@@ -1,5 +1,5 @@
-use crate::mos6502::op_code::OpCode::{LdaAbs, LdaImm};
-use crate::mos6502::tests::tests_helpers::{data, init, init_d, DATA1};
+use crate::mos6502::cpu::op_code::OpCode::{LdaAbs, LdaImm};
+use crate::mos6502::cpu::tests::tests_helpers::{data, init, init_d, DATA1};
 
 #[test]
 fn lda_imm() {

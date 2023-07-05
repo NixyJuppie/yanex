@@ -1,10 +1,10 @@
-use crate::mos6502::addressing_mode::AddressingMode;
+use crate::mos6502::cpu::addressing_mode::AddressingMode;
+use crate::mos6502::cpu::op_code::OpCode;
 use crate::mos6502::cpu::Cpu;
-use crate::mos6502::op_code::OpCode;
 
 pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
-    use crate::mos6502::addressing_mode::AddressingMode::*;
-    use crate::mos6502::op_code::OpCode::*;
+    use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
+    use crate::mos6502::cpu::op_code::OpCode::*;
 
     match op_code {
         LdaImm => lda(Immediate, cpu),

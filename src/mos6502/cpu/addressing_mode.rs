@@ -37,27 +37,27 @@ impl AddressingMode {
             AddressingMode::Implied => panic!("Cannot read using Implied addressing mode"),
             AddressingMode::Accumulator => cpu.registers.accumulator,
             AddressingMode::Immediate => {
-                let data = cpu.memory.read(cpu.registers.program_counter);
+                let data = cpu.memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter += 1;
                 data
             }
             AddressingMode::Absolute => {
-                let location = cpu.memory.read2(cpu.registers.program_counter);
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
-                cpu.memory.read(location)
+                cpu.memory.read_u8(location)
             }
             AddressingMode::Relative => todo!(),
             AddressingMode::ZeroPage => todo!(),
             AddressingMode::Indirect => todo!(),
             AddressingMode::AbsoluteIndexedX => {
-                let location = cpu.memory.read2(cpu.registers.program_counter);
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
-                cpu.memory.read(location + cpu.registers.index_x as u16)
+                cpu.memory.read_u8(location + cpu.registers.index_x as u16)
             }
             AddressingMode::AbsoluteIndexedY => {
-                let location = cpu.memory.read2(cpu.registers.program_counter);
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
-                cpu.memory.read(location + cpu.registers.index_y as u16)
+                cpu.memory.read_u8(location + cpu.registers.index_y as u16)
             }
             AddressingMode::ZeroPageIndexedX => todo!(),
             AddressingMode::ZeroPageIndexedY => todo!(),
@@ -72,9 +72,9 @@ impl AddressingMode {
             AddressingMode::Accumulator => panic!("Cannot write using Accumulator addressing mode"),
             AddressingMode::Immediate => panic!("Cannot write using Immediate addressing mode"),
             AddressingMode::Absolute => {
-                let location = cpu.memory.read2(cpu.registers.program_counter);
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
-                cpu.memory.write(location, data)
+                cpu.memory.write_u8(location, data)
             }
             AddressingMode::Relative => todo!(),
             AddressingMode::ZeroPage => todo!(),

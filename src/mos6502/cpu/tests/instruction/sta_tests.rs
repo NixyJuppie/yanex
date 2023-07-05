@@ -1,5 +1,5 @@
-use crate::mos6502::op_code::OpCode::StaAbs;
-use crate::mos6502::tests::tests_helpers::{data, init_d, DATA1};
+use crate::mos6502::cpu::op_code::OpCode::StaAbs;
+use crate::mos6502::cpu::tests::tests_helpers::{data, init_d, DATA1};
 
 #[test]
 fn sta_abs() {
@@ -8,5 +8,5 @@ fn sta_abs() {
         data([0xFF]),
     );
     cpu.execute();
-    assert_eq!(cpu.memory.read(DATA1), 0x00);
+    assert_eq!(cpu.memory.read_u8(DATA1), 0x00);
 }

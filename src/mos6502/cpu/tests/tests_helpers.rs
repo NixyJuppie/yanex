@@ -23,15 +23,15 @@ pub fn init_d(program: [u8; 100], data: [u8; 100]) -> Cpu {
 
 pub fn init_d2(program: [u8; 100], data1: [u8; 100], data2: [u8; 100]) -> Cpu {
     let mut memory = Memory::new();
-    for i in 0..program.len() {
-        memory.write(PROGRAM + i as u16, program[i]);
+    for (i, &b) in program.iter().enumerate() {
+        memory.write_u8(PROGRAM + i as u16, b);
     }
-    for i in 0..data1.len() {
-        memory.write(DATA1 + i as u16, data1[i]);
+    for (i, &b) in data1.iter().enumerate() {
+        memory.write_u8(DATA1 + i as u16, b);
     }
-    for i in 0..data2.len() {
-        memory.write(DATA2 + i as u16, data2[i]);
+    for (i, &b) in data2.iter().enumerate() {
+        memory.write_u8(DATA2 + i as u16, b);
     }
-    memory.write2(RESET_VECTOR, PROGRAM);
+    memory.write_u16(RESET_VECTOR, PROGRAM);
     Cpu::new(memory)
 }

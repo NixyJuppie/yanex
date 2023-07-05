@@ -1,8 +1,15 @@
 use num_traits::FromPrimitive;
 
-use crate::mos6502::instruction::execute_instruction;
+use crate::mos6502::cpu::instruction::execute_instruction;
+use crate::mos6502::cpu::op_code::OpCode;
 use crate::mos6502::memory::{Memory, RESET_VECTOR};
-use crate::mos6502::op_code::OpCode;
+
+mod addressing_mode;
+mod instruction;
+mod op_code;
+
+#[cfg(test)]
+mod tests;
 
 pub struct Cpu {
     pub registers: CpuRegisters,
@@ -22,14 +29,14 @@ impl Cpu {
     }
 
     pub fn execute(&mut self) {
-        let op_code = self.memory.read(self.registers.program_counter);
+        let op_code = self.memory.read_u8(self.registers.program_counter);
         self.registers.program_counter += 1;
         let op_code = OpCode::from_u8(op_code).expect("OpCode not found");
         execute_instruction(op_code, self);
     }
 
     pub fn reset(&mut self) {
-        self.registers.program_counter = self.memory.read2(RESET_VECTOR);
+        self.registers.program_counter = self.memory.read_u16(RESET_VECTOR);
     }
 }
 

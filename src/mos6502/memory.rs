@@ -11,24 +11,24 @@ impl Memory {
         }
     }
 
-    pub fn read(&self, location: u16) -> u8 {
+    pub fn read_u8(&self, location: u16) -> u8 {
         self.data[location as usize]
     }
 
-    pub fn read2(&self, location: u16) -> u16 {
+    pub fn read_u16(&self, location: u16) -> u16 {
         u16::from_le_bytes([
             self.data[location as usize],
             self.data[(location + 1) as usize],
         ])
     }
 
-    pub fn write(&mut self, location: u16, value: u8) {
+    pub fn write_u8(&mut self, location: u16, value: u8) {
         // println!("Memory[0x{:04x}] = 0x{:02x}", location, value);
 
         self.data[location as usize] = value;
     }
 
-    pub fn write2(&mut self, location: u16, value: u16) {
+    pub fn write_u16(&mut self, location: u16, value: u16) {
         // println!("Memory[0x{:04x}] = 0x{:04x}", location, value);
 
         self.data[location as usize] = value.to_le_bytes()[0];
