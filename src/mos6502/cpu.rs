@@ -1,5 +1,8 @@
-use crate::instruction::*;
-use crate::memory::*;
+use num_traits::FromPrimitive;
+
+use crate::mos6502::instruction::execute_instruction;
+use crate::mos6502::memory::{Memory, RESET_VECTOR};
+use crate::mos6502::op_code::OpCode;
 
 pub struct Cpu {
     pub registers: CpuRegisters,
@@ -21,6 +24,7 @@ impl Cpu {
     pub fn execute(&mut self) {
         let op_code = self.memory.read(self.registers.program_counter);
         self.registers.program_counter += 1;
+        let op_code = OpCode::from_u8(op_code).expect("OpCode not found");
         execute_instruction(op_code, self);
     }
 
@@ -33,6 +37,8 @@ impl Cpu {
 pub struct CpuRegisters {
     pub program_counter: u16,
     pub accumulator: u8,
+    pub index_x: u8,
+    pub index_y: u8,
     pub status: CpuStatus,
 }
 

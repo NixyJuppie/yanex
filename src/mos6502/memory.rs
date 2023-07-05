@@ -23,13 +23,13 @@ impl Memory {
     }
 
     pub fn write(&mut self, location: u16, value: u8) {
-        println!("Memory[0x{:04x}] = 0x{:02x}", location, value);
+        // println!("Memory[0x{:04x}] = 0x{:02x}", location, value);
 
         self.data[location as usize] = value;
     }
 
     pub fn write2(&mut self, location: u16, value: u16) {
-        println!("Memory[0x{:04x}] = 0x{:04x}", location, value);
+        // println!("Memory[0x{:04x}] = 0x{:04x}", location, value);
 
         self.data[location as usize] = value.to_le_bytes()[0];
         self.data[(location + 1) as usize] = value.to_le_bytes()[1];
