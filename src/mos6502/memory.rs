@@ -1,5 +1,6 @@
 pub const RESET_VECTOR: u16 = 0xFFFC;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Memory {
     data: [u8; 64 * 1024],
 }
@@ -23,14 +24,10 @@ impl Memory {
     }
 
     pub fn write_u8(&mut self, location: u16, value: u8) {
-        // println!("Memory[0x{:04x}] = 0x{:02x}", location, value);
-
         self.data[location as usize] = value;
     }
 
     pub fn write_u16(&mut self, location: u16, value: u16) {
-        // println!("Memory[0x{:04x}] = 0x{:04x}", location, value);
-
         self.data[location as usize] = value.to_le_bytes()[0];
         self.data[(location + 1) as usize] = value.to_le_bytes()[1];
     }

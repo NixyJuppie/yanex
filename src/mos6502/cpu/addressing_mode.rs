@@ -32,59 +32,96 @@ pub enum AddressingMode {
 }
 
 impl AddressingMode {
-    pub fn read(&self, cpu: &mut Cpu) -> u8 {
+    pub fn read_address(&self, cpu: &mut Cpu) -> u16 {
+        use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
+
         match self {
-            AddressingMode::Implied => panic!("Cannot read using Implied addressing mode"),
-            AddressingMode::Accumulator => cpu.registers.accumulator,
-            AddressingMode::Immediate => {
+            Implied => panic!("Cannot read address using Implied addressing mode"),
+            Accumulator => panic!("Cannot read address using Accumulator addressing mode"),
+            Immediate => panic!("Cannot read address using Immediate addressing mode"),
+            Absolute => {
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
+                cpu.registers.program_counter += 2;
+                location
+            }
+            Relative => todo!(),
+            ZeroPage => todo!(),
+            Indirect => {
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
+                cpu.registers.program_counter += 2;
+                cpu.memory.read_u16(location)
+            }
+            AbsoluteIndexedX => {
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
+                cpu.registers.program_counter += 2;
+                location + cpu.registers.index_x as u16
+            }
+            AbsoluteIndexedY => {
+                let location = cpu.memory.read_u16(cpu.registers.program_counter);
+                cpu.registers.program_counter += 2;
+                location + cpu.registers.index_y as u16
+            }
+            ZeroPageIndexedX => todo!(),
+            ZeroPageIndexedY => todo!(),
+            IndexedIndirectX => todo!(),
+            IndirectIndexedY => todo!(),
+        }
+    }
+
+    pub fn read_data(&self, cpu: &mut Cpu) -> u8 {
+        use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
+
+        match self {
+            Implied => panic!("Cannot read data using Implied addressing mode"),
+            Accumulator => cpu.registers.accumulator,
+            Immediate => {
                 let data = cpu.memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter += 1;
                 data
             }
-            AddressingMode::Absolute => {
-                let location = cpu.memory.read_u16(cpu.registers.program_counter);
-                cpu.registers.program_counter += 2;
+            Absolute => {
+                let location = Absolute.read_address(cpu);
                 cpu.memory.read_u8(location)
             }
-            AddressingMode::Relative => todo!(),
-            AddressingMode::ZeroPage => todo!(),
-            AddressingMode::Indirect => todo!(),
-            AddressingMode::AbsoluteIndexedX => {
-                let location = cpu.memory.read_u16(cpu.registers.program_counter);
-                cpu.registers.program_counter += 2;
-                cpu.memory.read_u8(location + cpu.registers.index_x as u16)
+            Relative => todo!(),
+            ZeroPage => todo!(),
+            Indirect => todo!(),
+            AbsoluteIndexedX => {
+                let location = AbsoluteIndexedX.read_address(cpu);
+                cpu.memory.read_u8(location)
             }
-            AddressingMode::AbsoluteIndexedY => {
-                let location = cpu.memory.read_u16(cpu.registers.program_counter);
-                cpu.registers.program_counter += 2;
-                cpu.memory.read_u8(location + cpu.registers.index_y as u16)
+            AbsoluteIndexedY => {
+                let location = AbsoluteIndexedY.read_address(cpu);
+                cpu.memory.read_u8(location)
             }
-            AddressingMode::ZeroPageIndexedX => todo!(),
-            AddressingMode::ZeroPageIndexedY => todo!(),
-            AddressingMode::IndexedIndirectX => todo!(),
-            AddressingMode::IndirectIndexedY => todo!(),
+            ZeroPageIndexedX => todo!(),
+            ZeroPageIndexedY => todo!(),
+            IndexedIndirectX => todo!(),
+            IndirectIndexedY => todo!(),
         }
     }
 
     pub fn write(&self, data: u8, cpu: &mut Cpu) {
+        use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
+
         match self {
-            AddressingMode::Implied => panic!("Cannot read using Implied addressing mode"),
-            AddressingMode::Accumulator => panic!("Cannot write using Accumulator addressing mode"),
-            AddressingMode::Immediate => panic!("Cannot write using Immediate addressing mode"),
-            AddressingMode::Absolute => {
+            Implied => panic!("Cannot write using Implied addressing mode"),
+            Accumulator => panic!("Cannot write using Accumulator addressing mode"),
+            Immediate => panic!("Cannot write using Immediate addressing mode"),
+            Absolute => {
                 let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
                 cpu.memory.write_u8(location, data)
             }
-            AddressingMode::Relative => todo!(),
-            AddressingMode::ZeroPage => todo!(),
-            AddressingMode::Indirect => todo!(),
-            AddressingMode::AbsoluteIndexedX => todo!(),
-            AddressingMode::AbsoluteIndexedY => todo!(),
-            AddressingMode::ZeroPageIndexedX => todo!(),
-            AddressingMode::ZeroPageIndexedY => todo!(),
-            AddressingMode::IndexedIndirectX => todo!(),
-            AddressingMode::IndirectIndexedY => todo!(),
+            Relative => todo!(),
+            ZeroPage => todo!(),
+            Indirect => todo!(),
+            AbsoluteIndexedX => todo!(),
+            AbsoluteIndexedY => todo!(),
+            ZeroPageIndexedX => todo!(),
+            ZeroPageIndexedY => todo!(),
+            IndexedIndirectX => todo!(),
+            IndirectIndexedY => todo!(),
         }
     }
 }

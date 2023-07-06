@@ -6,11 +6,12 @@ use crate::mos6502::memory::{Memory, RESET_VECTOR};
 
 mod addressing_mode;
 mod instruction;
-mod op_code;
+pub mod op_code;
 
 #[cfg(test)]
 mod tests;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Cpu {
     pub registers: CpuRegisters,
     pub memory: Memory,
@@ -40,7 +41,7 @@ impl Cpu {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct CpuRegisters {
     pub program_counter: u16,
     pub accumulator: u8,
@@ -49,7 +50,7 @@ pub struct CpuRegisters {
     pub status: CpuStatus,
 }
 
-#[derive(Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct CpuStatus {
     /// Carry flag (bit 0)
     pub c: bool,

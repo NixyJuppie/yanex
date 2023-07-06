@@ -7,6 +7,7 @@ fn sta_abs() {
         data([StaAbs as u8, DATA1.to_le_bytes()[0], DATA1.to_le_bytes()[1]]),
         data([0xFF]),
     );
+
     cpu.execute();
     assert_eq!(cpu.memory.read_u8(DATA1), 0x00);
 }
