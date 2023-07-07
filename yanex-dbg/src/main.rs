@@ -1,8 +1,6 @@
-use crate::mos6502::cpu::op_code::OpCode;
-use crate::mos6502::cpu::Cpu;
-use crate::mos6502::memory::{Memory, RESET_VECTOR};
-
-mod mos6502;
+use yanex_core::mos6502::cpu::op_code::OpCode;
+use yanex_core::mos6502::cpu::Cpu;
+use yanex_core::mos6502::memory::{Memory, RESET_VECTOR};
 
 fn main() {
     const PROGRAM: u16 = 0x0600;

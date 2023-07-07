@@ -1,0 +1,7 @@
+[package]
+name = "yanex-dbg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+yanex-core = { path = "../yanex-core" }

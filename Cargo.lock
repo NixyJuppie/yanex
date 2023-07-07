@@ -64,9 +64,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22049a19f4a68748a168c0fc439f9516686aa045927ff767eca0a85101fb6e73"
 
 [[package]]
-name = "yanex"
+name = "yanex-core"
 version = "0.1.0"
 dependencies = [
  "num-derive",
  "num-traits",
+]
+
+[[package]]
+name = "yanex-dbg"
+version = "0.1.0"
+dependencies = [
+ "yanex-core",
 ]
