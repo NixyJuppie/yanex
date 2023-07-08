@@ -45,7 +45,11 @@ impl AddressingMode {
                 location
             }
             Relative => todo!(),
-            ZeroPage => todo!(),
+            ZeroPage => {
+                let location = cpu.memory.read_u8(cpu.registers.program_counter);
+                cpu.registers.program_counter += 1;
+                u16::from_le_bytes([location, 0])
+            }
             Indirect => {
                 let location = cpu.memory.read_u16(cpu.registers.program_counter);
                 cpu.registers.program_counter += 2;
@@ -61,10 +65,38 @@ impl AddressingMode {
                 cpu.registers.program_counter += 2;
                 location + cpu.registers.index_y as u16
             }
-            ZeroPageIndexedX => todo!(),
-            ZeroPageIndexedY => todo!(),
-            IndexedIndirectX => todo!(),
-            IndirectIndexedY => todo!(),
+            ZeroPageIndexedX => {
+                let location = cpu
+                    .memory
+                    .read_u8(cpu.registers.program_counter)
+                    .wrapping_add(cpu.registers.index_x);
+                cpu.registers.program_counter += 1;
+                u16::from_le_bytes([location, 0])
+            }
+            ZeroPageIndexedY => {
+                let location = cpu
+                    .memory
+                    .read_u8(cpu.registers.program_counter)
+                    .wrapping_add(cpu.registers.index_y);
+                cpu.registers.program_counter += 1;
+                u16::from_le_bytes([location, 0])
+            }
+            IndexedIndirectX => {
+                let location = cpu
+                    .memory
+                    .read_u8(cpu.registers.program_counter)
+                    .wrapping_add(cpu.registers.index_x);
+                cpu.registers.program_counter += 1;
+                cpu.memory.read_u16(u16::from_le_bytes([location, 0]))
+            }
+            IndirectIndexedY => {
+                let location = cpu
+                    .memory
+                    .read_u8(cpu.registers.program_counter)
+                    .wrapping_add(cpu.registers.index_y);
+                cpu.registers.program_counter += 1;
+                cpu.memory.read_u16(u16::from_le_bytes([location, 0]))
+            }
         }
     }
 
@@ -75,29 +107,17 @@ impl AddressingMode {
             Implied => panic!("Cannot read data using Implied addressing mode"),
             Accumulator => cpu.registers.accumulator,
             Immediate => {
-                let data = cpu.memory.read_u8(cpu.registers.program_counter);
+                let location = cpu.memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter += 1;
-                data
+                location
             }
-            Absolute => {
-                let location = Absolute.read_address(cpu);
+            Absolute | AbsoluteIndexedX | AbsoluteIndexedY | ZeroPage | ZeroPageIndexedX
+            | ZeroPageIndexedY | IndexedIndirectX | IndirectIndexedY => {
+                let location = self.read_address(cpu);
                 cpu.memory.read_u8(location)
             }
             Relative => todo!(),
-            ZeroPage => todo!(),
             Indirect => todo!(),
-            AbsoluteIndexedX => {
-                let location = AbsoluteIndexedX.read_address(cpu);
-                cpu.memory.read_u8(location)
-            }
-            AbsoluteIndexedY => {
-                let location = AbsoluteIndexedY.read_address(cpu);
-                cpu.memory.read_u8(location)
-            }
-            ZeroPageIndexedX => todo!(),
-            ZeroPageIndexedY => todo!(),
-            IndexedIndirectX => todo!(),
-            IndirectIndexedY => todo!(),
         }
     }
 
@@ -108,20 +128,13 @@ impl AddressingMode {
             Implied => panic!("Cannot write using Implied addressing mode"),
             Accumulator => panic!("Cannot write using Accumulator addressing mode"),
             Immediate => panic!("Cannot write using Immediate addressing mode"),
-            Absolute => {
-                let location = cpu.memory.read_u16(cpu.registers.program_counter);
-                cpu.registers.program_counter += 2;
+            Absolute | AbsoluteIndexedX | AbsoluteIndexedY | ZeroPage | ZeroPageIndexedX
+            | ZeroPageIndexedY | IndexedIndirectX | IndirectIndexedY => {
+                let location = self.read_address(cpu);
                 cpu.memory.write_u8(location, data)
             }
             Relative => todo!(),
-            ZeroPage => todo!(),
             Indirect => todo!(),
-            AbsoluteIndexedX => todo!(),
-            AbsoluteIndexedY => todo!(),
-            ZeroPageIndexedX => todo!(),
-            ZeroPageIndexedY => todo!(),
-            IndexedIndirectX => todo!(),
-            IndirectIndexedY => todo!(),
         }
     }
 }

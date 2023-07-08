@@ -6,12 +6,6 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn new() -> Self {
-        Memory {
-            data: [0; 64 * 1024],
-        }
-    }
-
     pub fn read_u8(&self, location: u16) -> u8 {
         self.data[location as usize]
     }
@@ -30,5 +24,13 @@ impl Memory {
     pub fn write_u16(&mut self, location: u16, value: u16) {
         self.data[location as usize] = value.to_le_bytes()[0];
         self.data[(location + 1) as usize] = value.to_le_bytes()[1];
+    }
+}
+
+impl Default for Memory {
+    fn default() -> Self {
+        Memory {
+            data: [0; 64 * 1024],
+        }
     }
 }
