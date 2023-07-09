@@ -2,7 +2,6 @@ use crate::mos6502::cpu::Cpu;
 
 #[derive(Debug)]
 pub enum AddressingMode {
-    Implied,
     /// A
     Accumulator,
     /// #$FF
@@ -36,7 +35,6 @@ impl AddressingMode {
         use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
 
         match self {
-            Implied => panic!("Cannot read address using Implied addressing mode"),
             Accumulator => panic!("Cannot read address using Accumulator addressing mode"),
             Immediate => panic!("Cannot read address using Immediate addressing mode"),
             Absolute => {
@@ -104,7 +102,6 @@ impl AddressingMode {
         use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
 
         match self {
-            Implied => panic!("Cannot read data using Implied addressing mode"),
             Accumulator => cpu.registers.accumulator,
             Immediate => {
                 let location = cpu.memory.read_u8(cpu.registers.program_counter);
@@ -125,7 +122,6 @@ impl AddressingMode {
         use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
 
         match self {
-            Implied => panic!("Cannot write using Implied addressing mode"),
             Accumulator => panic!("Cannot write using Accumulator addressing mode"),
             Immediate => panic!("Cannot write using Immediate addressing mode"),
             Absolute | AbsoluteIndexedX | AbsoluteIndexedY | ZeroPage | ZeroPageIndexedX

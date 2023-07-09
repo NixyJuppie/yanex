@@ -7,15 +7,15 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 
 #[test]
 fn lda_flags() {
-    let mut cpu = init(data([LdaImm as u8, 0xff, LdaImm as u8, 0x00]));
-
-    cpu.execute();
-    assert!(!cpu.registers.status.z);
-    assert!(cpu.registers.status.n);
+    let mut cpu = init(data([LdaImm as u8, 0x00, LdaImm as u8, 0xFF]));
 
     cpu.execute();
     assert!(cpu.registers.status.z);
     assert!(!cpu.registers.status.n);
+
+    cpu.execute();
+    assert!(!cpu.registers.status.z);
+    assert!(cpu.registers.status.n);
 }
 
 #[test]

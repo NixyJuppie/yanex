@@ -44,7 +44,14 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         StyZp => sty(ZeroPage, cpu),
         StyZpX => sty(ZeroPageIndexedX, cpu),
 
-        NopImp => {}
+        TaxImp => tax(cpu),
+        TayImp => tay(cpu),
+        TxaImp => txa(cpu),
+        TyaImp => tya(cpu),
+        TsxImp => tsx(cpu),
+        TxsImp => txs(cpu),
+
+        NopImp => nop(),
 
         JmpAbs => jmp(Absolute, cpu),
         JmpInd => jmp(Indirect, cpu),
@@ -88,6 +95,42 @@ fn sty(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     addressing_mode.write(data, cpu);
 }
 
+fn tax(cpu: &mut Cpu) {
+    cpu.registers.index_x = cpu.registers.accumulator;
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b10000000 == 0b10000000;
+}
+
+fn tay(cpu: &mut Cpu) {
+    cpu.registers.index_y = cpu.registers.accumulator;
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b10000000 == 0b10000000;
+}
+
+fn txa(cpu: &mut Cpu) {
+    cpu.registers.accumulator = cpu.registers.index_x;
+    cpu.registers.status.z = cpu.registers.index_x == 0;
+    cpu.registers.status.n = cpu.registers.index_x & 0b10000000 == 0b10000000;
+}
+
+fn tya(cpu: &mut Cpu) {
+    cpu.registers.accumulator = cpu.registers.index_y;
+    cpu.registers.status.z = cpu.registers.index_y == 0;
+    cpu.registers.status.n = cpu.registers.index_y & 0b10000000 == 0b10000000;
+}
+
+fn tsx(cpu: &mut Cpu) {
+    cpu.registers.index_x = cpu.registers.stack_pointer;
+    cpu.registers.status.z = cpu.registers.stack_pointer == 0;
+    cpu.registers.status.n = cpu.registers.stack_pointer & 0b10000000 == 0b10000000;
+}
+
+fn txs(cpu: &mut Cpu) {
+    cpu.registers.stack_pointer = cpu.registers.index_x;
+}
+
 fn jmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     cpu.registers.program_counter = addressing_mode.read_address(cpu);
 }
+
+fn nop() {}

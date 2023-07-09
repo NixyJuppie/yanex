@@ -5,15 +5,15 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 
 #[test]
 fn ldx_flags() {
-    let mut cpu = init(data([LdxImm as u8, 0xff, LdxImm as u8, 0x00]));
-
-    cpu.execute();
-    assert!(!cpu.registers.status.z);
-    assert!(cpu.registers.status.n);
+    let mut cpu = init(data([LdxImm as u8, 0x00, LdxImm as u8, 0xFF]));
 
     cpu.execute();
     assert!(cpu.registers.status.z);
     assert!(!cpu.registers.status.n);
+
+    cpu.execute();
+    assert!(!cpu.registers.status.z);
+    assert!(cpu.registers.status.n);
 }
 
 #[test]
