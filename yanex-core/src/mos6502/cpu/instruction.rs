@@ -7,6 +7,7 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
     use crate::mos6502::cpu::op_code::OpCode::*;
 
     match op_code {
+        // Load
         LdaImm => lda(Immediate, cpu),
         LdaAbs => lda(Absolute, cpu),
         LdaAbsX => lda(AbsoluteIndexedX, cpu),
@@ -15,19 +16,16 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         LdaZpX => lda(ZeroPageIndexedX, cpu),
         LdaIndX => lda(IndexedIndirectX, cpu),
         LdaIndY => lda(IndirectIndexedY, cpu),
-
         LdxImm => ldx(Immediate, cpu),
         LdxAbs => ldx(Absolute, cpu),
         LdxAbsY => ldx(AbsoluteIndexedY, cpu),
         LdxZp => ldx(ZeroPage, cpu),
         LdxZpY => ldx(ZeroPageIndexedY, cpu),
-
         LdyImm => ldy(Immediate, cpu),
         LdyAbs => ldy(Absolute, cpu),
         LdyAbsX => ldy(AbsoluteIndexedX, cpu),
         LdyZp => ldy(ZeroPage, cpu),
         LdyZpX => ldy(ZeroPageIndexedX, cpu),
-
         StaAbs => sta(Absolute, cpu),
         StaAbsX => sta(AbsoluteIndexedX, cpu),
         StaAbsY => sta(AbsoluteIndexedY, cpu),
@@ -35,24 +33,27 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         StaZpX => sta(ZeroPageIndexedX, cpu),
         StaIndX => sta(IndexedIndirectX, cpu),
         StaIndY => sta(IndirectIndexedY, cpu),
-
         StxAbs => stx(Absolute, cpu),
         StxZp => stx(ZeroPage, cpu),
         StxZpY => stx(ZeroPageIndexedY, cpu),
-
         StyAbs => sty(Absolute, cpu),
         StyZp => sty(ZeroPage, cpu),
         StyZpX => sty(ZeroPageIndexedX, cpu),
-
+        // Transfer
         TaxImp => tax(cpu),
         TayImp => tay(cpu),
         TxaImp => txa(cpu),
         TyaImp => tya(cpu),
         TsxImp => tsx(cpu),
         TxsImp => txs(cpu),
+        // Stack
+        PhaImp => pha(cpu),
+        PhpImp => php(cpu),
+        PlaImp => pla(cpu),
+        PlpImp => plp(cpu),
 
+        // TODO
         NopImp => nop(),
-
         JmpAbs => jmp(Absolute, cpu),
         JmpInd => jmp(Indirect, cpu),
         _ => todo!("OpCode: 0x{:2X}", op_code as u8),
@@ -128,6 +129,26 @@ fn tsx(cpu: &mut Cpu) {
 fn txs(cpu: &mut Cpu) {
     cpu.registers.stack_pointer = cpu.registers.index_x;
 }
+
+fn pha(cpu: &mut Cpu) {
+    cpu.write_stack(cpu.registers.stack_pointer, cpu.registers.accumulator);
+    cpu.registers.stack_pointer = cpu.registers.stack_pointer.wrapping_sub(1);
+}
+
+fn php(cpu: &mut Cpu) {
+    cpu.write_stack(cpu.registers.stack_pointer, cpu.registers.status.into())
+}
+
+fn pla(cpu: &mut Cpu) {
+    cpu.registers.stack_pointer = cpu.registers.stack_pointer.wrapping_add(1);
+    cpu.registers.accumulator = cpu.read_stack(cpu.registers.stack_pointer);
+}
+
+fn plp(cpu: &mut Cpu) {
+    cpu.registers.status = cpu.read_stack(cpu.registers.stack_pointer).into()
+}
+
+// TODO
 
 fn jmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     cpu.registers.program_counter = addressing_mode.read_address(cpu);

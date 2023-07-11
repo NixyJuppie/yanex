@@ -1,9 +1,7 @@
 use crate::mos6502::cpu::op_code::OpCode::{
     StaAbs, StaAbsX, StaAbsY, StaIndX, StaIndY, StaZp, StaZpX,
 };
-use crate::mos6502::cpu::tests::tests_helpers::{
-    data, init, init_all, init_data, init_data_zp, DATA, DATA_ZP,
-};
+use crate::mos6502::cpu::tests::tests_helpers::{data, init, init_data_zp, DATA, DATA_ZP};
 
 #[test]
 fn sta_abs() {

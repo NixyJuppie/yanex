@@ -1,5 +1,5 @@
-use crate::mos6502::cpu::Cpu;
-use crate::mos6502::memory::{Memory, RESET_VECTOR};
+use crate::mos6502::cpu::{Cpu, RESET_VECTOR};
+use crate::mos6502::memory::Memory;
 
 pub const PROGRAM: u16 = 0x0600;
 pub const DATA: u16 = 0xAA00;

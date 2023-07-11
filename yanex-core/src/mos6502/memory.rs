@@ -1,5 +1,3 @@
-pub const RESET_VECTOR: u16 = 0xFFFC;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Memory {
     data: [u8; 64 * 1024],

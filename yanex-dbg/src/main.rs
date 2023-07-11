@@ -1,6 +1,6 @@
 use yanex_core::mos6502::cpu::op_code::OpCode;
-use yanex_core::mos6502::cpu::Cpu;
-use yanex_core::mos6502::memory::{Memory, RESET_VECTOR};
+use yanex_core::mos6502::cpu::{Cpu, RESET_VECTOR};
+use yanex_core::mos6502::memory::Memory;
 
 fn main() {
     const PROGRAM: u16 = 0x0600;
