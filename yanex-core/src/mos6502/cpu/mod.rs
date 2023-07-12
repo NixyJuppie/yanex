@@ -88,14 +88,14 @@ pub struct CpuStatus {
 impl From<u8> for CpuStatus {
     fn from(value: u8) -> Self {
         Self {
-            c: value & 0b00000001 > 0,
-            z: value & 0b00000010 > 0,
-            i: value & 0b00000010 > 0,
-            d: value & 0b00000100 > 0,
-            b: value & 0b00001000 > 0,
-            u: value & 0b00010000 > 0,
-            v: value & 0b01000000 > 0,
-            n: value & 0b10000000 > 0,
+            c: value & 0b0000_0001 > 0,
+            z: value & 0b0000_0010 > 0,
+            i: value & 0b0000_0100 > 0,
+            d: value & 0b0000_1000 > 0,
+            b: value & 0b0001_0000 > 0,
+            u: value & 0b0010_0000 > 0,
+            v: value & 0b0100_0000 > 0,
+            n: value & 0b1000_0000 > 0,
         }
     }
 }

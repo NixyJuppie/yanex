@@ -51,6 +51,27 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         PhpImp => php(cpu),
         PlaImp => pla(cpu),
         PlpImp => plp(cpu),
+        // Shift
+        AslAcc => asl(Accumulator, cpu),
+        AslAbs => asl(Absolute, cpu),
+        AslAbsX => asl(AbsoluteIndexedX, cpu),
+        AslZp => asl(ZeroPage, cpu),
+        AslZpX => asl(ZeroPageIndexedX, cpu),
+        LsrAcc => lsr(Accumulator, cpu),
+        LsrAbs => lsr(Absolute, cpu),
+        LsrAbsX => lsr(AbsoluteIndexedX, cpu),
+        LsrZp => lsr(ZeroPage, cpu),
+        LsrZpX => lsr(ZeroPageIndexedX, cpu),
+        RolAcc => rol(Accumulator, cpu),
+        RolAbs => rol(Absolute, cpu),
+        RolAbsX => rol(AbsoluteIndexedX, cpu),
+        RolZp => rol(ZeroPage, cpu),
+        RolZpX => rol(ZeroPageIndexedX, cpu),
+        RorAcc => ror(Accumulator, cpu),
+        RorAbs => ror(Absolute, cpu),
+        RorAbsX => ror(AbsoluteIndexedX, cpu),
+        RorZp => ror(ZeroPage, cpu),
+        RorZpX => ror(ZeroPageIndexedX, cpu),
 
         // TODO
         NopImp => nop(),
@@ -61,69 +82,69 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
 }
 
 fn lda(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let data = addressing_mode.read_data(cpu);
+    let data = addressing_mode.read_data(cpu, true);
     cpu.registers.accumulator = data;
     cpu.registers.status.z = data == 0;
-    cpu.registers.status.n = data & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = data & 0b1000_0000 == 0b1000_0000;
 }
 
 fn ldx(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let data = addressing_mode.read_data(cpu);
+    let data = addressing_mode.read_data(cpu, true);
     cpu.registers.index_x = data;
     cpu.registers.status.z = data == 0;
-    cpu.registers.status.n = data & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = data & 0b1000_0000 == 0b1000_0000;
 }
 
 fn ldy(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let data = addressing_mode.read_data(cpu);
+    let data = addressing_mode.read_data(cpu, true);
     cpu.registers.index_y = data;
     cpu.registers.status.z = data == 0;
-    cpu.registers.status.n = data & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = data & 0b1000_0000 == 0b1000_0000;
 }
 
 fn sta(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let data = cpu.registers.accumulator;
-    addressing_mode.write(data, cpu);
+    addressing_mode.write(data, cpu, true);
 }
 
 fn stx(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let data = cpu.registers.index_x;
-    addressing_mode.write(data, cpu);
+    addressing_mode.write(data, cpu, true);
 }
 
 fn sty(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let data = cpu.registers.index_y;
-    addressing_mode.write(data, cpu);
+    addressing_mode.write(data, cpu, true);
 }
 
 fn tax(cpu: &mut Cpu) {
     cpu.registers.index_x = cpu.registers.accumulator;
     cpu.registers.status.z = cpu.registers.accumulator == 0;
-    cpu.registers.status.n = cpu.registers.accumulator & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
 }
 
 fn tay(cpu: &mut Cpu) {
     cpu.registers.index_y = cpu.registers.accumulator;
     cpu.registers.status.z = cpu.registers.accumulator == 0;
-    cpu.registers.status.n = cpu.registers.accumulator & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
 }
 
 fn txa(cpu: &mut Cpu) {
     cpu.registers.accumulator = cpu.registers.index_x;
     cpu.registers.status.z = cpu.registers.index_x == 0;
-    cpu.registers.status.n = cpu.registers.index_x & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = cpu.registers.index_x & 0b1000_0000 == 0b1000_0000;
 }
 
 fn tya(cpu: &mut Cpu) {
     cpu.registers.accumulator = cpu.registers.index_y;
     cpu.registers.status.z = cpu.registers.index_y == 0;
-    cpu.registers.status.n = cpu.registers.index_y & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = cpu.registers.index_y & 0b1000_0000 == 0b1000_0000;
 }
 
 fn tsx(cpu: &mut Cpu) {
     cpu.registers.index_x = cpu.registers.stack_pointer;
     cpu.registers.status.z = cpu.registers.stack_pointer == 0;
-    cpu.registers.status.n = cpu.registers.stack_pointer & 0b10000000 == 0b10000000;
+    cpu.registers.status.n = cpu.registers.stack_pointer & 0b1000_0000 == 0b1000_0000;
 }
 
 fn txs(cpu: &mut Cpu) {
@@ -148,10 +169,56 @@ fn plp(cpu: &mut Cpu) {
     cpu.registers.status = cpu.read_stack(cpu.registers.stack_pointer).into()
 }
 
+fn asl(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let result = value << 1;
+
+    addressing_mode.write(result, cpu, true);
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.c = value & 0b1000_0000 == 0b1000_0000;
+}
+
+fn lsr(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let result = value >> 1;
+
+    addressing_mode.write(result, cpu, true);
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = false;
+    cpu.registers.status.c = value & 0b0000_0001 == 0b0000_0001;
+}
+
+fn rol(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let mut result = value << 1;
+    if cpu.registers.status.c {
+        result |= 0b0000_0001
+    }
+
+    addressing_mode.write(result, cpu, true);
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.c = value & 0b1000_0000 == 0b1000_0000;
+}
+
+fn ror(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let mut result = value >> 1;
+    if cpu.registers.status.c {
+        result |= 0b1000_0000
+    }
+
+    addressing_mode.write(result, cpu, true);
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = cpu.registers.status.c;
+    cpu.registers.status.c = value & 0b0000_0001 == 0b0000_0001;
+}
+
 // TODO
 
 fn jmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    cpu.registers.program_counter = addressing_mode.read_address(cpu);
+    cpu.registers.program_counter = addressing_mode.read_address(cpu, true);
 }
 
 fn nop() {}
