@@ -72,6 +72,33 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         RorAbsX => ror(AbsoluteIndexedX, cpu),
         RorZp => ror(ZeroPage, cpu),
         RorZpX => ror(ZeroPageIndexedX, cpu),
+        // Logic
+        BitAbs => bit(Absolute, cpu),
+        BitZp => bit(ZeroPage, cpu),
+        AndImm => and(Immediate, cpu),
+        AndAbs => and(Absolute, cpu),
+        AndAbsX => and(AbsoluteIndexedX, cpu),
+        AndAbsY => and(AbsoluteIndexedY, cpu),
+        AndZp => and(ZeroPage, cpu),
+        AndZpX => and(ZeroPageIndexedX, cpu),
+        AndIndX => and(IndexedIndirectX, cpu),
+        AndIndY => and(IndirectIndexedY, cpu),
+        OraImm => ora(Immediate, cpu),
+        OraAbs => ora(Absolute, cpu),
+        OraAbsX => ora(AbsoluteIndexedX, cpu),
+        OraAbsY => ora(AbsoluteIndexedY, cpu),
+        OraZp => ora(ZeroPage, cpu),
+        OraZpX => ora(ZeroPageIndexedX, cpu),
+        OraIndX => ora(IndexedIndirectX, cpu),
+        OraIndY => ora(IndirectIndexedY, cpu),
+        EorImm => eor(Immediate, cpu),
+        EorAbs => eor(Absolute, cpu),
+        EorAbsX => eor(AbsoluteIndexedX, cpu),
+        EorAbsY => eor(AbsoluteIndexedY, cpu),
+        EorZp => eor(ZeroPage, cpu),
+        EorZpX => eor(ZeroPageIndexedX, cpu),
+        EorIndX => eor(IndexedIndirectX, cpu),
+        EorIndY => eor(IndirectIndexedY, cpu),
 
         // TODO
         NopImp => nop(),
@@ -213,6 +240,38 @@ fn ror(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     cpu.registers.status.z = result == 0;
     cpu.registers.status.n = cpu.registers.status.c;
     cpu.registers.status.c = value & 0b0000_0001 == 0b0000_0001;
+}
+
+fn bit(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, true);
+
+    cpu.registers.status.z = value & cpu.registers.accumulator == 0;
+    cpu.registers.status.n = value & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.v = value & 0b0100_0000 == 0b0100_0000;
+}
+
+fn and(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    cpu.registers.accumulator &= value;
+
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
+}
+
+fn ora(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    cpu.registers.accumulator |= value;
+
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
+}
+
+fn eor(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    cpu.registers.accumulator ^= value;
+
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
 }
 
 // TODO
