@@ -311,22 +311,30 @@ fn eor(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 // Arithmetic
+
 fn adc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let value = addressing_mode.read_data(cpu, true);
+    adc_execute(addressing_mode.read_data(cpu, true), cpu);
+}
+
+fn sbc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    // SBC(data) == ADC(~data)
+    adc_execute(!addressing_mode.read_data(cpu, true), cpu);
+}
+
+fn adc_execute(value: u8, cpu: &mut Cpu) {
+    if cpu.registers.status.d {
+        todo!("Implement decimal mode")
+    }
+
     let result: u16 = value as u16
         + cpu.registers.accumulator as u16
         + if cpu.registers.status.c { 1 } else { 0 };
 
     cpu.registers.accumulator = result as u8;
     cpu.registers.status.z = cpu.registers.accumulator == 0;
-    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
-    cpu.registers.status.v = value & 0b1000_0000 != (result & 0b1000_0000) as u8;
-    cpu.registers.status.c =
-        (cpu.registers.status.d && result > 99) || (!cpu.registers.status.d && result > 255);
-}
-
-fn sbc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    todo!()
+    cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.v = (value & 0b1000_0000) != (result as u8 & 0b1000_0000);
+    cpu.registers.status.c = result > 0b1111_1111;
 }
 
 fn cmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {

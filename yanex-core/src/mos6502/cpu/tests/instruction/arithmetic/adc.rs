@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn adc_flags_bin() {
+fn adc_flags() {
     let mut cpu = init(data([
         AdcImm as u8,
         0b0111_1111,
@@ -44,53 +44,6 @@ fn adc_flags_bin() {
     assert!(cpu.registers.status.v);
 
     cpu.registers.accumulator = 0b1000_0000;
-    cpu.registers.status.c = true;
-    cpu.execute();
-    assert!(cpu.registers.status.z);
-    assert!(!cpu.registers.status.n);
-    assert!(cpu.registers.status.c);
-    assert!(!cpu.registers.status.v);
-}
-
-#[test]
-fn adc_flags_dec() {
-    let mut cpu = init(data([
-        AdcImm as u8,
-        0b0011_0010, // 50
-        AdcImm as u8,
-        0b0011_0010, // 50
-        AdcImm as u8,
-        0b0011_0010, // 50
-        AdcImm as u8,
-        0b0011_0010, // 50
-    ]));
-    cpu.registers.status.d = true;
-
-    cpu.registers.accumulator = 0b0011_0001; // 49
-    cpu.registers.status.c = false;
-    cpu.execute();
-    assert!(!cpu.registers.status.z);
-    assert!(!cpu.registers.status.n);
-    assert!(!cpu.registers.status.c);
-    assert!(!cpu.registers.status.v);
-
-    cpu.registers.accumulator = 0b0011_0001; // 49
-    cpu.registers.status.c = true;
-    cpu.execute();
-    assert!(!cpu.registers.status.z);
-    assert!(!cpu.registers.status.n);
-    assert!(cpu.registers.status.c);
-    assert!(!cpu.registers.status.v);
-
-    cpu.registers.accumulator = 0b1100_1101; // 205
-    cpu.registers.status.c = false;
-    cpu.execute();
-    assert!(!cpu.registers.status.z);
-    assert!(cpu.registers.status.n);
-    assert!(cpu.registers.status.c);
-    assert!(cpu.registers.status.v);
-
-    cpu.registers.accumulator = 0b1100_1101; // 205
     cpu.registers.status.c = true;
     cpu.execute();
     assert!(cpu.registers.status.z);
