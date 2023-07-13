@@ -115,9 +115,13 @@ fn ora_ind_x() {
 #[test]
 fn ora_ind_y() {
     let mut cpu = init_all(
-        data([OraIndY as u8, (DATA_ZP - 4).to_le_bytes()[0]]),
-        data([0x69]),
-        data([DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
+        data([OraIndY as u8, DATA_ZP.to_le_bytes()[0]]),
+        data([
+            (DATA + 2).to_le_bytes()[0],
+            (DATA + 2).to_le_bytes()[1],
+            0x69,
+        ]),
+        data([(DATA - 4).to_le_bytes()[0], (DATA - 4).to_le_bytes()[1]]),
     );
     cpu.registers.accumulator = 0x42;
     cpu.registers.index_y = 4;

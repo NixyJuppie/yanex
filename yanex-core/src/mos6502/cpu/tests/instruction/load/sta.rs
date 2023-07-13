@@ -1,7 +1,9 @@
 use crate::mos6502::cpu::op_code::OpCode::{
     StaAbs, StaAbsX, StaAbsY, StaIndX, StaIndY, StaZp, StaZpX,
 };
-use crate::mos6502::cpu::tests::tests_helpers::{data, init, init_data_zp, DATA, DATA_ZP};
+use crate::mos6502::cpu::tests::tests_helpers::{
+    data, init, init_all, init_data_zp, DATA, DATA_ZP,
+};
 
 #[test]
 fn sta_abs() {
@@ -78,13 +80,14 @@ fn sta_ind_x() {
 
 #[test]
 fn sta_ind_y() {
-    let mut cpu = init_data_zp(
-        data([StaIndY as u8, (DATA_ZP - 4).to_le_bytes()[0]]),
-        data([DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
+    let mut cpu = init_all(
+        data([StaIndY as u8, DATA_ZP.to_le_bytes()[0]]),
+        data([(DATA + 2).to_le_bytes()[0], (DATA + 2).to_le_bytes()[1]]),
+        data([(DATA - 4).to_le_bytes()[0], (DATA - 4).to_le_bytes()[1]]),
     );
     cpu.registers.accumulator = 0x69;
     cpu.registers.index_y = 0x04;
 
     cpu.execute();
-    assert_eq!(cpu.memory.read_u8(DATA), 0x69);
+    assert_eq!(cpu.memory.read_u8(DATA + 2), 0x69);
 }

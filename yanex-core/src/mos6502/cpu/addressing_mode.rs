@@ -104,14 +104,17 @@ impl AddressingMode {
                 cpu.memory.read_u16(u16::from_le_bytes([location, 0]))
             }
             IndirectIndexedY => {
-                let location = cpu
-                    .memory
-                    .read_u8(cpu.registers.program_counter)
-                    .wrapping_add(cpu.registers.index_y);
+                let zp = u16::from_le_bytes([cpu.memory.read_u8(cpu.registers.program_counter), 0]);
                 if increase_program_counter {
                     cpu.registers.program_counter += 1;
                 }
-                cpu.memory.read_u16(u16::from_le_bytes([location, 0]))
+
+                let low = cpu.memory.read_u8(zp) as u16 + cpu.registers.index_y as u16;
+                let carry = if low > 255 { 1 } else { 0 };
+
+                let low = low as u8;
+                let high = cpu.memory.read_u8(zp + 1).wrapping_add(carry);
+                cpu.memory.read_u16(u16::from_le_bytes([low, high]))
             }
         }
     }

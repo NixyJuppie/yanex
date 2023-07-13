@@ -1,3 +1,4 @@
+mod arithmetic;
 mod control;
 mod load;
 mod logic;

@@ -1,6 +1,7 @@
 use crate::mos6502::cpu::addressing_mode::AddressingMode;
 use crate::mos6502::cpu::op_code::OpCode;
 use crate::mos6502::cpu::Cpu;
+use num_traits::ToPrimitive;
 
 pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
     use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
@@ -99,6 +100,37 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         EorZpX => eor(ZeroPageIndexedX, cpu),
         EorIndX => eor(IndexedIndirectX, cpu),
         EorIndY => eor(IndirectIndexedY, cpu),
+        // Arithmetic
+        AdcImm => adc(Immediate, cpu),
+        AdcAbs => adc(Absolute, cpu),
+        AdcAbsX => adc(AbsoluteIndexedX, cpu),
+        AdcAbsY => adc(AbsoluteIndexedY, cpu),
+        AdcZp => adc(ZeroPage, cpu),
+        AdcZpX => adc(ZeroPageIndexedX, cpu),
+        AdcIndX => adc(IndexedIndirectX, cpu),
+        AdcIndY => adc(IndirectIndexedY, cpu),
+        SbcImm => sbc(Immediate, cpu),
+        SbcAbs => sbc(Absolute, cpu),
+        SbcAbsX => sbc(AbsoluteIndexedX, cpu),
+        SbcAbsY => sbc(AbsoluteIndexedY, cpu),
+        SbcZp => sbc(ZeroPage, cpu),
+        SbcZpX => sbc(ZeroPageIndexedX, cpu),
+        SbcIndX => sbc(IndexedIndirectX, cpu),
+        SbcIndY => sbc(IndirectIndexedY, cpu),
+        CmpImm => cmp(Immediate, cpu),
+        CmpAbs => cmp(Absolute, cpu),
+        CmpAbsX => cmp(AbsoluteIndexedX, cpu),
+        CmpAbsY => cmp(AbsoluteIndexedY, cpu),
+        CmpZp => cmp(ZeroPage, cpu),
+        CmpZpX => cmp(ZeroPageIndexedX, cpu),
+        CmpIndX => cmp(IndexedIndirectX, cpu),
+        CmpIndY => cmp(IndirectIndexedY, cpu),
+        CpxImm => cpx(Immediate, cpu),
+        CpxAbs => cpx(Absolute, cpu),
+        CpxZp => cpx(ZeroPage, cpu),
+        CpyImm => cpy(Immediate, cpu),
+        CpyAbs => cpy(Absolute, cpu),
+        CpyZp => cpy(ZeroPage, cpu),
 
         // TODO
         NopImp => nop(),
@@ -108,6 +140,7 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
     }
 }
 
+// Load
 fn lda(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let data = addressing_mode.read_data(cpu, true);
     cpu.registers.accumulator = data;
@@ -144,6 +177,7 @@ fn sty(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     addressing_mode.write(data, cpu, true);
 }
 
+// Transfer
 fn tax(cpu: &mut Cpu) {
     cpu.registers.index_x = cpu.registers.accumulator;
     cpu.registers.status.z = cpu.registers.accumulator == 0;
@@ -178,6 +212,7 @@ fn txs(cpu: &mut Cpu) {
     cpu.registers.stack_pointer = cpu.registers.index_x;
 }
 
+// Stack
 fn pha(cpu: &mut Cpu) {
     cpu.write_stack(cpu.registers.stack_pointer, cpu.registers.accumulator);
     cpu.registers.stack_pointer = cpu.registers.stack_pointer.wrapping_sub(1);
@@ -196,6 +231,7 @@ fn plp(cpu: &mut Cpu) {
     cpu.registers.status = cpu.read_stack(cpu.registers.stack_pointer).into()
 }
 
+// Shift
 fn asl(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let value = addressing_mode.read_data(cpu, false);
     let result = value << 1;
@@ -242,6 +278,7 @@ fn ror(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     cpu.registers.status.c = value & 0b0000_0001 == 0b0000_0001;
 }
 
+// Logic
 fn bit(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     let value = addressing_mode.read_data(cpu, true);
 
@@ -251,7 +288,7 @@ fn bit(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 fn and(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let value = addressing_mode.read_data(cpu, false);
+    let value = addressing_mode.read_data(cpu, true);
     cpu.registers.accumulator &= value;
 
     cpu.registers.status.z = cpu.registers.accumulator == 0;
@@ -259,7 +296,7 @@ fn and(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 fn ora(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let value = addressing_mode.read_data(cpu, false);
+    let value = addressing_mode.read_data(cpu, true);
     cpu.registers.accumulator |= value;
 
     cpu.registers.status.z = cpu.registers.accumulator == 0;
@@ -267,11 +304,52 @@ fn ora(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 fn eor(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let value = addressing_mode.read_data(cpu, false);
+    let value = addressing_mode.read_data(cpu, true);
     cpu.registers.accumulator ^= value;
 
     cpu.registers.status.z = cpu.registers.accumulator == 0;
     cpu.registers.status.n = cpu.registers.accumulator & 0b1000_0000 == 0b1000_0000;
+}
+
+// Arithmetic
+fn adc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, true);
+    let result: u16 = value as u16
+        + cpu.registers.accumulator as u16
+        + if cpu.registers.status.c { 1 } else { 0 };
+
+    cpu.registers.accumulator = result as u8;
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.v = value & 0b1000_0000 != (result & 0b1000_0000) as u8;
+    cpu.registers.status.c =
+        (cpu.registers.status.d && result > 99) || (!cpu.registers.status.d && result > 255);
+}
+
+fn sbc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, true);
+    let result: u16 = value as u16
+        + cpu.registers.accumulator as u16
+        + if cpu.registers.status.c { 1 } else { 0 };
+
+    cpu.registers.accumulator = result as u8;
+    cpu.registers.status.z = cpu.registers.accumulator == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.v = value & 0b1000_0000 != (result & 0b1000_0000) as u8;
+    cpu.registers.status.c =
+        (cpu.registers.status.d && result > 99) || (!cpu.registers.status.d && result > 255);
+}
+
+fn cmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    todo!()
+}
+
+fn cpx(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    todo!()
+}
+
+fn cpy(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    todo!()
 }
 
 // TODO
