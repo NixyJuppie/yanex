@@ -1,7 +1,6 @@
 use crate::mos6502::cpu::addressing_mode::AddressingMode;
 use crate::mos6502::cpu::op_code::OpCode;
 use crate::mos6502::cpu::Cpu;
-use num_traits::ToPrimitive;
 
 pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
     use crate::mos6502::cpu::addressing_mode::AddressingMode::*;
@@ -327,29 +326,34 @@ fn adc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 fn sbc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    let value = addressing_mode.read_data(cpu, true);
-    let result: u16 = value as u16
-        + cpu.registers.accumulator as u16
-        + if cpu.registers.status.c { 1 } else { 0 };
-
-    cpu.registers.accumulator = result as u8;
-    cpu.registers.status.z = cpu.registers.accumulator == 0;
-    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
-    cpu.registers.status.v = value & 0b1000_0000 != (result & 0b1000_0000) as u8;
-    cpu.registers.status.c =
-        (cpu.registers.status.d && result > 99) || (!cpu.registers.status.d && result > 255);
+    todo!()
 }
 
 fn cmp(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    todo!()
+    let value = addressing_mode.read_data(cpu, true);
+    let result = cpu.registers.accumulator.wrapping_sub(value);
+
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.c = value <= cpu.registers.accumulator;
 }
 
 fn cpx(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    todo!()
+    let value = addressing_mode.read_data(cpu, true);
+    let result = cpu.registers.index_x.wrapping_sub(value);
+
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.c = value <= cpu.registers.index_x;
 }
 
 fn cpy(addressing_mode: AddressingMode, cpu: &mut Cpu) {
-    todo!()
+    let value = addressing_mode.read_data(cpu, true);
+    let result = cpu.registers.index_y.wrapping_sub(value);
+
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+    cpu.registers.status.c = value <= cpu.registers.index_y;
 }
 
 // TODO
