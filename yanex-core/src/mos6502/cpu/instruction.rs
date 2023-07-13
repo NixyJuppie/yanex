@@ -311,7 +311,6 @@ fn eor(addressing_mode: AddressingMode, cpu: &mut Cpu) {
 }
 
 // Arithmetic
-
 fn adc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     adc_execute(addressing_mode.read_data(cpu, true), cpu);
 }
