@@ -7,7 +7,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 use crate::mos6502::cpu::Cpu;
 
 #[test]
-fn cmp_imm() {
+fn imm() {
     let mut cpu = init(data([
         CmpImm as u8,
         0b0000_0000,
@@ -22,7 +22,7 @@ fn cmp_imm() {
 }
 
 #[test]
-fn cmp_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             CmpAbs as u8,
@@ -43,7 +43,7 @@ fn cmp_abs() {
 }
 
 #[test]
-fn cmp_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([
             CmpAbsX as u8,
@@ -65,7 +65,7 @@ fn cmp_abs_x() {
 }
 
 #[test]
-fn cmp_abs_y() {
+fn abs_y() {
     let mut cpu = init_data(
         data([
             CmpAbsY as u8,
@@ -87,7 +87,7 @@ fn cmp_abs_y() {
 }
 
 #[test]
-fn cmp_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             CmpZp as u8,
@@ -105,7 +105,7 @@ fn cmp_zp() {
 }
 
 #[test]
-fn cmp_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([
             CmpZpX as u8,
@@ -124,7 +124,7 @@ fn cmp_zp_x() {
 }
 
 #[test]
-fn cmp_ind_x() {
+fn ind_x() {
     let mut cpu = init_all(
         data([
             CmpIndX as u8,
@@ -151,7 +151,7 @@ fn cmp_ind_x() {
 }
 
 #[test]
-fn cmp_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([
             CmpIndY as u8,

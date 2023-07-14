@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn and_flags() {
+fn flags() {
     let mut cpu = init(data([AndImm as u8, 0x00, AndImm as u8, 0xFF]));
 
     cpu.registers.accumulator = 0b1111_1111;
@@ -21,7 +21,7 @@ fn and_flags() {
 }
 
 #[test]
-fn and_imm() {
+fn imm() {
     let mut cpu = init(data([AndImm as u8, 0x69]));
     cpu.registers.accumulator = 0x42;
 
@@ -30,7 +30,7 @@ fn and_imm() {
 }
 
 #[test]
-fn and_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([AndAbs as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0x69]),
@@ -42,7 +42,7 @@ fn and_abs() {
 }
 
 #[test]
-fn and_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([AndAbsX as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0x69]),
@@ -55,7 +55,7 @@ fn and_abs_x() {
 }
 
 #[test]
-fn and_abs_y() {
+fn abs_y() {
     let mut cpu = init_data(
         data([AndAbsY as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0x69]),
@@ -68,7 +68,7 @@ fn and_abs_y() {
 }
 
 #[test]
-fn and_zp() {
+fn zp() {
     let mut cpu = init_data_zp(data([AndZp as u8, DATA_ZP.to_le_bytes()[0]]), data([0x69]));
     cpu.registers.accumulator = 0x42;
 
@@ -77,7 +77,7 @@ fn and_zp() {
 }
 
 #[test]
-fn and_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([AndZpX as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0, 0, 0, 0, 0x69]),
@@ -90,7 +90,7 @@ fn and_zp_x() {
 }
 
 #[test]
-fn and_ind_x() {
+fn ind_x() {
     let mut cpu = init_all(
         data([AndIndX as u8, (DATA_ZP - 4).to_le_bytes()[0]]),
         data([0x69]),
@@ -104,7 +104,7 @@ fn and_ind_x() {
 }
 
 #[test]
-fn and_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([AndIndY as u8, DATA_ZP.to_le_bytes()[0]]),
         data([

@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn adc_flags() {
+fn flags() {
     let mut cpu = init(data([
         AdcImm as u8,
         0b0111_1111,
@@ -53,7 +53,7 @@ fn adc_flags() {
 }
 
 #[test]
-fn adc_imm() {
+fn imm() {
     let mut cpu = init(data([AdcImm as u8, 0x69, AdcImm as u8, 0x69]));
 
     cpu.registers.accumulator = 0x42;
@@ -68,7 +68,7 @@ fn adc_imm() {
 }
 
 #[test]
-fn adc_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             AdcAbs as u8,
@@ -93,7 +93,7 @@ fn adc_abs() {
 }
 
 #[test]
-fn adc_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([
             AdcAbsX as u8,
@@ -119,7 +119,7 @@ fn adc_abs_x() {
 }
 
 #[test]
-fn adc_abs_y() {
+fn abs_y() {
     let mut cpu = init_data(
         data([
             AdcAbsY as u8,
@@ -145,7 +145,7 @@ fn adc_abs_y() {
 }
 
 #[test]
-fn adc_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             AdcZp as u8,
@@ -168,7 +168,7 @@ fn adc_zp() {
 }
 
 #[test]
-fn adc_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([
             AdcZpX as u8,
@@ -192,7 +192,7 @@ fn adc_zp_x() {
 }
 
 #[test]
-fn adc_ind_x() {
+fn ind_x() {
     let mut cpu = init_all(
         data([
             AdcIndX as u8,
@@ -217,7 +217,7 @@ fn adc_ind_x() {
 }
 
 #[test]
-fn adc_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([
             AdcIndY as u8,

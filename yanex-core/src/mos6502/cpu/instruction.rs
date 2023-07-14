@@ -130,6 +130,19 @@ pub fn execute_instruction(op_code: OpCode, cpu: &mut Cpu) {
         CpyImm => cpy(Immediate, cpu),
         CpyAbs => cpy(Absolute, cpu),
         CpyZp => cpy(ZeroPage, cpu),
+        // Increment
+        IncAbs => inc(Absolute, cpu),
+        IncAbsX => inc(AbsoluteIndexedX, cpu),
+        IncZp => inc(ZeroPage, cpu),
+        IncZpX => inc(ZeroPageIndexedX, cpu),
+        DecAbs => dec(Absolute, cpu),
+        DecAbsX => dec(AbsoluteIndexedX, cpu),
+        DecZp => dec(ZeroPage, cpu),
+        DecZpX => dec(ZeroPageIndexedX, cpu),
+        InxImp => inx(cpu),
+        DexImp => dex(cpu),
+        InyImp => iny(cpu),
+        DeyImp => dey(cpu),
 
         // TODO
         NopImp => nop(),
@@ -361,6 +374,53 @@ fn cpy(addressing_mode: AddressingMode, cpu: &mut Cpu) {
     cpu.registers.status.z = result == 0;
     cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
     cpu.registers.status.c = value <= cpu.registers.index_y;
+}
+
+// Increment
+fn inc(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let result = value.wrapping_add(1);
+    addressing_mode.write(result, cpu, true);
+
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+}
+
+fn dec(addressing_mode: AddressingMode, cpu: &mut Cpu) {
+    let value = addressing_mode.read_data(cpu, false);
+    let result = value.wrapping_sub(1);
+    addressing_mode.write(result, cpu, true);
+
+    cpu.registers.status.z = result == 0;
+    cpu.registers.status.n = result & 0b1000_0000 == 0b1000_0000;
+}
+
+fn inx(cpu: &mut Cpu) {
+    cpu.registers.index_x = cpu.registers.index_x.wrapping_add(1);
+
+    cpu.registers.status.z = cpu.registers.index_x == 0;
+    cpu.registers.status.n = cpu.registers.index_x & 0b1000_0000 == 0b1000_0000;
+}
+
+fn dex(cpu: &mut Cpu) {
+    cpu.registers.index_x = cpu.registers.index_x.wrapping_sub(1);
+
+    cpu.registers.status.z = cpu.registers.index_x == 0;
+    cpu.registers.status.n = cpu.registers.index_x & 0b1000_0000 == 0b1000_0000;
+}
+
+fn iny(cpu: &mut Cpu) {
+    cpu.registers.index_y = cpu.registers.index_y.wrapping_add(1);
+
+    cpu.registers.status.z = cpu.registers.index_y == 0;
+    cpu.registers.status.n = cpu.registers.index_y & 0b1000_0000 == 0b1000_0000;
+}
+
+fn dey(cpu: &mut Cpu) {
+    cpu.registers.index_y = cpu.registers.index_y.wrapping_sub(1);
+
+    cpu.registers.status.z = cpu.registers.index_y == 0;
+    cpu.registers.status.n = cpu.registers.index_y & 0b1000_0000 == 0b1000_0000;
 }
 
 // TODO

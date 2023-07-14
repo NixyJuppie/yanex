@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::PhaImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn pha_imp() {
+fn imp() {
     let mut cpu = init(data([PhaImp as u8]));
     cpu.registers.accumulator = 0x69;
 
@@ -14,7 +14,7 @@ fn pha_imp() {
 }
 
 #[test]
-fn pha_stack_pointer() {
+fn stack_pointer() {
     let mut cpu = init(data([PhaImp as u8, PhaImp as u8]));
     cpu.registers.stack_pointer = 0x00;
 

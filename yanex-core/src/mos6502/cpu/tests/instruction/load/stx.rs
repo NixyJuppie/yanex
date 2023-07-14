@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::{StxAbs, StxZp, StxZpY};
 use crate::mos6502::cpu::tests::tests_helpers::{data, init, DATA, DATA_ZP};
 
 #[test]
-fn stx_abs() {
+fn abs() {
     let mut cpu = init(data([
         StxAbs as u8,
         DATA.to_le_bytes()[0],
@@ -15,7 +15,7 @@ fn stx_abs() {
 }
 
 #[test]
-fn stx_zp() {
+fn zp() {
     let mut cpu = init(data([StxZp as u8, DATA_ZP.to_le_bytes()[0]]));
     cpu.registers.index_x = 0x69;
 
@@ -24,7 +24,7 @@ fn stx_zp() {
 }
 
 #[test]
-fn stx_zp_y() {
+fn zp_y() {
     let mut cpu = init(data([StxZpY as u8, DATA_ZP.to_le_bytes()[0]]));
     cpu.registers.index_x = 0x69;
     cpu.registers.index_y = 0x04;

@@ -4,7 +4,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn asl_flags() {
+fn flags() {
     let mut cpu = init(data([AslAcc as u8, AslAcc as u8]));
 
     cpu.registers.accumulator = 0b1000_0000;
@@ -21,7 +21,7 @@ fn asl_flags() {
 }
 
 #[test]
-fn asl_acc() {
+fn acc() {
     let mut cpu = init(data([AslAcc as u8]));
     cpu.registers.accumulator = 0b1010_1010;
 
@@ -30,7 +30,7 @@ fn asl_acc() {
 }
 
 #[test]
-fn asl_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([AslAbs as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0b1010_1010]),
@@ -41,7 +41,7 @@ fn asl_abs() {
 }
 
 #[test]
-fn asl_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([AslAbsX as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0b1010_1010]),
@@ -53,7 +53,7 @@ fn asl_abs_x() {
 }
 
 #[test]
-fn asl_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([AslZp as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0b1010_1010]),
@@ -64,7 +64,7 @@ fn asl_zp() {
 }
 
 #[test]
-fn asl_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([AslZpX as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0, 0, 0, 0, 0b1010_1010]),

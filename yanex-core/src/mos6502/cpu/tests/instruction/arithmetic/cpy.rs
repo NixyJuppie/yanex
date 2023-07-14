@@ -5,7 +5,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 use crate::mos6502::cpu::Cpu;
 
 #[test]
-fn cpy_imm() {
+fn imm() {
     let mut cpu = init(data([
         CpyImm as u8,
         0b0000_0000,
@@ -20,7 +20,7 @@ fn cpy_imm() {
 }
 
 #[test]
-fn cpy_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             CpyAbs as u8,
@@ -41,7 +41,7 @@ fn cpy_abs() {
 }
 
 #[test]
-fn cpy_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             CpyZp as u8,

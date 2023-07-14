@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::TsxImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn tsx_flags() {
+fn flags() {
     let mut cpu = init(data([TsxImp as u8, TsxImp as u8]));
 
     cpu.registers.stack_pointer = 0x00;
@@ -17,7 +17,7 @@ fn tsx_flags() {
 }
 
 #[test]
-fn tsx_imp() {
+fn imp() {
     let mut cpu = init(data([TsxImp as u8]));
     cpu.registers.stack_pointer = 0x69;
 

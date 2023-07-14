@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn sbc_flags() {
+fn flags() {
     let mut cpu = init(data([
         SbcImm as u8,
         0b0111_1111,
@@ -53,7 +53,7 @@ fn sbc_flags() {
 }
 
 #[test]
-fn sbc_imm() {
+fn imm() {
     let mut cpu = init(data([SbcImm as u8, 0x69, SbcImm as u8, 0x69]));
 
     cpu.registers.accumulator = 0x42;
@@ -68,7 +68,7 @@ fn sbc_imm() {
 }
 
 #[test]
-fn sbc_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             SbcAbs as u8,
@@ -93,7 +93,7 @@ fn sbc_abs() {
 }
 
 #[test]
-fn sbc_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([
             SbcAbsX as u8,
@@ -119,7 +119,7 @@ fn sbc_abs_x() {
 }
 
 #[test]
-fn sbc_abs_y() {
+fn abs_y() {
     let mut cpu = init_data(
         data([
             SbcAbsY as u8,
@@ -145,7 +145,7 @@ fn sbc_abs_y() {
 }
 
 #[test]
-fn sbc_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             SbcZp as u8,
@@ -168,7 +168,7 @@ fn sbc_zp() {
 }
 
 #[test]
-fn sbc_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([
             SbcZpX as u8,
@@ -192,7 +192,7 @@ fn sbc_zp_x() {
 }
 
 #[test]
-fn sbc_ind_x() {
+fn ind_x() {
     let mut cpu = init_all(
         data([
             SbcIndX as u8,
@@ -217,7 +217,7 @@ fn sbc_ind_x() {
 }
 
 #[test]
-fn sbc_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([
             SbcIndY as u8,

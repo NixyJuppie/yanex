@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::TyaImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn tya_flags() {
+fn flags() {
     let mut cpu = init(data([TyaImp as u8, TyaImp as u8]));
 
     cpu.registers.index_y = 0x00;
@@ -17,7 +17,7 @@ fn tya_flags() {
 }
 
 #[test]
-fn tya_imp() {
+fn imp() {
     let mut cpu = init(data([TyaImp as u8]));
     cpu.registers.index_y = 0x69;
 

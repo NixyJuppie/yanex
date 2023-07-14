@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::PhpImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn php_imp() {
+fn imp() {
     let mut cpu = init(data([PhpImp as u8]));
     cpu.registers.status.c = true;
     cpu.registers.status.z = true;

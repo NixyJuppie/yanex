@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::{BitAbs, BitZp};
 use crate::mos6502::cpu::tests::tests_helpers::{data, init_data, init_data_zp, DATA, DATA_ZP};
 
 #[test]
-fn bit_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             BitAbs as u8,
@@ -28,7 +28,7 @@ fn bit_abs() {
 }
 
 #[test]
-fn bit_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             BitZp as u8,

@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn ora_flags() {
+fn flags() {
     let mut cpu = init(data([
         OraImm as u8,
         0x00,
@@ -30,7 +30,7 @@ fn ora_flags() {
 }
 
 #[test]
-fn ora_imm() {
+fn imm() {
     let mut cpu = init(data([OraImm as u8, 0x69]));
     cpu.registers.accumulator = 0x42;
 
@@ -39,7 +39,7 @@ fn ora_imm() {
 }
 
 #[test]
-fn ora_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([OraAbs as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0x69]),
@@ -51,7 +51,7 @@ fn ora_abs() {
 }
 
 #[test]
-fn ora_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([OraAbsX as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0x69]),
@@ -64,7 +64,7 @@ fn ora_abs_x() {
 }
 
 #[test]
-fn ora_abs_y() {
+fn abs_y() {
     let mut cpu = init_data(
         data([OraAbsY as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0x69]),
@@ -77,7 +77,7 @@ fn ora_abs_y() {
 }
 
 #[test]
-fn ora_zp() {
+fn zp() {
     let mut cpu = init_data_zp(data([OraZp as u8, DATA_ZP.to_le_bytes()[0]]), data([0x69]));
     cpu.registers.accumulator = 0x42;
 
@@ -86,7 +86,7 @@ fn ora_zp() {
 }
 
 #[test]
-fn ora_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([OraZpX as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0, 0, 0, 0, 0x69]),
@@ -99,7 +99,7 @@ fn ora_zp_x() {
 }
 
 #[test]
-fn ora_ind_x() {
+fn ind_x() {
     let mut cpu = init_all(
         data([OraIndX as u8, (DATA_ZP - 4).to_le_bytes()[0]]),
         data([0x69]),
@@ -113,7 +113,7 @@ fn ora_ind_x() {
 }
 
 #[test]
-fn ora_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([OraIndY as u8, DATA_ZP.to_le_bytes()[0]]),
         data([

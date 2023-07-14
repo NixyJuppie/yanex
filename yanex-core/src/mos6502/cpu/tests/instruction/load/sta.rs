@@ -6,7 +6,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn sta_abs() {
+fn abs() {
     let mut cpu = init(data([
         StaAbs as u8,
         DATA.to_le_bytes()[0],
@@ -19,7 +19,7 @@ fn sta_abs() {
 }
 
 #[test]
-fn sta_abs_x() {
+fn abs_x() {
     let mut cpu = init(data([
         StaAbsX as u8,
         DATA.to_le_bytes()[0],
@@ -33,7 +33,7 @@ fn sta_abs_x() {
 }
 
 #[test]
-fn sta_abs_y() {
+fn abs_y() {
     let mut cpu = init(data([
         StaAbsY as u8,
         DATA.to_le_bytes()[0],
@@ -47,7 +47,7 @@ fn sta_abs_y() {
 }
 
 #[test]
-fn sta_zp() {
+fn zp() {
     let mut cpu = init(data([StaZp as u8, DATA_ZP.to_le_bytes()[0]]));
     cpu.registers.accumulator = 0x69;
 
@@ -56,7 +56,7 @@ fn sta_zp() {
 }
 
 #[test]
-fn sta_zp_x() {
+fn zp_x() {
     let mut cpu = init(data([StaZpX as u8, DATA_ZP.to_le_bytes()[0]]));
     cpu.registers.accumulator = 0x69;
     cpu.registers.index_x = 0x04;
@@ -66,7 +66,7 @@ fn sta_zp_x() {
 }
 
 #[test]
-fn sta_ind_x() {
+fn ind_x() {
     let mut cpu = init_data_zp(
         data([StaIndX as u8, (DATA_ZP - 4).to_le_bytes()[0]]),
         data([DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
@@ -79,7 +79,7 @@ fn sta_ind_x() {
 }
 
 #[test]
-fn sta_ind_y() {
+fn ind_y() {
     let mut cpu = init_all(
         data([StaIndY as u8, DATA_ZP.to_le_bytes()[0]]),
         data([(DATA + 2).to_le_bytes()[0], (DATA + 2).to_le_bytes()[1]]),

@@ -1,5 +1,6 @@
 mod arithmetic;
 mod control;
+mod increment;
 mod load;
 mod logic;
 mod nop;

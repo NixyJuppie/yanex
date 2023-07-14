@@ -4,7 +4,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn ldy_flags() {
+fn flags() {
     let mut cpu = init(data([LdyImm as u8, 0x00, LdyImm as u8, 0xFF]));
 
     cpu.execute();
@@ -17,7 +17,7 @@ fn ldy_flags() {
 }
 
 #[test]
-fn ldy_imm() {
+fn imm() {
     let mut cpu = init(data([LdyImm as u8, 0x69]));
 
     cpu.execute();
@@ -25,7 +25,7 @@ fn ldy_imm() {
 }
 
 #[test]
-fn ldy_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([LdyAbs as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0x69]),
@@ -36,7 +36,7 @@ fn ldy_abs() {
 }
 
 #[test]
-fn ldy_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([LdyAbsX as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0x69]),
@@ -48,7 +48,7 @@ fn ldy_abs_x() {
 }
 
 #[test]
-fn ldy_zp() {
+fn zp() {
     let mut cpu = init_data_zp(data([LdyZp as u8, DATA_ZP.to_le_bytes()[0]]), data([0x69]));
 
     cpu.execute();
@@ -56,7 +56,7 @@ fn ldy_zp() {
 }
 
 #[test]
-fn ldy_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([LdyZpX as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0, 0, 0, 0, 0x69]),

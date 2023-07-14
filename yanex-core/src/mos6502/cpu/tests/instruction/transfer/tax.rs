@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::TaxImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn tax_flags() {
+fn flags() {
     let mut cpu = init(data([TaxImp as u8, TaxImp as u8]));
 
     cpu.registers.accumulator = 0x00;
@@ -17,7 +17,7 @@ fn tax_flags() {
 }
 
 #[test]
-fn tax_imp() {
+fn imp() {
     let mut cpu = init(data([TaxImp as u8]));
     cpu.registers.accumulator = 0x69;
 

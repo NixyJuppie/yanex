@@ -5,7 +5,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 use crate::mos6502::cpu::Cpu;
 
 #[test]
-fn cpx_imm() {
+fn imm() {
     let mut cpu = init(data([
         CpxImm as u8,
         0b0000_0000,
@@ -20,7 +20,7 @@ fn cpx_imm() {
 }
 
 #[test]
-fn cpx_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([
             CpxAbs as u8,
@@ -41,7 +41,7 @@ fn cpx_abs() {
 }
 
 #[test]
-fn cpx_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([
             CpxZp as u8,

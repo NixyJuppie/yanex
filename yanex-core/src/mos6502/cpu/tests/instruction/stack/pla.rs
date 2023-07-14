@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::PlaImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn pla_imp() {
+fn imp() {
     let mut cpu = init(data([PlaImp as u8]));
     cpu.write_stack(cpu.registers.stack_pointer.wrapping_add(1), 0x69);
 
@@ -11,7 +11,7 @@ fn pla_imp() {
 }
 
 #[test]
-fn pla_stack_pointer() {
+fn stack_pointer() {
     let mut cpu = init(data([PlaImp as u8, PlaImp as u8]));
     cpu.registers.stack_pointer = 0xFF;
 

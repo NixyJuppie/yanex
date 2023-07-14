@@ -4,7 +4,7 @@ use crate::mos6502::cpu::tests::tests_helpers::{
 };
 
 #[test]
-fn ror_flags() {
+fn flags() {
     let mut cpu = init(data([RorAcc as u8, RorAcc as u8]));
 
     cpu.registers.accumulator = 0b0000_0001;
@@ -21,7 +21,7 @@ fn ror_flags() {
 }
 
 #[test]
-fn ror_acc() {
+fn acc() {
     let mut cpu = init(data([RorAcc as u8]));
     cpu.registers.accumulator = 0b1010_1010;
 
@@ -30,7 +30,7 @@ fn ror_acc() {
 }
 
 #[test]
-fn ror_abs() {
+fn abs() {
     let mut cpu = init_data(
         data([RorAbs as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0b1010_1010]),
@@ -41,7 +41,7 @@ fn ror_abs() {
 }
 
 #[test]
-fn ror_abs_x() {
+fn abs_x() {
     let mut cpu = init_data(
         data([RorAbsX as u8, DATA.to_le_bytes()[0], DATA.to_le_bytes()[1]]),
         data([0, 0, 0, 0, 0b1010_1010]),
@@ -53,7 +53,7 @@ fn ror_abs_x() {
 }
 
 #[test]
-fn ror_zp() {
+fn zp() {
     let mut cpu = init_data_zp(
         data([RorZp as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0b1010_1010]),
@@ -64,7 +64,7 @@ fn ror_zp() {
 }
 
 #[test]
-fn ror_zp_x() {
+fn zp_x() {
     let mut cpu = init_data_zp(
         data([RorZpX as u8, DATA_ZP.to_le_bytes()[0]]),
         data([0, 0, 0, 0, 0b1010_1010]),

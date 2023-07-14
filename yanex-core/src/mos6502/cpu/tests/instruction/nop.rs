@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::NopImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn nop_imp() {
+fn imp() {
     let mut cpu = init(data([NopImp as u8]));
     let cpu_backup = cpu.clone();
 

@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::TayImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn tay_flags() {
+fn flags() {
     let mut cpu = init(data([TayImp as u8, TayImp as u8]));
 
     cpu.registers.accumulator = 0x00;
@@ -17,7 +17,7 @@ fn tay_flags() {
 }
 
 #[test]
-fn tay_imp() {
+fn imp() {
     let mut cpu = init(data([TayImp as u8]));
     cpu.registers.accumulator = 0x69;
 

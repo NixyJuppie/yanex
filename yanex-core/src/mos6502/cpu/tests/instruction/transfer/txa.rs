@@ -2,7 +2,7 @@ use crate::mos6502::cpu::op_code::OpCode::TxaImp;
 use crate::mos6502::cpu::tests::tests_helpers::{data, init};
 
 #[test]
-fn txa_flags() {
+fn flags() {
     let mut cpu = init(data([TxaImp as u8, TxaImp as u8]));
 
     cpu.registers.index_x = 0x00;
@@ -17,7 +17,7 @@ fn txa_flags() {
 }
 
 #[test]
-fn txa_imp() {
+fn imp() {
     let mut cpu = init(data([TxaImp as u8]));
     cpu.registers.index_x = 0x69;
 
