@@ -1,12 +1,12 @@
-use crate::memory::memory_access::MemoryAccess;
-use crate::memory::ppu_registers::PpuRegisters;
-use crate::memory::ram::Ram;
+use memory_access::MemoryAccess;
+use ppu_registers::PpuRegisters;
+use ram::Ram;
 
-mod memory_access;
-mod ppu_registers;
-mod ram;
+pub mod memory_access;
+pub mod ppu_registers;
+pub mod ram;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Memory {
     ram: Ram,
     ppu: PpuRegisters,

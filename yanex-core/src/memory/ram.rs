@@ -5,6 +5,12 @@ pub struct Ram {
     data: [u8; 2048],
 }
 
+impl Default for Ram {
+    fn default() -> Self {
+        Self { data: [0; 2048] }
+    }
+}
+
 impl MemoryAccess for Ram {
     fn read_u8(&self, address: u16) -> u8 {
         self.data[index(address)]

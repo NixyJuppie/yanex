@@ -1,6 +1,6 @@
 use crate::memory::memory_access::MemoryAccess;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct PpuRegisters {
     data: [u8; 8],
 }
