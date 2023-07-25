@@ -8,7 +8,7 @@ pub enum AbsoluteReadDataState {
     #[default]
     None,
     AddressLowByte(u8),
-    Address(u16),
+    Address(u8, u8),
     Data(u8),
 }
 
@@ -26,13 +26,12 @@ impl AddressingModeRead for AbsoluteReadDataState {
                 let high_byte = memory.read_u8(registers.program_counter);
                 registers.program_counter += 1;
 
-                let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteReadDataState::Address(address);
+                *self = AbsoluteReadDataState::Address(*low_byte, high_byte);
                 None
             }
-            AbsoluteReadDataState::Address(address) => {
-                let data = memory.read_u8(*address);
-                registers.program_counter += 1;
+            AbsoluteReadDataState::Address(low_byte, high_byte) => {
+                let address = u16::from_le_bytes([*low_byte, *high_byte]);
+                let data = memory.read_u8(address);
 
                 *self = AbsoluteReadDataState::Data(data);
                 Some(data)

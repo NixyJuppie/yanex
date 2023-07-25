@@ -46,10 +46,11 @@ impl LoadAccumulatorState {
 
 #[cfg(test)]
 mod tests {
-    use crate::tests_utils::*;
+    use crate::tests_utils::cycles_macros::*;
+    use crate::tests_utils::opcode_macros::*;
     use crate::Cpu;
     use crate::Memory;
-    use crate::Opcode::*;
+    use crate::Opcode::{LdaAbs, LdaAbsX, LdaAbsY, LdaImm};
 
     fn assert() -> fn(Cpu, Memory) {
         |mut cpu: Cpu, mut memory: Memory| {
@@ -58,6 +59,17 @@ mod tests {
         }
     }
 
-    gen_imm_tests!(LdaImm, 0x42, 2, assert());
-    gen_abs_tests!(LdaAbs, 0x42, 4, assert());
+    gen_imm_test!(LdaImm, 0x42, assert());
+    gen_imm_cycles_test!(LdaImm, 2);
+
+    gen_abs_test!(LdaAbs, 0x42, assert());
+    gen_abs_cycles_test!(LdaAbs, 4);
+
+    gen_abs_x_test!(LdaAbsX, 0x42, assert());
+    gen_abs_x_cycles_test!(LdaAbsX, 4);
+    gen_abs_x_page_crossed_cycles_test!(LdaAbsX, 5);
+
+    gen_abs_y_test!(LdaAbsY, 0x42, assert());
+    gen_abs_y_cycles_test!(LdaAbsY, 4);
+    gen_abs_y_page_crossed_cycles_test!(LdaAbsY, 5);
 }

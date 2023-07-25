@@ -32,8 +32,8 @@ impl From<Opcode> for Operation {
         match opcode {
             LdaImm => LoadAccumulator(LoadAccumulatorState::Decoded(Immediate)),
             LdaAbs => LoadAccumulator(LoadAccumulatorState::Decoded(Absolute)),
-            // LdaAbsX => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteX)),
-            // LdaAbsY => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteY)),
+            LdaAbsX => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteX)),
+            LdaAbsY => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteY)),
             // LdaZp => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPage)),
             // LdaZpX => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPageX)),
             // LdaIndX => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectX)),

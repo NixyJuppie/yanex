@@ -7,6 +7,8 @@ pub use read_data::AddressingModeReadDataState;
 pub enum AddressingMode {
     Immediate,
     Absolute,
+    AbsoluteX,
+    AbsoluteY,
 }
 
 impl From<AddressingMode> for AddressingModeReadDataState {
@@ -14,6 +16,8 @@ impl From<AddressingMode> for AddressingModeReadDataState {
         match value {
             AddressingMode::Immediate => AddressingModeReadDataState::Immediate(Default::default()),
             AddressingMode::Absolute => AddressingModeReadDataState::Absolute(Default::default()),
+            AddressingMode::AbsoluteX => AddressingModeReadDataState::AbsoluteX(Default::default()),
+            AddressingMode::AbsoluteY => AddressingModeReadDataState::AbsoluteY(Default::default()),
         }
     }
 }
