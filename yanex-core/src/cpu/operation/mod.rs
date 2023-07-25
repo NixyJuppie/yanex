@@ -1,4 +1,4 @@
-use crate::cpu::operation::operations::load::LoadAccumulatorState;
+use crate::cpu::operation::operations::load::load_accumulator::LoadAccumulatorState;
 use crate::cpu::registers::CpuRegisters;
 use crate::memory::Memory;
 
@@ -12,11 +12,11 @@ pub enum Operation {
 }
 
 impl Operation {
-    pub fn advance(self, registers: &mut CpuRegisters, memory: &mut Memory) -> Self {
+    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut Memory) -> bool {
         use Operation::*;
 
         match self {
-            LoadAccumulator(state) => LoadAccumulator(state.advance(registers, memory)),
+            LoadAccumulator(state) => state.advance(registers, memory),
         }
     }
 

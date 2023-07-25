@@ -267,7 +267,7 @@ impl From<Opcode> for Operation {
     fn from(opcode: Opcode) -> Self {
         use crate::cpu::operation::addressing_mode::AddressingMode::*;
         use crate::cpu::operation::opcode::Opcode::*;
-        use crate::cpu::operation::operations::load::*;
+        use crate::cpu::operation::operations::load::load_accumulator::LoadAccumulatorState;
         use crate::cpu::operation::Operation::*;
 
         match opcode {

@@ -3,7 +3,7 @@ use crate::cpu::registers::CpuRegisters;
 use crate::memory::memory_access::MemoryAccess;
 use crate::memory::Memory;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub enum ImmediateReadDataState {
     #[default]
     None,
@@ -11,21 +11,16 @@ pub enum ImmediateReadDataState {
 }
 
 impl AddressingModeRead for ImmediateReadDataState {
-    fn advance(self, registers: &mut CpuRegisters, memory: &mut Memory) -> Self {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &Memory) -> Option<u8> {
         match self {
             ImmediateReadDataState::None => {
                 let data = memory.read_u8(registers.program_counter);
                 registers.program_counter += 1;
-                ImmediateReadDataState::Data(data)
-            }
-            ImmediateReadDataState::Data(_) => unreachable!(),
-        }
-    }
 
-    fn result(&self) -> Option<u8> {
-        match self {
+                *self = ImmediateReadDataState::Data(data);
+                Some(data)
+            }
             ImmediateReadDataState::Data(data) => Some(*data),
-            _ => None,
         }
     }
 }

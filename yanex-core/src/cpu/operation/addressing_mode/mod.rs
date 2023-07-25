@@ -2,7 +2,7 @@ use crate::cpu::operation::addressing_mode::read_data::AddressingModeReadDataSta
 
 pub mod read_data;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum AddressingMode {
     Immediate,
     Absolute,

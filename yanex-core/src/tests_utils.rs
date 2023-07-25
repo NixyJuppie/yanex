@@ -10,7 +10,7 @@ macro_rules! gen_cycles_test {
                 $opcode as u8,
             );
 
-            cpu.execute_operation(&mut memory, None);
+            cpu.execute_operation(&mut memory, &mut None);
             assert_eq!(cpu.cycle, $cycles);
         }
     };

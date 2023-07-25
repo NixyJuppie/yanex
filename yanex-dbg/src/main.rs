@@ -12,8 +12,8 @@ fn main() {
     memory.write_u8(5, 0x42);
 
     let mut cpu = Cpu::default();
-    cpu.execute_operation(&mut memory, None);
+    cpu.execute_operation(&mut memory, &mut None);
     assert_eq!(cpu.registers.accumulator, 0x69);
-    cpu.execute_operation(&mut memory, None);
+    cpu.execute_operation(&mut memory, &mut None);
     assert_eq!(cpu.registers.accumulator, 0x42);
 }

@@ -3,41 +3,41 @@ use crate::cpu::registers::CpuRegisters;
 use crate::memory::memory_access::MemoryAccess;
 use crate::memory::Memory;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub enum AbsoluteReadDataState {
     #[default]
     None,
-    LowByteAddress(u8),
+    AddressLowByte(u8),
     Address(u16),
     Data(u8),
 }
 
 impl AddressingModeRead for AbsoluteReadDataState {
-    fn advance(self, registers: &mut CpuRegisters, memory: &mut Memory) -> Self {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &Memory) -> Option<u8> {
         match self {
             AbsoluteReadDataState::None => {
                 let low_byte = memory.read_u8(registers.program_counter);
                 registers.program_counter += 1;
-                AbsoluteReadDataState::LowByteAddress(low_byte)
+
+                *self = AbsoluteReadDataState::AddressLowByte(low_byte);
+                None
             }
-            AbsoluteReadDataState::LowByteAddress(low_byte) => {
+            AbsoluteReadDataState::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(registers.program_counter);
                 registers.program_counter += 1;
-                AbsoluteReadDataState::Address(u16::from_le_bytes([low_byte, high_byte]))
+
+                let address = u16::from_le_bytes([*low_byte, high_byte]);
+                *self = AbsoluteReadDataState::Address(address);
+                None
             }
             AbsoluteReadDataState::Address(address) => {
-                let data = memory.read_u8(address);
+                let data = memory.read_u8(*address);
                 registers.program_counter += 1;
-                AbsoluteReadDataState::Data(data)
-            }
-            AbsoluteReadDataState::Data(_) => unreachable!(),
-        }
-    }
 
-    fn result(&self) -> Option<u8> {
-        match self {
+                *self = AbsoluteReadDataState::Data(data);
+                Some(data)
+            }
             AbsoluteReadDataState::Data(data) => Some(*data),
-            _ => None,
         }
     }
 }

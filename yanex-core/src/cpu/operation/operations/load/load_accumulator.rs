@@ -5,35 +5,42 @@ use crate::cpu::operation::addressing_mode::AddressingMode;
 use crate::cpu::registers::CpuRegisters;
 use crate::memory::Memory;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum LoadAccumulatorState {
     Decoded(AddressingMode),
     Fetching(AddressingModeReadDataState),
-    Fetched(u8),
     Executed,
 }
 
 impl LoadAccumulatorState {
-    pub fn advance(self, registers: &mut CpuRegisters, memory: &mut Memory) -> Self {
+    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut Memory) -> bool {
         match self {
-            LoadAccumulatorState::Decoded(mode) => {
-                let mut read_state: AddressingModeReadDataState = mode.into();
-                read_state = read_state.advance(registers, memory);
-                LoadAccumulatorState::Fetching(read_state)
+            LoadAccumulatorState::Decoded(ref mode) => {
+                self.try_execute(registers, memory, (*mode).into())
             }
-            LoadAccumulatorState::Fetching(state) => {
-                let result = state.result();
+            LoadAccumulatorState::Fetching(ref mode) => {
+                self.try_execute(registers, memory, mode.clone())
+            }
+            LoadAccumulatorState::Executed => true,
+        }
+    }
 
-                match result {
-                    None => LoadAccumulatorState::Fetching(state.advance(registers, memory)),
-                    Some(data) => LoadAccumulatorState::Fetched(data),
-                }
+    fn try_execute(
+        &mut self,
+        registers: &mut CpuRegisters,
+        memory: &Memory,
+        mut read_state: AddressingModeReadDataState,
+    ) -> bool {
+        match read_state.advance(registers, memory) {
+            None => {
+                *self = LoadAccumulatorState::Fetching(read_state);
+                false
             }
-            LoadAccumulatorState::Fetched(data) => {
+            Some(data) => {
                 registers.accumulator = data;
-                LoadAccumulatorState::Executed
+                *self = LoadAccumulatorState::Executed;
+                true
             }
-            LoadAccumulatorState::Executed => unreachable!(),
         }
     }
 }
@@ -48,7 +55,7 @@ mod tests {
 
     fn assert() -> fn(Cpu, Memory) {
         |mut cpu: Cpu, mut memory: Memory| {
-            cpu.execute_operation(&mut memory, None);
+            cpu.execute_operation(&mut memory, &mut None);
             assert_eq!(cpu.registers.accumulator, 0x42);
         }
     }

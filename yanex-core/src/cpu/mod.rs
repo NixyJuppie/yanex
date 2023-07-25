@@ -17,33 +17,25 @@ pub struct Cpu {
 struct ExecutionContext(Operation);
 
 impl Cpu {
-    pub fn execute_operation(&mut self, memory: &mut Memory, mut state: Option<Operation>) {
-        state = self.execute_cycle(memory, state);
+    pub fn execute_operation(&mut self, memory: &mut Memory, state: &mut Option<Operation>) {
+        self.execute_cycle(memory, state);
 
         while state.is_some() {
-            state = self.execute_cycle(memory, state)
+            self.execute_cycle(memory, state)
         }
     }
 
-    pub fn execute_cycle(
-        &mut self,
-        memory: &mut Memory,
-        state: Option<Operation>,
-    ) -> Option<Operation> {
-        let result = match state {
-            None => Some(self.fetch_operation(memory)),
-            Some(state) => {
-                let result = state.advance(&mut self.registers, memory);
-                if result.completed() {
-                    None
-                } else {
-                    Some(result)
+    pub fn execute_cycle(&mut self, memory: &mut Memory, state: &mut Option<Operation>) {
+        match state {
+            None => *state = Some(self.fetch_operation(memory)),
+            Some(operation) => {
+                if operation.advance(&mut self.registers, memory) {
+                    *state = None
                 }
             }
         };
 
         self.cycle += 1;
-        result
     }
 
     fn fetch_operation(&mut self, memory: &Memory) -> Operation {

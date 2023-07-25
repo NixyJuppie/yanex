@@ -31,13 +31,13 @@ impl CpuStatus {
 }
 
 impl From<CpuStatus> for u8 {
-    fn from(value: CpuStatus) -> Self {
+    fn from(_value: CpuStatus) -> Self {
         todo!()
     }
 }
 
 impl From<u8> for CpuStatus {
-    fn from(value: u8) -> Self {
+    fn from(_value: u8) -> Self {
         todo!()
     }
 }
