@@ -67,12 +67,26 @@ macro_rules! gen_abs_y_page_crossed_cycles_test {
     };
 }
 
+macro_rules! gen_zp_cycles_test {
+    ($opcode:ident, $cycles:expr) => {
+        gen_cycles_test!(zp_cycles, $opcode, $cycles);
+    };
+}
+
+macro_rules! gen_zp_x_cycles_test {
+    ($opcode:ident, $cycles:expr) => {
+        gen_cycles_test!(zp_x_cycles, $opcode, $cycles);
+    };
+}
+
 pub(crate) use gen_abs_cycles_test;
 pub(crate) use gen_abs_x_cycles_test;
 pub(crate) use gen_abs_x_page_crossed_cycles_test;
 pub(crate) use gen_abs_y_cycles_test;
 pub(crate) use gen_abs_y_page_crossed_cycles_test;
 pub(crate) use gen_imm_cycles_test;
+pub(crate) use gen_zp_cycles_test;
+pub(crate) use gen_zp_x_cycles_test;
 
 pub(crate) use gen_cycles_test;
 pub(crate) use gen_page_crossed_cycles_test;

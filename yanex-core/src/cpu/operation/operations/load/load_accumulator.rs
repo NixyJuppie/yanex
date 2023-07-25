@@ -50,7 +50,7 @@ mod tests {
     use crate::tests_utils::opcode_macros::*;
     use crate::Cpu;
     use crate::Memory;
-    use crate::Opcode::{LdaAbs, LdaAbsX, LdaAbsY, LdaImm};
+    use crate::Opcode::{LdaAbs, LdaAbsX, LdaAbsY, LdaImm, LdaZp, LdaZpX};
 
     fn assert() -> fn(Cpu, Memory) {
         |mut cpu: Cpu, mut memory: Memory| {
@@ -72,4 +72,10 @@ mod tests {
     gen_abs_y_test!(LdaAbsY, 0x42, assert());
     gen_abs_y_cycles_test!(LdaAbsY, 4);
     gen_abs_y_page_crossed_cycles_test!(LdaAbsY, 5);
+
+    gen_zp_test!(LdaZp, 0x42, assert());
+    gen_zp_cycles_test!(LdaZp, 3);
+
+    gen_zp_x_test!(LdaZpX, 0x42, assert());
+    gen_zp_x_cycles_test!(LdaZpX, 4);
 }

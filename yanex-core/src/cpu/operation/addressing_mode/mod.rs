@@ -9,6 +9,8 @@ pub enum AddressingMode {
     Absolute,
     AbsoluteX,
     AbsoluteY,
+    ZeroPage,
+    ZeroPageX,
 }
 
 impl From<AddressingMode> for AddressingModeReadDataState {
@@ -18,6 +20,8 @@ impl From<AddressingMode> for AddressingModeReadDataState {
             AddressingMode::Absolute => AddressingModeReadDataState::Absolute(Default::default()),
             AddressingMode::AbsoluteX => AddressingModeReadDataState::AbsoluteX(Default::default()),
             AddressingMode::AbsoluteY => AddressingModeReadDataState::AbsoluteY(Default::default()),
+            AddressingMode::ZeroPage => AddressingModeReadDataState::ZeroPage(Default::default()),
+            AddressingMode::ZeroPageX => AddressingModeReadDataState::ZeroPageX(Default::default()),
         }
     }
 }
