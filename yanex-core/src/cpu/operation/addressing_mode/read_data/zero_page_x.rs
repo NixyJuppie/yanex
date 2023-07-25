@@ -8,7 +8,7 @@ pub enum ZeroPageXReadDataState {
     #[default]
     None,
     AddressLowByte(u8),
-    DeadCycle(u8),
+    DummyRead(u8),
     Data(u8),
 }
 
@@ -23,13 +23,12 @@ impl AddressingModeRead for ZeroPageXReadDataState {
                 None
             }
             ZeroPageXReadDataState::AddressLowByte(low_byte) => {
-                // Dummy read
                 memory.read_u8(u16::from_le_bytes([*low_byte, 0x00]));
 
-                *self = ZeroPageXReadDataState::DeadCycle(*low_byte);
+                *self = ZeroPageXReadDataState::DummyRead(*low_byte);
                 None
             }
-            ZeroPageXReadDataState::DeadCycle(low_byte) => {
+            ZeroPageXReadDataState::DummyRead(low_byte) => {
                 let low_byte = low_byte.wrapping_add(registers.index_x);
                 let address = u16::from_le_bytes([low_byte, 0x00]);
                 let data = memory.read_u8(address);

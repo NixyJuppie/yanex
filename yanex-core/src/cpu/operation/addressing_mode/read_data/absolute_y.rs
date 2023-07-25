@@ -8,8 +8,8 @@ pub enum AbsoluteYReadDataState {
     #[default]
     None,
     AddressLowByte(u8),
-    Address(u8, u8),
     PageCrossed(u8, u8),
+    Address(u8, u8),
     Data(u8),
 }
 

@@ -36,8 +36,8 @@ impl From<Opcode> for Operation {
             LdaAbsY => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteY)),
             LdaZp => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPage)),
             LdaZpX => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPageX)),
-            // LdaIndX => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectX)),
-            // LdaIndY => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectY)),
+            LdaIndX => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectX)),
+            LdaIndY => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectY)),
             _ => todo!("Unsupported opcode {:?}", opcode),
         }
     }

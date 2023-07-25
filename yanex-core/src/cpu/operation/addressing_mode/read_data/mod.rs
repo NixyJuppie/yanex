@@ -2,6 +2,8 @@ mod absolute;
 mod absolute_x;
 mod absolute_y;
 mod immediate;
+mod indirect_x;
+mod indirect_y;
 mod zero_page;
 mod zero_page_x;
 
@@ -11,6 +13,8 @@ use absolute::AbsoluteReadDataState;
 use absolute_x::AbsoluteXReadDataState;
 use absolute_y::AbsoluteYReadDataState;
 use immediate::ImmediateReadDataState;
+use indirect_x::IndirectXReadDataState;
+use indirect_y::IndirectYReadDataState;
 use zero_page::ZeroPageReadDataState;
 use zero_page_x::ZeroPageXReadDataState;
 
@@ -26,6 +30,8 @@ pub enum AddressingModeReadDataState {
     AbsoluteY(AbsoluteYReadDataState),
     ZeroPage(ZeroPageReadDataState),
     ZeroPageX(ZeroPageXReadDataState),
+    IndirectX(IndirectXReadDataState),
+    IndirectY(IndirectYReadDataState),
 }
 
 impl AddressingModeRead for AddressingModeReadDataState {
@@ -39,6 +45,8 @@ impl AddressingModeRead for AddressingModeReadDataState {
             AbsoluteY(state) => state.advance(registers, memory),
             ZeroPage(state) => state.advance(registers, memory),
             ZeroPageX(state) => state.advance(registers, memory),
+            IndirectX(state) => state.advance(registers, memory),
+            IndirectY(state) => state.advance(registers, memory),
         }
     }
 }
