@@ -6,6 +6,7 @@ mod indirect_x;
 mod indirect_y;
 mod zero_page;
 mod zero_page_x;
+mod zero_page_y;
 
 use crate::cpu::CpuRegisters;
 use crate::Memory;
@@ -17,6 +18,7 @@ use indirect_x::IndirectXReadDataState;
 use indirect_y::IndirectYReadDataState;
 use zero_page::ZeroPageReadDataState;
 use zero_page_x::ZeroPageXReadDataState;
+use zero_page_y::ZeroPageYReadDataState;
 
 pub trait AddressingModeRead {
     fn advance(&mut self, registers: &mut CpuRegisters, memory: &Memory) -> Option<u8>;
@@ -30,6 +32,7 @@ pub enum AddressingModeReadDataState {
     AbsoluteY(AbsoluteYReadDataState),
     ZeroPage(ZeroPageReadDataState),
     ZeroPageX(ZeroPageXReadDataState),
+    ZeroPageY(ZeroPageYReadDataState),
     IndirectX(IndirectXReadDataState),
     IndirectY(IndirectYReadDataState),
 }
@@ -45,6 +48,7 @@ impl AddressingModeRead for AddressingModeReadDataState {
             AbsoluteY(state) => state.advance(registers, memory),
             ZeroPage(state) => state.advance(registers, memory),
             ZeroPageX(state) => state.advance(registers, memory),
+            ZeroPageY(state) => state.advance(registers, memory),
             IndirectX(state) => state.advance(registers, memory),
             IndirectY(state) => state.advance(registers, memory),
         }

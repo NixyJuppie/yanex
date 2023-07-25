@@ -104,6 +104,24 @@ macro_rules! gen_zp_x_test {
     };
 }
 
+macro_rules! gen_zp_y_test {
+    ($opcode:ident, $data:literal, $assert:expr) => {
+        #[test]
+        fn zp_y() {
+            let mut cpu = crate::Cpu::default();
+            cpu.registers.index_y = 0x04;
+
+            let mut memory = crate::Memory::default();
+            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
+
+            crate::MemoryAccess::write_u8(&mut memory, 0x0014, $data);
+
+            $assert(cpu, memory);
+        }
+    };
+}
+
 macro_rules! gen_ind_x_test {
     ($opcode:ident, $data:literal, $assert:expr) => {
         #[test]
@@ -152,3 +170,4 @@ pub(crate) use gen_ind_x_test;
 pub(crate) use gen_ind_y_test;
 pub(crate) use gen_zp_test;
 pub(crate) use gen_zp_x_test;
+pub(crate) use gen_zp_y_test;
