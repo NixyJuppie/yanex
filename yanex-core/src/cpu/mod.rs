@@ -1,20 +1,18 @@
-use crate::cpu::operation::opcode::Opcode;
-use crate::cpu::operation::Operation;
-use crate::cpu::registers::CpuRegisters;
-use crate::memory::memory_access::MemoryAccess;
-use crate::memory::Memory;
+mod operation;
+mod registers;
 
-pub mod operation;
-pub mod registers;
+pub use operation::Opcode;
+
+use crate::Memory;
+use crate::MemoryAccess;
+use operation::Operation;
+use registers::CpuRegisters;
 
 #[derive(Debug, Default)]
 pub struct Cpu {
     pub registers: CpuRegisters,
     pub cycle: u32,
 }
-
-#[derive(Debug)]
-struct ExecutionContext(Operation);
 
 impl Cpu {
     pub fn execute_operation(&mut self, memory: &mut Memory, state: &mut Option<Operation>) {

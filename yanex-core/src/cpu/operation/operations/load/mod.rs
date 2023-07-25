@@ -1,1 +1,3 @@
-pub mod load_accumulator;
+mod load_accumulator;
+
+pub use load_accumulator::*;

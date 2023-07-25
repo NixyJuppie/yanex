@@ -1,7 +1,4 @@
-use yanex_core::cpu::operation::opcode::Opcode;
-use yanex_core::cpu::Cpu;
-use yanex_core::memory::memory_access::MemoryAccess;
-use yanex_core::memory::Memory;
+use yanex_core::{Cpu, Memory, MemoryAccess, Opcode};
 
 fn main() {
     let mut memory = Memory::default();

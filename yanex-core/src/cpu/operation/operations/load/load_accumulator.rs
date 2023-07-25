@@ -1,9 +1,8 @@
-use crate::cpu::operation::addressing_mode::read_data::{
-    AddressingModeRead, AddressingModeReadDataState,
+use crate::cpu::operation::addressing_mode::{
+    AddressingMode, AddressingModeRead, AddressingModeReadDataState,
 };
-use crate::cpu::operation::addressing_mode::AddressingMode;
-use crate::cpu::registers::CpuRegisters;
-use crate::memory::Memory;
+use crate::cpu::CpuRegisters;
+use crate::Memory;
 
 #[derive(Debug, Clone)]
 pub enum LoadAccumulatorState {
@@ -47,11 +46,10 @@ impl LoadAccumulatorState {
 
 #[cfg(test)]
 mod tests {
-    use crate::cpu::operation::opcode::Opcode::LdaAbs;
-    use crate::cpu::Cpu;
-    use crate::cpu::Opcode::LdaImm;
-    use crate::memory::Memory;
     use crate::tests_utils::*;
+    use crate::Cpu;
+    use crate::Memory;
+    use crate::Opcode::*;
 
     fn assert() -> fn(Cpu, Memory) {
         |mut cpu: Cpu, mut memory: Memory| {

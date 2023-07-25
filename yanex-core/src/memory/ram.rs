@@ -1,4 +1,4 @@
-use crate::memory::memory_access::MemoryAccess;
+use super::MemoryAccess;
 
 #[derive(Debug)]
 pub struct Ram {

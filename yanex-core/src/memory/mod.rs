@@ -1,10 +1,10 @@
-use memory_access::MemoryAccess;
+mod memory_access;
+mod ppu_registers;
+mod ram;
+
+pub use memory_access::MemoryAccess;
 use ppu_registers::PpuRegisters;
 use ram::Ram;
-
-pub mod memory_access;
-pub mod ppu_registers;
-pub mod ram;
 
 #[derive(Debug, Default)]
 pub struct Memory {

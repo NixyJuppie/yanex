@@ -260,26 +260,3 @@ pub enum Opcode {
     TodoFE = 0xFE,
     TodoFF = 0xFF,
 }
-
-use crate::cpu::operation::Operation;
-
-impl From<Opcode> for Operation {
-    fn from(opcode: Opcode) -> Self {
-        use crate::cpu::operation::addressing_mode::AddressingMode::*;
-        use crate::cpu::operation::opcode::Opcode::*;
-        use crate::cpu::operation::operations::load::load_accumulator::LoadAccumulatorState;
-        use crate::cpu::operation::Operation::*;
-
-        match opcode {
-            LdaImm => LoadAccumulator(LoadAccumulatorState::Decoded(Immediate)),
-            LdaAbs => LoadAccumulator(LoadAccumulatorState::Decoded(Absolute)),
-            // LdaAbsX => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteX)),
-            // LdaAbsY => LoadAccumulator(LoadAccumulatorState::Decoded(AbsoluteY)),
-            // LdaZp => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPage)),
-            // LdaZpX => LoadAccumulator(LoadAccumulatorState::Decoded(ZeroPageX)),
-            // LdaIndX => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectX)),
-            // LdaIndY => LoadAccumulator(LoadAccumulatorState::Decoded(IndirectY)),
-            _ => todo!("Unsupported opcode {:?}", opcode),
-        }
-    }
-}

@@ -1,10 +1,10 @@
 mod absolute;
 mod immediate;
 
-use crate::cpu::operation::addressing_mode::read_data::absolute::AbsoluteReadDataState;
-use crate::cpu::operation::addressing_mode::read_data::immediate::ImmediateReadDataState;
-use crate::cpu::registers::CpuRegisters;
-use crate::memory::Memory;
+use crate::cpu::CpuRegisters;
+use crate::Memory;
+use absolute::AbsoluteReadDataState;
+use immediate::ImmediateReadDataState;
 
 pub trait AddressingModeRead {
     fn advance(&mut self, registers: &mut CpuRegisters, memory: &Memory) -> Option<u8>;

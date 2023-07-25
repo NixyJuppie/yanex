@@ -1,7 +1,7 @@
-use crate::cpu::operation::addressing_mode::read_data::AddressingModeRead;
-use crate::cpu::registers::CpuRegisters;
-use crate::memory::memory_access::MemoryAccess;
-use crate::memory::Memory;
+use super::AddressingModeRead;
+use crate::cpu::CpuRegisters;
+use crate::Memory;
+use crate::MemoryAccess;
 
 #[derive(Debug, Default, Clone)]
 pub enum AbsoluteReadDataState {

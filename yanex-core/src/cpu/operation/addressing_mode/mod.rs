@@ -1,6 +1,7 @@
-use crate::cpu::operation::addressing_mode::read_data::AddressingModeReadDataState;
+mod read_data;
 
-pub mod read_data;
+pub use read_data::AddressingModeRead;
+pub use read_data::AddressingModeReadDataState;
 
 #[derive(Debug, Copy, Clone)]
 pub enum AddressingMode {
