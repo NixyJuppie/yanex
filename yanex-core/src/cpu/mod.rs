@@ -2,11 +2,12 @@ mod operation;
 mod registers;
 
 pub use operation::Opcode;
+pub use registers::CpuRegisters;
+pub use registers::CpuStatus;
 
 use crate::Memory;
 use crate::MemoryAccess;
 use operation::Operation;
-use registers::CpuRegisters;
 
 #[derive(Debug, Default)]
 pub struct Cpu {

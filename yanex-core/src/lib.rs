@@ -1,8 +1,7 @@
 mod cpu;
 mod memory;
 
-pub use cpu::Cpu;
-pub use cpu::Opcode;
+pub use cpu::{Cpu, CpuRegisters, CpuStatus, Opcode};
 pub use memory::{Memory, MemoryAccess};
 
 #[cfg(test)]
