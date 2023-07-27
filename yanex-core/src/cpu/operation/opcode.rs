@@ -237,7 +237,7 @@ pub enum Opcode {
     TodoE7 = 0xE7,
     TodoE8 = 0xE8,
     TodoE9 = 0xE9,
-    TodoEA = 0xEA,
+    NopImp = 0xEA,
     TodoEB = 0xEB,
     TodoEC = 0xEC,
     TodoED = 0xED,

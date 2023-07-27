@@ -5,9 +5,9 @@ macro_rules! gen_cycles_test {
             let mut cpu = crate::Cpu::default();
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
 
-            cpu.execute_operation(&mut memory, &mut None);
+            cpu.next_operation(&mut memory, &mut None);
             assert_eq!(cpu.cycle, $cycles);
         }
     };
@@ -22,11 +22,11 @@ macro_rules! gen_page_crossed_cycles_test {
             cpu.registers.index_y = 0x10;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0xF0);
             crate::MemoryAccess::write_u8(&mut memory, 0x00F0, 0xF0);
 
-            cpu.execute_operation(&mut memory, &mut None);
+            cpu.next_operation(&mut memory, &mut None);
             assert_eq!(cpu.cycle, $cycles);
         }
     };

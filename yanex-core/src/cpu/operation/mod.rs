@@ -12,6 +12,7 @@ pub enum Operation {
     LoadAccumulator(operations::LoadAccumulatorState),
     LoadIndexX(operations::LoadIndexXState),
     LoadIndexY(operations::LoadIndexYState),
+    NoOperation(operations::NoOperationState),
 }
 
 impl Operation {
@@ -22,6 +23,7 @@ impl Operation {
             LoadAccumulator(state) => state.advance(registers, memory),
             LoadIndexX(state) => state.advance(registers, memory),
             LoadIndexY(state) => state.advance(registers, memory),
+            NoOperation(state) => state.advance(registers, memory),
         }
     }
 }
@@ -52,6 +54,7 @@ impl From<Opcode> for Operation {
             LdyAbsX => LoadIndexY(LoadIndexYState::Decoded(AbsoluteX)),
             LdyZp => LoadIndexY(LoadIndexYState::Decoded(ZeroPage)),
             LdyZpX => LoadIndexY(LoadIndexYState::Decoded(ZeroPageX)),
+            NopImp => NoOperation(NoOperationState::Decoded(Implied)),
             _ => todo!("Unsupported opcode {:?}", opcode),
         }
     }

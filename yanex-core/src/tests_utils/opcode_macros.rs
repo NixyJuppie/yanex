@@ -5,7 +5,7 @@ macro_rules! gen_imm_test {
             let cpu = crate::Cpu::default();
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, $data);
 
             $assert(cpu, memory);
@@ -20,7 +20,7 @@ macro_rules! gen_abs_test {
             let cpu = crate::Cpu::default();
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
 
@@ -39,7 +39,7 @@ macro_rules! gen_abs_x_test {
             cpu.registers.index_x = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
 
@@ -58,7 +58,7 @@ macro_rules! gen_abs_y_test {
             cpu.registers.index_y = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
 
@@ -76,7 +76,7 @@ macro_rules! gen_zp_test {
             let cpu = crate::Cpu::default();
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
             crate::MemoryAccess::write_u8(&mut memory, 0x0010, $data);
@@ -94,7 +94,7 @@ macro_rules! gen_zp_x_test {
             cpu.registers.index_x = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
             crate::MemoryAccess::write_u8(&mut memory, 0x0014, $data);
@@ -112,7 +112,7 @@ macro_rules! gen_zp_y_test {
             cpu.registers.index_y = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
             crate::MemoryAccess::write_u8(&mut memory, 0x0014, $data);
@@ -130,7 +130,7 @@ macro_rules! gen_ind_x_test {
             cpu.registers.index_x = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
             crate::MemoryAccess::write_u8(&mut memory, 0x0014, 0x20);
@@ -150,7 +150,7 @@ macro_rules! gen_ind_y_test {
             cpu.registers.index_y = 0x04;
 
             let mut memory = crate::Memory::default();
-            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode as u8);
+            crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
             crate::MemoryAccess::write_u8(&mut memory, 0x0010, 0x20);
