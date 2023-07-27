@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "serve": "nodemon -e rs --exec 'tailwindcss -i ./src/style.css -o ./dist/style.css && dioxus build && http-server dist'"
+  },
+  "dependencies": {
+    "rippleui": "^1.12.1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "nodemon": "^3.0.1",
+    "tailwindcss": "^3.3.3"
+  }
+}
