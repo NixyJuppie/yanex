@@ -6,7 +6,7 @@ pub use operation::Operation;
 pub use registers::CpuRegisters;
 pub use registers::CpuStatus;
 
-use crate::Memory;
+use crate::CpuMemory;
 use crate::MemoryAccess;
 
 #[derive(Debug, Default)]
@@ -16,7 +16,7 @@ pub struct Cpu {
 }
 
 impl Cpu {
-    pub fn next_operation(&mut self, memory: &mut Memory, state: &mut Option<Operation>) {
+    pub fn next_operation(&mut self, memory: &mut CpuMemory, state: &mut Option<Operation>) {
         self.next_cycle(memory, state);
 
         while state.is_some() {
@@ -24,7 +24,7 @@ impl Cpu {
         }
     }
 
-    pub fn next_cycle(&mut self, memory: &mut Memory, state: &mut Option<Operation>) {
+    pub fn next_cycle(&mut self, memory: &mut CpuMemory, state: &mut Option<Operation>) {
         match state {
             None => *state = Some(self.fetch_operation(memory)),
             Some(operation) => {
@@ -37,7 +37,7 @@ impl Cpu {
         self.cycle += 1;
     }
 
-    fn fetch_operation(&mut self, memory: &Memory) -> Operation {
+    fn fetch_operation(&mut self, memory: &CpuMemory) -> Operation {
         let opcode: Opcode = memory.read_u8(self.registers.program_counter).into();
         self.registers.program_counter += 1;
         opcode.into()

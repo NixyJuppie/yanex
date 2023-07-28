@@ -4,7 +4,7 @@ macro_rules! gen_imm_test {
         fn imm() {
             let cpu = crate::Cpu::default();
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, $data);
 
@@ -19,7 +19,7 @@ macro_rules! gen_abs_test {
         fn abs() {
             let cpu = crate::Cpu::default();
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
@@ -38,7 +38,7 @@ macro_rules! gen_abs_x_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_x = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
@@ -57,7 +57,7 @@ macro_rules! gen_abs_y_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_y = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x0010u16.to_le_bytes()[0]);
             crate::MemoryAccess::write_u8(&mut memory, 0x0002, 0x0010u16.to_le_bytes()[1]);
@@ -75,7 +75,7 @@ macro_rules! gen_zp_test {
         fn zp() {
             let cpu = crate::Cpu::default();
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
@@ -93,7 +93,7 @@ macro_rules! gen_zp_x_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_x = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
@@ -111,7 +111,7 @@ macro_rules! gen_zp_y_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_y = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
@@ -129,7 +129,7 @@ macro_rules! gen_ind_x_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_x = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 
@@ -149,7 +149,7 @@ macro_rules! gen_ind_y_test {
             let mut cpu = crate::Cpu::default();
             cpu.registers.index_y = 0x04;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0x10);
 

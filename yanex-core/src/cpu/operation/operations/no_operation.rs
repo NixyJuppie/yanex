@@ -1,6 +1,6 @@
 use crate::cpu::operation::addressing_mode::AddressingMode;
 use crate::cpu::CpuRegisters;
-use crate::Memory;
+use crate::CpuMemory;
 
 #[derive(Debug, Clone)]
 pub enum NoOperationState {
@@ -9,7 +9,7 @@ pub enum NoOperationState {
 }
 
 impl NoOperationState {
-    pub fn advance(&mut self, _registers: &mut CpuRegisters, _memory: &mut Memory) -> bool {
+    pub fn advance(&mut self, _registers: &mut CpuRegisters, _memory: &mut CpuMemory) -> bool {
         match self {
             NoOperationState::Decoded(ref _mode) => {
                 *self = NoOperationState::Executed;

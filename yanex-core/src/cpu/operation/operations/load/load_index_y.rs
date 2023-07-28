@@ -2,7 +2,7 @@ use crate::cpu::operation::addressing_mode::{
     AddressingMode, AddressingModeRead, AddressingModeReadDataState,
 };
 use crate::cpu::CpuRegisters;
-use crate::Memory;
+use crate::CpuMemory;
 
 #[derive(Debug, Clone)]
 pub enum LoadIndexYState {
@@ -12,7 +12,7 @@ pub enum LoadIndexYState {
 }
 
 impl LoadIndexYState {
-    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut Memory) -> bool {
+    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut CpuMemory) -> bool {
         match self {
             LoadIndexYState::Decoded(ref mode) => {
                 self.try_execute(registers, memory, (*mode).into())
@@ -27,7 +27,7 @@ impl LoadIndexYState {
     fn try_execute(
         &mut self,
         registers: &mut CpuRegisters,
-        memory: &Memory,
+        memory: &CpuMemory,
         mut read_state: AddressingModeReadDataState,
     ) -> bool {
         match read_state.advance(registers, memory) {
@@ -52,11 +52,11 @@ mod tests {
     use crate::tests_utils::cycles_macros::*;
     use crate::tests_utils::opcode_macros::*;
     use crate::Cpu;
-    use crate::Memory;
+    use crate::CpuMemory;
     use crate::Opcode::{LdyAbs, LdyAbsX, LdyImm, LdyZp, LdyZpX};
 
-    fn assert() -> fn(Cpu, Memory) {
-        |mut cpu: Cpu, mut memory: Memory| {
+    fn assert() -> fn(Cpu, CpuMemory) {
+        |mut cpu: Cpu, mut memory: CpuMemory| {
             cpu.next_operation(&mut memory, &mut None);
             assert_eq!(cpu.registers.index_y, 0xFF);
             assert!(!cpu.registers.status.b1_zero);

@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
-use yanex_core::{Cpu, Memory, Operation};
+use yanex_core::{Cpu, CpuMemory, Operation};
 
 #[inline_props]
 pub fn ControlView(cx: Scope) -> Element {
     let cpu = use_shared_state::<Cpu>(cx).unwrap();
-    let memory = use_shared_state::<Memory>(cx).unwrap();
+    let memory = use_shared_state::<CpuMemory>(cx).unwrap();
     let state = use_ref(cx, || None::<Operation>);
 
     cx.render(rsx! {

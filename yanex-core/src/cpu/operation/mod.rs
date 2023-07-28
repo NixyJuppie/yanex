@@ -3,7 +3,7 @@ mod opcode;
 mod operations;
 
 use crate::cpu::CpuRegisters;
-use crate::Memory;
+use crate::CpuMemory;
 use addressing_mode::AddressingMode;
 pub use opcode::Opcode;
 
@@ -16,7 +16,7 @@ pub enum Operation {
 }
 
 impl Operation {
-    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut Memory) -> bool {
+    pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut CpuMemory) -> bool {
         use Operation::*;
 
         match self {

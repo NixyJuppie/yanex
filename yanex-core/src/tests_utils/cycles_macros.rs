@@ -4,7 +4,7 @@ macro_rules! gen_cycles_test {
         fn $name() {
             let mut cpu = crate::Cpu::default();
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
 
             cpu.next_operation(&mut memory, &mut None);
@@ -21,7 +21,7 @@ macro_rules! gen_page_crossed_cycles_test {
             cpu.registers.index_x = 0x10;
             cpu.registers.index_y = 0x10;
 
-            let mut memory = crate::Memory::default();
+            let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0xF0);
             crate::MemoryAccess::write_u8(&mut memory, 0x00F0, 0xF0);

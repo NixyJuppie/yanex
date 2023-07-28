@@ -1,6 +1,6 @@
 use super::AddressingModeRead;
 use crate::cpu::CpuRegisters;
-use crate::Memory;
+use crate::CpuMemory;
 use crate::MemoryAccess;
 
 #[derive(Debug, Default, Clone)]
@@ -15,7 +15,7 @@ pub enum IndirectYReadDataState {
 }
 
 impl AddressingModeRead for IndirectYReadDataState {
-    fn advance(&mut self, registers: &mut CpuRegisters, memory: &Memory) -> Option<u8> {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
         match self {
             IndirectYReadDataState::None => {
                 let low_byte = memory.read_u8(registers.program_counter);
