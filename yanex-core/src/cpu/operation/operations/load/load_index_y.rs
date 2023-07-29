@@ -51,16 +51,16 @@ impl LoadIndexYState {
 mod tests {
     use crate::tests_utils::cycles_macros::*;
     use crate::tests_utils::opcode_macros::*;
-    use crate::Cpu;
     use crate::CpuMemory;
     use crate::Opcode::{LdyAbs, LdyAbsX, LdyImm, LdyZp, LdyZpX};
+    use crate::{Cpu, CpuStatus};
 
     fn assert() -> fn(Cpu, CpuMemory) {
         |mut cpu: Cpu, mut memory: CpuMemory| {
             cpu.next_operation(&mut memory, &mut None);
             assert_eq!(cpu.registers.index_y, 0xFF);
-            assert!(!cpu.registers.status.b1_zero);
-            assert!(cpu.registers.status.b7_negative);
+            assert!(!cpu.registers.status.contains(CpuStatus::B1_ZERO));
+            assert!(cpu.registers.status.contains(CpuStatus::B7_NEGATIVE));
         }
     }
 

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use std::num::ParseIntError;
-use yanex_core::Cpu;
+use yanex_core::{Cpu, CpuStatus};
 
 #[inline_props]
 pub fn RegistersView(cx: Scope) -> Element {
@@ -19,9 +19,9 @@ pub fn RegistersView(cx: Scope) -> Element {
                 RegisterView {
                     name: "Status",
                     bit_names: ["C", "Z", "I", "D", "B", "_", "V", "N"]
-                    value: cpu.read().registers.status.clone().into(),
+                    value: cpu.read().registers.status.bits(),
                     set_value: move |v| {
-                        cpu.write().registers.status = v.into();
+                        cpu.write().registers.status = CpuStatus::from_bits_truncate(v);
                     }
                 },
 
