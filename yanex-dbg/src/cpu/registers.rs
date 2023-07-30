@@ -108,13 +108,13 @@ where
                         div { class: "btn-group",
                             for i in 0..8 {
                                 button {
-                                    class: if value & 0b0000_0001 << i > 0 {
+                                    class: if value & 0b_0000_0001 << i > 0 {
                                         "btn btn-sm btn-solid-success"
                                     } else {
                                         "btn btn-sm btn-solid-error"
                                     },
                                     onclick: move |_| {
-                                        let new_value = value ^ 0b00000001 << i;
+                                        let new_value = value ^ 0b_0000_0001 << i;
                                         (set_value)(new_value);
                                         input_value.set(format!("0x{:02X}", new_value));
                                         is_valid.set(true);

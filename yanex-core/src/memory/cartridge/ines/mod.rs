@@ -1,6 +1,6 @@
-use ines_header::INesHeader;
+use header::INesHeader;
 
-mod ines_header;
+mod header;
 
 pub struct INes {
     pub header: INesHeader,

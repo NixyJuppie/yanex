@@ -17,5 +17,5 @@ impl MemoryAccess for PpuRegisters {
 
 fn index(address: u16) -> usize {
     // PPU registers are addressed using first 3 bits, so it can access a maximum of 8B
-    (address & 0b0000_0000_0000_0111) as usize
+    (address & 0b_0000_0000_0000_0111) as usize
 }

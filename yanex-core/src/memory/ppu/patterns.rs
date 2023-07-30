@@ -23,5 +23,5 @@ impl MemoryAccess for PatternTable {
 
 fn index(address: u16) -> usize {
     // PatternTable is addressed using first 13 bits, so it can access a maximum of 8KiB
-    (address & 0b0001_1111_1111_1111) as usize
+    (address & 0b_0001_1111_1111_1111) as usize
 }

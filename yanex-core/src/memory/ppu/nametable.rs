@@ -23,5 +23,5 @@ impl MemoryAccess for NameTable {
 
 fn index(address: u16) -> usize {
     // Nametable is addressed using first 12 bits, so it can access a maximum of 4KiB
-    (address & 0b0000_1111_1111_1111) as usize
+    (address & 0b_0000_1111_1111_1111) as usize
 }

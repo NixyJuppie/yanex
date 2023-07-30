@@ -23,5 +23,5 @@ impl MemoryAccess for Ram {
 
 fn index(address: u16) -> usize {
     // SRAM is addressed using first 11 bits, so it can access a maximum of 2KiB
-    (address & 0b0000_0111_1111_1111) as usize
+    (address & 0b_0000_0111_1111_1111) as usize
 }

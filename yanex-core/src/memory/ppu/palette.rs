@@ -17,5 +17,5 @@ impl MemoryAccess for Palette {
 
 fn index(address: u16) -> usize {
     // Palette is addressed using first 5 bits, so it can access a maximum of 32B
-    (address & 0b0000_0000_0001_1111) as usize
+    (address & 0b_0000_0000_0001_1111) as usize
 }
