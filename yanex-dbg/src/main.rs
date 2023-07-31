@@ -1,40 +1,75 @@
-#![allow(non_snake_case)]
-
+mod components;
 mod cpu;
 
-use crate::cpu::CpuView;
-use dioxus::prelude::*;
-use yanex_core::Opcode::{LdaImm, LdxAbs, NopImp};
-use yanex_core::{Cpu, CpuMemory, MemoryAccess};
+use cpu::CpuModel;
+use relm4::adw::prelude::*;
+use relm4::{
+    adw, component, gtk, Component, ComponentController, ComponentParts, ComponentSender,
+    Controller, RelmApp, SimpleComponent,
+};
+use yanex_core::Cpu;
+
+#[derive(Debug)]
+struct AppModel {
+    title: String,
+    cpu: Controller<CpuModel>,
+}
+
+#[component]
+impl SimpleComponent for AppModel {
+    type Input = ();
+    type Output = ();
+    type Init = String;
+
+    fn init(
+        title: Self::Init,
+        root: &Self::Root,
+        _sender: ComponentSender<Self>,
+    ) -> ComponentParts<Self> {
+        let cpu = CpuModel::builder().launch(Cpu::default()).detach();
+        let model = AppModel { title, cpu };
+
+        let widgets = view_output!();
+        ComponentParts { model, widgets }
+    }
+
+    view! {
+        adw::Window {
+            set_title: Some(&model.title),
+            set_default_width: 800,
+            set_default_height: 600,
+            #[wrap(Some)]
+            set_content = &gtk::Box {
+                set_orientation: gtk::Orientation::Vertical,
+                adw::HeaderBar {
+                    #[wrap(Some)]
+                    set_title_widget = &adw::ViewSwitcherTitle {
+                        set_title: &model.title,
+                        set_stack: Some(&stack),
+                        #[chain(build())]
+                        bind_property: ("title-visible", &bar, "reveal")
+                    },
+                },
+                #[name(stack)]
+                adw::ViewStack {
+                    set_vexpand: true,
+                    set_hexpand: true,
+                    add_titled_with_icon[Some("cpu"), "CPU", "edit-select-all-symbolic"] = model.cpu.widget(),
+                    add_titled_with_icon[Some("ppu"), "PPU", "video-display-symbolic"] = &gtk::Box {},
+                    add_titled_with_icon[Some("apu"), "APU", "audio-speakers-symbolic"] = &gtk::Box {},
+                    add_titled_with_icon[Some("memory"), "Memory", "media-flash-symbolic"] = &gtk::Box {},
+
+                },
+                #[name(bar)]
+                adw::ViewSwitcherBar {
+                    set_stack: Some(&stack),
+                }
+            }
+        }
+    }
+}
 
 fn main() {
-    dioxus_web::launch(App);
-}
-
-fn App(cx: Scope) -> Element {
-    if cfg!(debug_assertions) {
-        cx.render(rsx! {
-            script { src: "https://livejs.com/live.js" }
-            MainView {}
-        })
-    } else {
-        cx.render(rsx! { MainView {} })
-    }
-}
-
-fn MainView(cx: Scope) -> Element {
-    use_shared_state_provider(cx, Cpu::default);
-
-    let mut memory = CpuMemory::default();
-    memory.write_opcode(0x0000, LdaImm);
-    memory.write_u8(0x0001, 0x69);
-    memory.write_opcode(0x0002, LdxAbs);
-    memory.write_u8(0x0003, 0x00);
-    memory.write_u8(0x0004, 0x03);
-    for i in 0..100 {
-        memory.write_opcode(0x0005 + i, NopImp);
-    }
-    use_shared_state_provider(cx, || memory);
-
-    cx.render(rsx! { CpuView {} })
+    let app = RelmApp::new("org.nixyjuppie.yanexdbg");
+    app.run::<AppModel>("Yanex Debugger".to_string());
 }

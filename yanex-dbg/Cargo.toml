@@ -4,6 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dioxus = "0.3.2"
-dioxus-web = "0.3.2"
+relm4 = { version = "0.6.0", features = ["gnome_44", "macros", "libadwaita"] }
 yanex-core = { path = "../yanex-core" }
