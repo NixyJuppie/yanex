@@ -3,7 +3,7 @@ use crate::components::{BitNames, BitSwitchRowModel};
 use relm4::adw::prelude::*;
 use relm4::{
     adw, component, Component, ComponentController, ComponentParts, ComponentSender, Controller,
-    SimpleComponent,
+    RelmWidgetExt, SimpleComponent,
 };
 use yanex_core::{CpuRegisters, CpuStatus};
 
@@ -95,6 +95,7 @@ impl SimpleComponent for CpuRegistersModel {
 
     view! {
         adw::Clamp {
+            set_margin_all: 20,
             set_maximum_size: 350,
             adw::PreferencesGroup {
                 set_title: "Registers",

@@ -31,6 +31,8 @@ impl Default for BitNames {
 #[derive(Debug)]
 pub struct BitSwitchRowModel {
     value: u8,
+    should_update_hex_value: bool,
+    should_update_dec_value: bool,
     name: String,
     bit_names: BitNames,
 }
@@ -38,6 +40,8 @@ pub struct BitSwitchRowModel {
 #[derive(Debug)]
 pub enum BitSwitchRowInput {
     BitFlipped(u8),
+    HexValueSet(String),
+    DecValueSet(String),
 }
 
 #[component(pub)]
@@ -49,10 +53,12 @@ impl SimpleComponent for BitSwitchRowModel {
     fn init(
         init: Self::Init,
         root: &Self::Root,
-        _sender: ComponentSender<Self>,
+        sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         let model = BitSwitchRowModel {
             value: init.0,
+            should_update_hex_value: true,
+            should_update_dec_value: true,
             name: init.1,
             bit_names: init.2,
         };
@@ -65,18 +71,22 @@ impl SimpleComponent for BitSwitchRowModel {
         adw::ExpanderRow {
             set_title: &model.name,
             #[watch]
-            set_subtitle: &format!("0x{:02X}", &model.value),
+            set_subtitle: &format!("0x{}", format_hex(model.value)),
             add_row = &adw::EntryRow {
                 set_title: "Value (HEX)",
-                #[watch]
-                set_text: &format!("0x{:02X}", &model.value),
-                set_show_apply_button: true
+                #[track(model.should_update_hex_value)]
+                set_text: &format_hex(model.value),
+                set_show_apply_button: true,
+                set_input_purpose: gtk::InputPurpose::Digits,
+                connect_apply[sender] => move |r| sender.input(BitSwitchRowInput::HexValueSet(r.text().to_string()))
             },
             add_row = &adw::EntryRow {
                 set_title: "Value (DEC)",
-                #[watch]
-                set_text: &format!("{:03}", &model.value),
-                set_show_apply_button: true
+                #[track(model.should_update_dec_value)]
+                set_text: &format_dec(model.value),
+                set_show_apply_button: true,
+                set_input_purpose: gtk::InputPurpose::Digits,
+                connect_apply[sender] => move |r| sender.input(BitSwitchRowInput::DecValueSet(r.text().to_string()))
             },
             add_row = &adw::ActionRow {
                 #[wrap(Some)]
@@ -147,8 +157,50 @@ impl SimpleComponent for BitSwitchRowModel {
 
     fn update(&mut self, input: Self::Input, sender: ComponentSender<Self>) {
         match input {
-            BitSwitchRowInput::BitFlipped(bit) => self.value ^= 0b_0000_0001 << bit,
+            BitSwitchRowInput::BitFlipped(bit) => {
+                self.value ^= 0b_0000_0001 << bit;
+                self.should_update_hex_value = true;
+                self.should_update_dec_value = true;
+                sender.output(self.value).unwrap();
+            }
+            BitSwitchRowInput::HexValueSet(value) => {
+                self.should_update_hex_value = false;
+                match u8::from_str_radix(&value, 16) {
+                    Ok(value) => {
+                        if self.value != value {
+                            self.value = value;
+                            self.should_update_dec_value = true;
+                            sender.output(self.value).unwrap();
+                        }
+                    }
+                    Err(error) => {
+                        println!("{}: error {:?}", value, error)
+                    }
+                }
+            }
+            BitSwitchRowInput::DecValueSet(value) => {
+                self.should_update_dec_value = false;
+                match value.parse() {
+                    Ok(value) => {
+                        if self.value != value {
+                            self.value = value;
+                            self.should_update_hex_value = true;
+                            sender.output(self.value).unwrap();
+                        }
+                    }
+                    Err(error) => {
+                        println!("{}: error {:?}", value, error)
+                    }
+                }
+            }
         }
-        sender.output(self.value).unwrap();
     }
+}
+
+fn format_hex(value: u8) -> String {
+    format!("{:02X}", value).to_string()
+}
+
+fn format_dec(value: u8) -> String {
+    format!("{:03}", value).to_string()
 }

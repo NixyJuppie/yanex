@@ -54,6 +54,7 @@ impl SimpleComponent for AppModel {
                 adw::ViewStack {
                     set_vexpand: true,
                     set_hexpand: true,
+                    // add_titled_with_icon[Some("play"), "Play", "applications-games-symbolic"] = &gtk::Box {},
                     add_titled_with_icon[Some("cpu"), "CPU", "edit-select-all-symbolic"] = model.cpu.widget(),
                     add_titled_with_icon[Some("ppu"), "PPU", "video-display-symbolic"] = &gtk::Box {},
                     add_titled_with_icon[Some("apu"), "APU", "audio-speakers-symbolic"] = &gtk::Box {},
