@@ -7,7 +7,7 @@ macro_rules! gen_cycles_test {
             let mut memory = crate::CpuMemory::default();
             crate::MemoryAccess::write_opcode(&mut memory, 0x0000, $opcode);
 
-            cpu.next_operation(&mut memory, &mut None);
+            cpu.next_operation(&mut memory);
             assert_eq!(cpu.cycle, $cycles);
         }
     };
@@ -26,7 +26,7 @@ macro_rules! gen_page_crossed_cycles_test {
             crate::MemoryAccess::write_u8(&mut memory, 0x0001, 0xF0);
             crate::MemoryAccess::write_u8(&mut memory, 0x00F0, 0xF0);
 
-            cpu.next_operation(&mut memory, &mut None);
+            cpu.next_operation(&mut memory);
             assert_eq!(cpu.cycle, $cycles);
         }
     };

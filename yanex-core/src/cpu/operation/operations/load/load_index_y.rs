@@ -57,7 +57,7 @@ mod tests {
 
     fn assert() -> fn(Cpu, CpuMemory) {
         |mut cpu: Cpu, mut memory: CpuMemory| {
-            cpu.next_operation(&mut memory, &mut None);
+            cpu.next_operation(&mut memory);
             assert_eq!(cpu.registers.index_y, 0xFF);
             assert!(!cpu.registers.status.contains(CpuStatus::B1_ZERO));
             assert!(cpu.registers.status.contains(CpuStatus::B7_NEGATIVE));
