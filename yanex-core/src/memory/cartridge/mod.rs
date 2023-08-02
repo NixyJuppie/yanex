@@ -1,18 +1,24 @@
-use crate::memory::cartridge::ines::INes;
 use crate::MemoryAccess;
+pub use ines::INes;
+use std::fmt::Debug;
 
 mod ines;
 
-pub trait Mapper {
-    fn map(&self, address: u16) -> u16;
+#[derive(Debug)]
+pub enum Mapper {}
+
+impl Mapper {
+    fn map(&self, _address: u16) -> u16 {
+        todo!()
+    }
 }
 
-#[derive(Debug, Default)]
-pub struct Cartridge<M: Mapper> {
-    mapper: M,
+#[derive(Debug)]
+pub struct Cartridge {
+    mapper: Mapper,
 }
 
-impl<M: Mapper> MemoryAccess for Cartridge<M> {
+impl MemoryAccess for Cartridge {
     fn read_u8(&self, _address: u16) -> u8 {
         let _address = self.mapper.map(_address);
         0 // todo
@@ -23,7 +29,7 @@ impl<M: Mapper> MemoryAccess for Cartridge<M> {
     }
 }
 
-impl<M: Mapper> From<INes> for Cartridge<M> {
+impl From<INes> for Cartridge {
     fn from(_value: INes) -> Self {
         todo!()
     }

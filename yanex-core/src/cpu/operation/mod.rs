@@ -6,6 +6,7 @@ use crate::cpu::CpuRegisters;
 use crate::CpuMemory;
 use addressing_mode::AddressingMode;
 pub use opcode::Opcode;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub enum Operation {
@@ -13,6 +14,17 @@ pub enum Operation {
     LoadIndexX(operations::LoadIndexXState),
     LoadIndexY(operations::LoadIndexYState),
     NoOperation(operations::NoOperationState),
+}
+
+impl Display for Operation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Operation::LoadAccumulator(_) => write!(f, "Load Accumulator"),
+            Operation::LoadIndexX(_) => write!(f, "Load Index X"),
+            Operation::LoadIndexY(_) => write!(f, "Load Index Y"),
+            Operation::NoOperation(_) => write!(f, "No Operation"),
+        }
+    }
 }
 
 impl Operation {

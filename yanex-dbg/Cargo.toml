@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-relm4 = { version = "0.6.0", features = ["gnome_43", "libadwaita"] }
+relm4 = { version = "0.6.0", features = ["gnome_44", "libadwaita"] }
 yanex-core = { path = "../yanex-core" }

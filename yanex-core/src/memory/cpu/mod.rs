@@ -1,8 +1,8 @@
 mod ppu_registers;
 mod ram;
 
+use crate::memory::Cartridge;
 use crate::MemoryAccess;
-// use cartridge::Cartridge;
 use ppu_registers::PpuRegisters;
 use ram::Ram;
 
@@ -10,14 +10,14 @@ use ram::Ram;
 pub struct CpuMemory {
     ram: Ram,
     ppu: PpuRegisters,
-    // cartridge: Option<Cartridge>,
+    cartridge: Option<Cartridge>,
 }
 
-// impl CpuMemory {
-//     pub fn connect_cartridge(&mut self, cartridge: Cartridge) -> Option<Cartridge> {
-//         std::mem::replace(&mut self.cartridge, Some(cartridge))
-//     }
-// }
+impl CpuMemory {
+    pub fn connect_cartridge(&mut self, cartridge: Cartridge) -> Option<Cartridge> {
+        std::mem::replace(&mut self.cartridge, Some(cartridge))
+    }
+}
 
 impl MemoryAccess for CpuMemory {
     fn read_u8(&self, address: u16) -> u8 {

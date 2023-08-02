@@ -10,10 +10,10 @@ use yanex_core::{CpuRegisters, CpuStatus};
 #[derive(Debug)]
 pub struct CpuRegistersModel {
     registers: CpuRegisters,
-    status: Controller<BitSwitchRowModel>,
-    accumulator: Controller<BitSwitchRowModel>,
-    index_x: Controller<BitSwitchRowModel>,
-    index_y: Controller<BitSwitchRowModel>,
+    status_component: Controller<BitSwitchRowModel>,
+    accumulator_component: Controller<BitSwitchRowModel>,
+    index_x_component: Controller<BitSwitchRowModel>,
+    index_y_component: Controller<BitSwitchRowModel>,
 }
 
 #[derive(Debug)]
@@ -35,7 +35,7 @@ impl SimpleComponent for CpuRegistersModel {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let status = BitSwitchRowModel::builder()
+        let status_component = BitSwitchRowModel::builder()
             .launch((
                 registers.status.bits(),
                 "Status".to_string(),
@@ -53,7 +53,7 @@ impl SimpleComponent for CpuRegistersModel {
             .forward(sender.input_sender(), |value| {
                 CpuRegistersInput::Status(CpuStatus::from_bits(value).unwrap())
             });
-        let accumulator = BitSwitchRowModel::builder()
+        let accumulator_component = BitSwitchRowModel::builder()
             .launch((
                 registers.accumulator,
                 "Accumulator".to_string(),
@@ -62,7 +62,7 @@ impl SimpleComponent for CpuRegistersModel {
             .forward(sender.input_sender(), |value| {
                 CpuRegistersInput::Accumulator(value)
             });
-        let index_x = BitSwitchRowModel::builder()
+        let index_x_component = BitSwitchRowModel::builder()
             .launch((
                 registers.index_x,
                 "Index X".to_string(),
@@ -71,7 +71,7 @@ impl SimpleComponent for CpuRegistersModel {
             .forward(sender.input_sender(), |value| {
                 CpuRegistersInput::IndexX(value)
             });
-        let index_y = BitSwitchRowModel::builder()
+        let index_y_component = BitSwitchRowModel::builder()
             .launch((
                 registers.index_y,
                 "Index Y".to_string(),
@@ -83,10 +83,10 @@ impl SimpleComponent for CpuRegistersModel {
 
         let model = CpuRegistersModel {
             registers,
-            status,
-            accumulator,
-            index_x,
-            index_y,
+            status_component,
+            accumulator_component,
+            index_x_component,
+            index_y_component,
         };
         let widgets = view_output!();
 
@@ -99,10 +99,10 @@ impl SimpleComponent for CpuRegistersModel {
             set_maximum_size: 350,
             adw::PreferencesGroup {
                 set_title: "Registers",
-                add = model.status.widget(),
-                add = model.accumulator.widget(),
-                add = model.index_x.widget(),
-                add = model.index_y.widget(),
+                add = model.status_component.widget(),
+                add = model.accumulator_component.widget(),
+                add = model.index_x_component.widget(),
+                add = model.index_y_component.widget(),
             }
         }
     }
