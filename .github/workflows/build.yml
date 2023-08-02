@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: bash -c "yum -y install libadwaita cmake gcc"
+    - run: bash -c "yum -y install libadwaita-devel cmake gcc"
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: 'stable'
