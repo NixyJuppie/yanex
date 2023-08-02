@@ -14,10 +14,11 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/gtk-rs/gtk4-rs/gtk4:latest
+      image: docker.io/fedora:latest
 
     steps:
     - uses: actions/checkout@v3
+    - run: bash -c "yum -y install libadwaita-devel cmake gcc"
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: 'stable'
