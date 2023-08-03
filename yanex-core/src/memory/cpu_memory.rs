@@ -30,7 +30,7 @@ impl MemoryAccess for CpuMemory {
             0x0000..=0x1FFF => self.ram[address as usize & 2047],
             0x2000..=0x3FFF => self.ppu_registers[address as usize & 7],
             0x4000..=0x401F => todo!("APU/IO registers"),
-            0x4020..=0xFFFF => todo!("Catridge"),
+            0x4020..=0xFFFF => self.cartridge.as_ref().unwrap().read_u8(address),
         }
     }
 
@@ -39,7 +39,7 @@ impl MemoryAccess for CpuMemory {
             0x0000..=0x1FFF => self.ram[address as usize & 2047] = value,
             0x2000..=0x3FFF => self.ppu_registers[address as usize & 7] = value,
             0x4000..=0x401F => todo!("APU/IO registers"),
-            0x4020..=0xFFFF => todo!("Catridge"),
+            0x4020..=0xFFFF => self.cartridge.as_mut().unwrap().write_u8(address, value),
         };
     }
 }

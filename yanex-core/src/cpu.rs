@@ -30,6 +30,13 @@ impl Display for CpuState {
 }
 
 impl Cpu {
+    pub fn reset(&mut self, memory: &CpuMemory) {
+        self.registers.accumulator = 0;
+        self.registers.index_x = 0;
+        self.registers.index_y = 0;
+        self.registers.program_counter = memory.read_u16(0xFFFC);
+    }
+
     pub fn next_operation(&mut self, memory: &mut CpuMemory) {
         self.next_cycle(memory);
 

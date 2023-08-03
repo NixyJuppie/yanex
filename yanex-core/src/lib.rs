@@ -8,5 +8,5 @@ mod tests_utils;
 
 pub use apu::Apu;
 pub use cpu::{Cpu, CpuRegisters, CpuStatus, Operation};
-pub use memory::{Cartridge, CpuMemory, INes, MemoryAccess, PpuMemory, TryFromBytes};
+pub use memory::{Cartridge, CpuMemory, MemoryAccess, ParseINesError, PpuMemory};
 pub use ppu::Ppu;

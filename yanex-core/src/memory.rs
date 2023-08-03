@@ -1,8 +1,9 @@
 mod cartridge;
 mod cpu_memory;
+mod mapper;
 mod ppu_memory;
 
-pub use cartridge::{Cartridge, INes, TryFromBytes};
+pub use cartridge::{Cartridge, ParseINesError};
 pub use cpu_memory::CpuMemory;
 pub use ppu_memory::PpuMemory;
 

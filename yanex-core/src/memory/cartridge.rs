@@ -1,62 +1,106 @@
+use crate::memory::mapper::Mapper;
 use bitfield_struct::bitfield;
 
 use super::MemoryAccess;
 
 #[derive(Debug)]
 pub struct Cartridge {
-    mapper: Mapper,
+    pub header: INesHeader,
+    pub mapper: Mapper,
+    pub trainer: Option<[u8; 512]>,
+    pub prg_rom: Vec<[u8; 16384]>,
+    pub chr_rom: Vec<[u8; 8192]>,
 }
 
 impl MemoryAccess for Cartridge {
-    fn read_u8(&self, _address: u16) -> u8 {
-        let _address = self.mapper.map(_address);
-        todo!()
+    fn read_u8(&self, address: u16) -> u8 {
+        let address = self.mapper.map(address);
+        self.prg_rom[0][address as usize]
     }
 
     fn write_u8(&mut self, _address: u16, _value: u8) {
-        let _address = self.mapper.map(_address);
-        todo!()
-    }
-}
-
-impl From<INes> for Cartridge {
-    fn from(_value: INes) -> Self {
-        todo!()
+        panic!("Tried writing to cartridge ROM")
     }
 }
 
 #[derive(Debug)]
-
-pub enum Mapper {}
-
-impl Mapper {
-    pub fn map(&self, _address: u16) -> u16 {
-        todo!()
-    }
-}
-
-#[derive(Debug, Default)]
-pub struct INes {
-    pub header: INesHeader,
-}
-
-#[derive(Debug)]
-pub enum TryFromBytes {
+pub enum ParseINesError {
     DescriptorNotFound,
     InvalidDescriptor,
+    TrainerNotFound,
+    PrgBankNotFound(u8),
+    ChrBankNotFound(u8),
 }
 
-impl TryFrom<Vec<u8>> for INes {
-    type Error = TryFromBytes;
+impl TryFrom<Vec<u8>> for Cartridge {
+    type Error = ParseINesError;
 
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        let header_data: [u8; 16] = value[..16]
-            .try_into()
-            .or(Err(TryFromBytes::DescriptorNotFound))?;
+    fn try_from(data: Vec<u8>) -> Result<Self, Self::Error> {
+        let mut i = 0;
 
-        let header: INesHeader = header_data.try_into()?;
+        let header: INesHeader = {
+            const SIZE: usize = 16;
+            let header_data: [u8; SIZE] = data[i..i + SIZE]
+                .try_into()
+                .or(Err(ParseINesError::DescriptorNotFound))?;
+            i += SIZE;
 
-        Ok(Self { header })
+            header_data
+                .try_into()
+                .or(Err(ParseINesError::InvalidDescriptor))?
+        };
+
+        let trainer = if header.b6_flags.trainer() {
+            const SIZE: usize = 512;
+            let trainer: [u8; SIZE] = data[i..i + SIZE]
+                .try_into()
+                .or(Err(ParseINesError::TrainerNotFound))?;
+            i += SIZE;
+
+            Ok(Some(trainer))
+        } else {
+            Ok(None)
+        }?;
+
+        let prg_rom = {
+            const SIZE: usize = 16384;
+            let mut prg_rom: Vec<[u8; SIZE]> = Vec::new();
+
+            for bank_index in 0..header.b4_prg_rom_size {
+                let prg_bank: [u8; SIZE] = data[i..i + SIZE]
+                    .try_into()
+                    .or(Err(ParseINesError::ChrBankNotFound(bank_index)))?;
+                prg_rom.push(prg_bank);
+                i += SIZE;
+            }
+
+            prg_rom
+        };
+
+        let chr_rom = {
+            const SIZE: usize = 8192;
+            let mut chr_rom: Vec<[u8; SIZE]> = Vec::new();
+
+            for bank_index in 0..header.b5_chr_rom_size {
+                let chr_bank: [u8; SIZE] = data[i..i + SIZE]
+                    .try_into()
+                    .or(Err(ParseINesError::ChrBankNotFound(bank_index)))?;
+                chr_rom.push(chr_bank);
+                i += SIZE;
+            }
+
+            chr_rom
+        };
+
+        // todo
+
+        Ok(Self {
+            mapper: header.mapper(),
+            header,
+            trainer,
+            prg_rom,
+            chr_rom,
+        })
     }
 }
 
@@ -75,6 +119,18 @@ pub struct INesHeader {
     pub b13_unused: u8,
     pub b14_unused: u8,
     pub b15_unused: u8,
+}
+
+impl INesHeader {
+    pub fn mapper(&self) -> Mapper {
+        let mapper_id =
+            self.b6_flags.mapper_low_nibble() | (self.b7_flags.mapper_high_nibble() << 4);
+
+        match mapper_id {
+            0x00 => Mapper::Nrom,
+            _ => todo!("Not supported mapper id {}", mapper_id),
+        }
+    }
 }
 
 #[bitfield(u8)]
@@ -96,7 +152,7 @@ pub struct INesHeaderFlags7 {
 }
 
 impl TryFrom<[u8; 16]> for INesHeader {
-    type Error = TryFromBytes;
+    type Error = ();
 
     fn try_from(value: [u8; 16]) -> Result<Self, Self::Error> {
         // 0..=4 == "NES<MS-DOS EOF>"
@@ -119,7 +175,7 @@ impl TryFrom<[u8; 16]> for INesHeader {
                 b15_unused: value[15],
             })
         } else {
-            Err(TryFromBytes::InvalidDescriptor)
+            Err(())
         }
     }
 }

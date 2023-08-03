@@ -14,6 +14,7 @@ pub struct CpuControlModel {
 pub enum CpuControlInput {
     NextCycle,
     NextOperation,
+    Reset,
 }
 
 #[component(pub)]
@@ -49,7 +50,7 @@ impl SimpleComponent for CpuControlModel {
                     add_suffix = &gtk::Button {
                         set_valign: gtk::Align::Center,
                         set_halign: gtk::Align::Center,
-                        set_css_classes: &["destructive-action"],
+                        set_css_classes: &["suggested-action"],
                         set_label: "Next",
                         connect_clicked => CpuControlInput::NextCycle
                     },
@@ -61,9 +62,20 @@ impl SimpleComponent for CpuControlModel {
                     add_suffix = &gtk::Button {
                         set_valign: gtk::Align::Center,
                         set_halign: gtk::Align::Center,
-                        set_css_classes: &["destructive-action"],
+                        set_css_classes: &["suggested-action"],
                         set_label: "Next",
                         connect_clicked => CpuControlInput::NextOperation
+                    },
+                },
+                add = &adw::ActionRow {
+                    set_title: "Reset",
+                    set_subtitle: "Resets the CPU",
+                    add_suffix = &gtk::Button {
+                        set_valign: gtk::Align::Center,
+                        set_halign: gtk::Align::Center,
+                        set_css_classes: &["destructive-action"],
+                        set_label: "Reset",
+                        connect_clicked => CpuControlInput::Reset
                     },
                 },
             },
@@ -80,6 +92,7 @@ impl SimpleComponent for CpuControlModel {
                 .cpu
                 .borrow_mut()
                 .next_operation(&mut self.memory.borrow_mut()),
+            CpuControlInput::Reset => self.cpu.borrow_mut().reset(&self.memory.borrow()),
         }
     }
 }
