@@ -4,7 +4,7 @@ use relm4::{adw, component, gtk, AsyncComponentSender, RelmWidgetExt};
 use std::cell::RefCell;
 use std::io::Read;
 use std::rc::Rc;
-use yanex_core::{CpuMemory, INes};
+use yanex_core::{CpuMemory, INes, TryFromBytes};
 
 #[derive(Debug)]
 pub struct CpuMemoryModel {
@@ -70,8 +70,13 @@ impl AsyncComponent for CpuMemoryModel {
                 }
             }
             CpuMemoryInput::CartridgeLoaded(data) => {
-                let ines: INes = data.into();
-                self.memory.borrow_mut().connect_cartridge(ines.into());
+                let ines: Result<INes, TryFromBytes> = data.try_into();
+                match ines {
+                    Ok(ines) => {
+                        self.memory.borrow_mut().connect_cartridge(ines.into());
+                    }
+                    Err(_) => todo!(),
+                }
             }
         }
     }

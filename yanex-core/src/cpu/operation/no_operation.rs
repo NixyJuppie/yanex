@@ -1,4 +1,4 @@
-use crate::cpu::operation::addressing_mode::AddressingMode;
+use crate::cpu::AddressingMode;
 use crate::cpu::CpuRegisters;
 use crate::CpuMemory;
 

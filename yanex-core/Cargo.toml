@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bitflags = "2.3.3"
-num_enum = "0.6.1"
+bitfield-struct = "0.5.3"

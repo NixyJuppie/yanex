@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'yanex-core'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=yanex-core"
+                ],
+                "filter": {
+                    "name": "yanex-core",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'yanex-dbg'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=yanex-dbg",
+                    "--package=yanex-dbg"
+                ],
+                "filter": {
+                    "name": "yanex-dbg",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

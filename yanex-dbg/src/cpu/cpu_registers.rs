@@ -37,7 +37,7 @@ impl SimpleComponent for CpuRegistersModel {
     ) -> ComponentParts<Self> {
         let status_component = BitSwitchRowModel::builder()
             .launch((
-                registers.status.bits(),
+                registers.status.into(),
                 "Status".to_string(),
                 BitNames {
                     bit0: "C".to_string(),
@@ -51,7 +51,7 @@ impl SimpleComponent for CpuRegistersModel {
                 },
             ))
             .forward(sender.input_sender(), |value| {
-                CpuRegistersInput::Status(CpuStatus::from_bits(value).unwrap())
+                CpuRegistersInput::Status(value.into())
             });
         let accumulator_component = BitSwitchRowModel::builder()
             .launch((

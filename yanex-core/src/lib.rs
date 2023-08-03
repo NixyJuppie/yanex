@@ -7,6 +7,6 @@ mod ppu;
 mod tests_utils;
 
 pub use apu::Apu;
-pub use cpu::{Cpu, CpuRegisters, CpuStatus, Opcode, Operation};
-pub use memory::{Cartridge, CpuMemory, INes, MemoryAccess, PpuMemory};
+pub use cpu::{Cpu, CpuRegisters, CpuStatus, Operation};
+pub use memory::{Cartridge, CpuMemory, INes, MemoryAccess, PpuMemory, TryFromBytes};
 pub use ppu::Ppu;
