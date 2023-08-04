@@ -1,3 +1,17 @@
+macro_rules! gen_imp_test {
+    ($opcode:literal, $assert:expr) => {
+        #[test]
+        fn imp() {
+            let cpu = crate::Cpu::default();
+
+            let mut memory = crate::CpuMemory::default();
+            crate::MemoryAccess::write_u8(&mut memory, 0x0000, $opcode);
+
+            $assert(cpu, memory);
+        }
+    };
+}
+
 macro_rules! gen_imm_test {
     ($opcode:literal, $data:literal, $assert:expr) => {
         #[test]
@@ -166,6 +180,7 @@ pub(crate) use gen_abs_test;
 pub(crate) use gen_abs_x_test;
 pub(crate) use gen_abs_y_test;
 pub(crate) use gen_imm_test;
+pub(crate) use gen_imp_test;
 pub(crate) use gen_ind_x_test;
 pub(crate) use gen_ind_y_test;
 pub(crate) use gen_zp_test;

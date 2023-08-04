@@ -1,4 +1,4 @@
-use crate::memory::mapper::Mapper;
+use crate::memory::mapper::{MappedAddress, Mapper};
 use bitfield_struct::bitfield;
 
 use super::MemoryAccess;
@@ -14,8 +14,9 @@ pub struct Cartridge {
 
 impl MemoryAccess for Cartridge {
     fn read_u8(&self, address: u16) -> u8 {
-        let address = self.mapper.map(address);
-        self.prg_rom[0][address as usize]
+        match self.mapper.map(self, address) {
+            MappedAddress::PrgRom(bank, address) => self.prg_rom[bank as usize][address as usize],
+        }
     }
 
     fn write_u8(&mut self, _address: u16, _value: u8) {

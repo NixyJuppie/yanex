@@ -4,6 +4,8 @@ mod memory;
 mod ppu;
 
 #[cfg(test)]
+mod tests;
+#[cfg(test)]
 mod tests_utils;
 
 pub use apu::Apu;

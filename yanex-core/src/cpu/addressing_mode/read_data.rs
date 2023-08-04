@@ -6,6 +6,7 @@ pub trait AddressingModeRead {
 
 #[derive(Debug, Clone)]
 pub enum AddressingModeReadDataState {
+    Implied(ImpliedReadDataState),
     Immediate(ImmediateReadDataState),
     Absolute(AbsoluteReadDataState),
     AbsoluteX(AbsoluteXReadDataState),
@@ -22,6 +23,7 @@ impl AddressingModeRead for AddressingModeReadDataState {
         use AddressingModeReadDataState::*;
 
         match self {
+            Implied(state) => state.advance(registers, memory),
             Immediate(state) => state.advance(registers, memory),
             Absolute(state) => state.advance(registers, memory),
             AbsoluteX(state) => state.advance(registers, memory),
@@ -31,6 +33,28 @@ impl AddressingModeRead for AddressingModeReadDataState {
             ZeroPageY(state) => state.advance(registers, memory),
             IndirectX(state) => state.advance(registers, memory),
             IndirectY(state) => state.advance(registers, memory),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ImpliedReadDataState {
+    #[default]
+    None,
+    DummyRead(u8),
+}
+
+impl AddressingModeRead for ImpliedReadDataState {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ImpliedReadDataState::None => {
+                let data = memory.read_u8(registers.program_counter);
+                // Dummy read without incrementing PC
+
+                *self = ImpliedReadDataState::DummyRead(data);
+                Some(data)
+            }
+            ImpliedReadDataState::DummyRead(data) => Some(*data),
         }
     }
 }
