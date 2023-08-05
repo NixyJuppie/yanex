@@ -92,7 +92,7 @@ impl SimpleComponent for CpuControlModel {
                 .cpu
                 .borrow_mut()
                 .next_operation(&mut self.memory.borrow_mut()),
-            CpuControlInput::Reset => self.cpu.borrow_mut().reset(&self.memory.borrow()),
+            CpuControlInput::Reset => self.cpu.borrow_mut().reset(&mut self.memory.borrow_mut()),
         }
     }
 }

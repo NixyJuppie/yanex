@@ -30,11 +30,27 @@ impl Display for CpuState {
 }
 
 impl Cpu {
-    pub fn reset(&mut self, memory: &CpuMemory) {
-        self.registers.accumulator = 0;
-        self.registers.index_x = 0;
-        self.registers.index_y = 0;
-        self.registers.program_counter = memory.read_u16(0xFFFC);
+    pub fn reset(&mut self, memory: &mut CpuMemory) {
+        self.registers.program_counter = 0x0000;
+        self.registers.accumulator = 0x00;
+        self.registers.index_x = 0x00;
+        self.registers.index_y = 0x00;
+
+        // Temporarily fill RAM with init code
+        memory.write_u8(0x0000, 0x78); // SEI
+        memory.write_u8(0x0001, 0xD8); // CLD
+        memory.write_u8(0x0002, 0x4C); // JMP
+        memory.write_u16(0x0003, 0xFFFC); // $FFFC
+
+        self.next_operation(memory);
+        self.next_operation(memory);
+        self.next_operation(memory);
+
+        // Clear
+        memory.write_u8(0x0000, 0x00);
+        memory.write_u8(0x0000, 0x00);
+        memory.write_u8(0x0000, 0x00);
+        memory.write_u16(0x0000, 0x0000);
     }
 
     pub fn next_operation(&mut self, memory: &mut CpuMemory) {

@@ -7,13 +7,10 @@ fn nestest() {
 
     let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
     memory.connect_cartridge(cartridge);
-    cpu.reset(&memory);
+    cpu.reset(&mut memory);
 
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
-
-    // FIXME: CPU init code should be properly implemented
-    cpu.cycle = 7;
 
     for line in include_str!("nestest.log").lines() {
         assert_nestest_log_line(line, &cpu);
