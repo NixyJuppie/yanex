@@ -8,12 +8,12 @@ pub trait AddressingModeRead {
 pub enum AddressingModeReadDataState {
     Implied(ImpliedReadDataState),
     Immediate(ImmediateReadDataState),
-    Absolute(AbsoluteReadDataState),
-    AbsoluteX(AbsoluteXReadDataState),
-    AbsoluteY(AbsoluteYReadDataState),
     ZeroPage(ZeroPageReadDataState),
     ZeroPageX(ZeroPageXReadDataState),
     ZeroPageY(ZeroPageYReadDataState),
+    Absolute(AbsoluteReadDataState),
+    AbsoluteX(AbsoluteXReadDataState),
+    AbsoluteY(AbsoluteYReadDataState),
     IndirectX(IndirectXReadDataState),
     IndirectY(IndirectYReadDataState),
 }
@@ -25,12 +25,12 @@ impl AddressingModeRead for AddressingModeReadDataState {
         match self {
             Implied(state) => state.advance(registers, memory),
             Immediate(state) => state.advance(registers, memory),
-            Absolute(state) => state.advance(registers, memory),
-            AbsoluteX(state) => state.advance(registers, memory),
-            AbsoluteY(state) => state.advance(registers, memory),
             ZeroPage(state) => state.advance(registers, memory),
             ZeroPageX(state) => state.advance(registers, memory),
             ZeroPageY(state) => state.advance(registers, memory),
+            Absolute(state) => state.advance(registers, memory),
+            AbsoluteX(state) => state.advance(registers, memory),
+            AbsoluteY(state) => state.advance(registers, memory),
             IndirectX(state) => state.advance(registers, memory),
             IndirectY(state) => state.advance(registers, memory),
         }
@@ -48,8 +48,8 @@ impl AddressingModeRead for ImpliedReadDataState {
     fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
         match self {
             ImpliedReadDataState::None => {
-                let data = memory.read_u8(registers.program_counter);
                 // Dummy read without incrementing PC
+                let data = memory.read_u8(registers.program_counter);
 
                 *self = ImpliedReadDataState::DummyRead(data);
                 Some(data)
@@ -77,6 +77,113 @@ impl AddressingModeRead for ImmediateReadDataState {
                 Some(data)
             }
             ImmediateReadDataState::Data(data) => Some(*data),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ZeroPageReadDataState {
+    #[default]
+    None,
+    AddressLowByte(u8),
+    Data(u8),
+}
+
+impl AddressingModeRead for ZeroPageReadDataState {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ZeroPageReadDataState::None => {
+                let low_byte = memory.read_u8(registers.program_counter);
+                registers.program_counter += 1;
+
+                *self = ZeroPageReadDataState::AddressLowByte(low_byte);
+                None
+            }
+            ZeroPageReadDataState::AddressLowByte(low_byte) => {
+                const HIGH_BYTE: u8 = 0x00;
+                let address = u16::from_le_bytes([*low_byte, HIGH_BYTE]);
+                let data = memory.read_u8(address);
+
+                *self = ZeroPageReadDataState::Data(data);
+                Some(data)
+            }
+            ZeroPageReadDataState::Data(data) => Some(*data),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ZeroPageXReadDataState {
+    #[default]
+    None,
+    AddressLowByte(u8),
+    DummyRead(u8),
+    Data(u8),
+}
+
+impl AddressingModeRead for ZeroPageXReadDataState {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ZeroPageXReadDataState::None => {
+                let low_byte = memory.read_u8(registers.program_counter);
+                registers.program_counter += 1;
+
+                *self = ZeroPageXReadDataState::AddressLowByte(low_byte);
+                None
+            }
+            ZeroPageXReadDataState::AddressLowByte(low_byte) => {
+                memory.read_u8(u16::from_le_bytes([*low_byte, 0x00]));
+
+                *self = ZeroPageXReadDataState::DummyRead(*low_byte);
+                None
+            }
+            ZeroPageXReadDataState::DummyRead(low_byte) => {
+                let low_byte = low_byte.wrapping_add(registers.index_x);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                let data = memory.read_u8(address);
+
+                *self = ZeroPageXReadDataState::Data(data);
+                Some(data)
+            }
+            ZeroPageXReadDataState::Data(data) => Some(*data),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ZeroPageYReadDataState {
+    #[default]
+    None,
+    AddressLowByte(u8),
+    DummyRead(u8),
+    Data(u8),
+}
+
+impl AddressingModeRead for ZeroPageYReadDataState {
+    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ZeroPageYReadDataState::None => {
+                let low_byte = memory.read_u8(registers.program_counter);
+                registers.program_counter += 1;
+
+                *self = ZeroPageYReadDataState::AddressLowByte(low_byte);
+                None
+            }
+            ZeroPageYReadDataState::AddressLowByte(low_byte) => {
+                memory.read_u8(u16::from_le_bytes([*low_byte, 0x00]));
+
+                *self = ZeroPageYReadDataState::DummyRead(*low_byte);
+                None
+            }
+            ZeroPageYReadDataState::DummyRead(low_byte) => {
+                let low_byte = low_byte.wrapping_add(registers.index_y);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                let data = memory.read_u8(address);
+
+                *self = ZeroPageYReadDataState::Data(data);
+                Some(data)
+            }
+            ZeroPageYReadDataState::Data(data) => Some(*data),
         }
     }
 }
@@ -217,113 +324,6 @@ impl AddressingModeRead for AbsoluteYReadDataState {
                 Some(data)
             }
             AbsoluteYReadDataState::Data(data) => Some(*data),
-        }
-    }
-}
-
-#[derive(Debug, Default, Clone)]
-pub enum ZeroPageReadDataState {
-    #[default]
-    None,
-    AddressLowByte(u8),
-    Data(u8),
-}
-
-impl AddressingModeRead for ZeroPageReadDataState {
-    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
-        match self {
-            ZeroPageReadDataState::None => {
-                let low_byte = memory.read_u8(registers.program_counter);
-                registers.program_counter += 1;
-
-                *self = ZeroPageReadDataState::AddressLowByte(low_byte);
-                None
-            }
-            ZeroPageReadDataState::AddressLowByte(low_byte) => {
-                const HIGH_BYTE: u8 = 0x00;
-                let address = u16::from_le_bytes([*low_byte, HIGH_BYTE]);
-                let data = memory.read_u8(address);
-
-                *self = ZeroPageReadDataState::Data(data);
-                Some(data)
-            }
-            ZeroPageReadDataState::Data(data) => Some(*data),
-        }
-    }
-}
-
-#[derive(Debug, Default, Clone)]
-pub enum ZeroPageXReadDataState {
-    #[default]
-    None,
-    AddressLowByte(u8),
-    DummyRead(u8),
-    Data(u8),
-}
-
-impl AddressingModeRead for ZeroPageXReadDataState {
-    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
-        match self {
-            ZeroPageXReadDataState::None => {
-                let low_byte = memory.read_u8(registers.program_counter);
-                registers.program_counter += 1;
-
-                *self = ZeroPageXReadDataState::AddressLowByte(low_byte);
-                None
-            }
-            ZeroPageXReadDataState::AddressLowByte(low_byte) => {
-                memory.read_u8(u16::from_le_bytes([*low_byte, 0x00]));
-
-                *self = ZeroPageXReadDataState::DummyRead(*low_byte);
-                None
-            }
-            ZeroPageXReadDataState::DummyRead(low_byte) => {
-                let low_byte = low_byte.wrapping_add(registers.index_x);
-                let address = u16::from_le_bytes([low_byte, 0x00]);
-                let data = memory.read_u8(address);
-
-                *self = ZeroPageXReadDataState::Data(data);
-                Some(data)
-            }
-            ZeroPageXReadDataState::Data(data) => Some(*data),
-        }
-    }
-}
-
-#[derive(Debug, Default, Clone)]
-pub enum ZeroPageYReadDataState {
-    #[default]
-    None,
-    AddressLowByte(u8),
-    DummyRead(u8),
-    Data(u8),
-}
-
-impl AddressingModeRead for ZeroPageYReadDataState {
-    fn advance(&mut self, registers: &mut CpuRegisters, memory: &CpuMemory) -> Option<u8> {
-        match self {
-            ZeroPageYReadDataState::None => {
-                let low_byte = memory.read_u8(registers.program_counter);
-                registers.program_counter += 1;
-
-                *self = ZeroPageYReadDataState::AddressLowByte(low_byte);
-                None
-            }
-            ZeroPageYReadDataState::AddressLowByte(low_byte) => {
-                memory.read_u8(u16::from_le_bytes([*low_byte, 0x00]));
-
-                *self = ZeroPageYReadDataState::DummyRead(*low_byte);
-                None
-            }
-            ZeroPageYReadDataState::DummyRead(low_byte) => {
-                let low_byte = low_byte.wrapping_add(registers.index_y);
-                let address = u16::from_le_bytes([low_byte, 0x00]);
-                let data = memory.read_u8(address);
-
-                *self = ZeroPageYReadDataState::Data(data);
-                Some(data)
-            }
-            ZeroPageYReadDataState::Data(data) => Some(*data),
         }
     }
 }

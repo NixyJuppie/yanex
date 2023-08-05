@@ -9,10 +9,16 @@ fn nestest() {
     memory.connect_cartridge(cartridge);
     cpu.reset(&memory);
 
+    // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
 
-    cpu.next_operation(&mut memory);
-    assert_eq!(cpu.cycle, 7);
+    for line in include_str!("nestest.log").lines() {
+        cpu.next_operation(&mut memory);
+        assert_eq!(line, generate_nestest_log_line(&cpu));
+    }
+}
 
-    // TODO: Generate log and compare with `nestest.log`
+fn generate_nestest_log_line(_cpu: &Cpu) -> &str {
+    let foo = 123;
+    todo!()
 }

@@ -4,22 +4,22 @@ use crate::cpu::CpuRegisters;
 use crate::CpuMemory;
 
 #[derive(Debug, Clone)]
-pub enum NoOperationState {
+pub enum SetDecimalState {
     Decoded(AddressingMode),
     Fetching(AddressingModeReadDataState),
     Executed,
 }
 
-impl NoOperationState {
+impl SetDecimalState {
     pub fn advance(&mut self, registers: &mut CpuRegisters, memory: &mut CpuMemory) -> bool {
         match self {
-            NoOperationState::Decoded(ref mode) => {
+            SetDecimalState::Decoded(ref mode) => {
                 self.try_execute(registers, memory, (*mode).into())
             }
-            NoOperationState::Fetching(ref mode) => {
+            SetDecimalState::Fetching(ref mode) => {
                 self.try_execute(registers, memory, mode.clone())
             }
-            NoOperationState::Executed => true,
+            SetDecimalState::Executed => true,
         }
     }
 
@@ -31,11 +31,13 @@ impl NoOperationState {
     ) -> bool {
         match read_state.advance(registers, memory) {
             None => {
-                *self = NoOperationState::Fetching(read_state);
+                *self = SetDecimalState::Fetching(read_state);
                 false
             }
             Some(_) => {
-                *self = NoOperationState::Executed;
+                registers.status.set_decimal(true);
+
+                *self = SetDecimalState::Executed;
                 true
             }
         }
@@ -46,7 +48,15 @@ impl NoOperationState {
 mod tests {
     use crate::tests_utils::cycles_macros::*;
     use crate::tests_utils::opcode_macros::*;
+    use crate::{Cpu, CpuMemory};
 
-    gen_imp_test!(0xEA, |_, _| {});
-    gen_imp_cycles_test!(0xEA, 2);
+    fn assert() -> fn(Cpu, CpuMemory) {
+        |mut cpu: Cpu, mut memory: CpuMemory| {
+            cpu.next_operation(&mut memory);
+            assert!(cpu.registers.status.decimal());
+        }
+    }
+
+    gen_imp_test!(0xF8, assert());
+    gen_imp_cycles_test!(0xF8, 2);
 }
