@@ -44,6 +44,24 @@ macro_rules! gen_imm_cycles_test {
     };
 }
 
+macro_rules! gen_zp_cycles_test {
+    ($opcode:literal, $cycles:expr) => {
+        gen_cycles_test!(zp_cycles, $opcode, $cycles);
+    };
+}
+
+macro_rules! gen_zp_x_cycles_test {
+    ($opcode:literal, $cycles:expr) => {
+        gen_cycles_test!(zp_x_cycles, $opcode, $cycles);
+    };
+}
+
+macro_rules! gen_zp_y_cycles_test {
+    ($opcode:literal, $cycles:expr) => {
+        gen_cycles_test!(zp_y_cycles, $opcode, $cycles);
+    };
+}
+
 macro_rules! gen_abs_cycles_test {
     ($opcode:literal, $cycles:expr) => {
         gen_cycles_test!(abs_cycles, $opcode, $cycles);
@@ -74,21 +92,9 @@ macro_rules! gen_abs_y_page_crossed_cycles_test {
     };
 }
 
-macro_rules! gen_zp_cycles_test {
+macro_rules! gen_ind_cycles_test {
     ($opcode:literal, $cycles:expr) => {
-        gen_cycles_test!(zp_cycles, $opcode, $cycles);
-    };
-}
-
-macro_rules! gen_zp_x_cycles_test {
-    ($opcode:literal, $cycles:expr) => {
-        gen_cycles_test!(zp_x_cycles, $opcode, $cycles);
-    };
-}
-
-macro_rules! gen_zp_y_cycles_test {
-    ($opcode:literal, $cycles:expr) => {
-        gen_cycles_test!(zp_y_cycles, $opcode, $cycles);
+        gen_cycles_test!(ind_cycles, $opcode, $cycles);
     };
 }
 
@@ -117,6 +123,7 @@ pub(crate) use gen_abs_y_cycles_test;
 pub(crate) use gen_abs_y_page_crossed_cycles_test;
 pub(crate) use gen_imm_cycles_test;
 pub(crate) use gen_imp_cycles_test;
+pub(crate) use gen_ind_cycles_test;
 pub(crate) use gen_ind_x_cycles_test;
 pub(crate) use gen_ind_y_cycles_test;
 pub(crate) use gen_ind_y_page_crossed_cycles_test;

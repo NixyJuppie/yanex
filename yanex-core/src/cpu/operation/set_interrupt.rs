@@ -1,4 +1,4 @@
-use crate::cpu::addressing_mode::{AddressingModeRead, AddressingModeReadDataState};
+use crate::cpu::addressing_mode::{AddressingModeReadData, AddressingModeReadDataState};
 use crate::cpu::AddressingMode;
 use crate::cpu::CpuRegisters;
 use crate::CpuMemory;

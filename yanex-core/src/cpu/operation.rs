@@ -1,6 +1,7 @@
 mod clear_carry;
 mod clear_decimal;
 mod clear_interrupt;
+mod jump;
 mod load_accumulator;
 mod load_index_x;
 mod load_index_y;
@@ -25,6 +26,7 @@ pub enum Operation {
     ClearCarry(clear_carry::ClearCarryState),
     ClearDecimal(clear_decimal::ClearDecimalState),
     ClearInterrupt(clear_interrupt::ClearInterruptState),
+    Jump(jump::JumpState),
 }
 
 impl Display for Operation {
@@ -40,6 +42,7 @@ impl Display for Operation {
             Operation::ClearCarry(_) => write!(f, "Clear Carry"),
             Operation::ClearDecimal(_) => write!(f, "Clear Decimal"),
             Operation::ClearInterrupt(_) => write!(f, "Clear Interrupt"),
+            Operation::Jump(_) => write!(f, "Jump"),
         }
     }
 }
@@ -59,6 +62,7 @@ impl Operation {
             ClearCarry(state) => state.advance(registers, memory),
             ClearDecimal(state) => state.advance(registers, memory),
             ClearInterrupt(state) => state.advance(registers, memory),
+            Jump(state) => state.advance(registers, memory),
         }
     }
 }
@@ -96,6 +100,9 @@ impl From<u8> for Operation {
             0x18 => ClearCarry(clear_carry::ClearCarryState::Decoded(Implied)),
             0xD8 => ClearDecimal(clear_decimal::ClearDecimalState::Decoded(Implied)),
             0x58 => ClearInterrupt(clear_interrupt::ClearInterruptState::Decoded(Implied)),
+
+            0x4C => Jump(jump::JumpState::Decoded(Absolute)),
+            0x6C => Jump(jump::JumpState::Decoded(Indirect)),
 
             0xEA => NoOperation(no_operation::NoOperationState::Decoded(Implied)),
             _ => todo!("Unsupported opcode 0x{:02X}", opcode),

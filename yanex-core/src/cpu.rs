@@ -13,7 +13,7 @@ use crate::MemoryAccess;
 #[derive(Debug, Default)]
 pub struct Cpu {
     pub registers: CpuRegisters,
-    pub cycle: u32,
+    pub cycle: usize,
     pub state: CpuState,
 }
 
