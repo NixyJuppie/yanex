@@ -15,7 +15,10 @@ pub struct Cpu {
 
 impl Cpu {
     pub fn reset(&mut self, memory: &mut CpuMemory) {
-        self.registers = CpuRegisters::default();
+        self.registers = CpuRegisters {
+            stack_pointer: 0xFD,
+            ..Default::default()
+        };
         self.internal_registers = CpuInternalRegisters::default();
         self.state = None;
         self.cycle = 0;

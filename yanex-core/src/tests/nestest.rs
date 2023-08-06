@@ -24,12 +24,14 @@ fn assert_nestest_log_line(line: &str, cpu: &Cpu) {
     let accumulator: u8 = u8::from_str_radix(&line[50..52], 16).unwrap();
     let index_x: u8 = u8::from_str_radix(&line[55..57], 16).unwrap();
     let index_y: u8 = u8::from_str_radix(&line[60..62], 16).unwrap();
+    let stack_pointer: u8 = u8::from_str_radix(&line[71..73], 16).unwrap();
     let cycle: usize = line[90..].parse().unwrap();
 
     assert_eq!(program_counter, cpu.registers.program_counter);
     assert_eq!(accumulator, cpu.registers.accumulator);
     assert_eq!(index_x, cpu.registers.index_x);
     assert_eq!(index_y, cpu.registers.index_y);
+    assert_eq!(stack_pointer, cpu.registers.stack_pointer);
     assert_eq!(cycle, cpu.cycle);
 
     // TODO: Stack pointer and PPU
