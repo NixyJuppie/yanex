@@ -94,15 +94,9 @@ pub struct CpuStatus {
     pub zero: bool,
     pub interrupt: bool,
     pub decimal: bool,
-    pub _break: bool,
+    pub break_: bool,
+    #[bits(default = true)]
     pub unused: bool,
     pub overflow: bool,
     pub negative: bool,
-}
-
-impl CpuStatus {
-    pub fn set_zero_and_negative(&mut self, value: u8) {
-        self.set_zero(value == 0);
-        self.set_negative(value & 0b1000_0000 != 0);
-    }
 }

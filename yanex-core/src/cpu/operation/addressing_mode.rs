@@ -48,7 +48,7 @@ impl AddressingMode {
             AddressingMode::Immediate => AddressingModeReadData::Immediate(Default::default()),
             AddressingMode::Accumulator => todo!(),
             AddressingMode::Relative => todo!(),
-            AddressingMode::ZeroPage => todo!(),
+            AddressingMode::ZeroPage => AddressingModeReadData::ZeroPage(Default::default()),
             AddressingMode::ZeroPageX => todo!(),
             AddressingMode::ZeroPageY => todo!(),
             AddressingMode::Absolute => todo!(),

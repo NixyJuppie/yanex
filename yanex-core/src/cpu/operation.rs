@@ -16,6 +16,8 @@ pub enum Operation {
     StoreAccumulator(operations::StoreAccumulator),
     StoreIndexX(operations::StoreIndexX),
     StoreIndexY(operations::StoreIndexY),
+    // Logic
+    BitTest(operations::BitTest),
     // Control
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
@@ -50,6 +52,8 @@ impl Operation {
             Operation::StoreAccumulator(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexX(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexY(operation) => operation.execute(cpu, memory),
+            // Logic
+            Operation::BitTest(operation) => operation.execute(cpu, memory),
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
@@ -116,6 +120,9 @@ impl From<Opcode> for Operation {
             StyZp => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPage)),
             StyZpX => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPageX)),
             StyAbs => Operation::StoreIndexY(StoreIndexY::Decoded(Absolute)),
+            // Logic
+            BitZp => Operation::BitTest(BitTest::Decoded(ZeroPage)),
+            BitAbs => Operation::BitTest(BitTest::Decoded(Absolute)),
             // Control
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
@@ -124,13 +131,10 @@ impl From<Opcode> for Operation {
             // Branch
             BccRel => Operation::BranchCarryClear(BranchCarryClear::Decoded(Relative)),
             BcsRel => Operation::BranchCarrySet(BranchCarrySet::Decoded(Relative)),
-
             BneRel => Operation::BranchZeroClear(BranchZeroClear::Decoded(Relative)),
             BeqRel => Operation::BranchZeroSet(BranchZeroSet::Decoded(Relative)),
-
             BplRel => Operation::BranchNegativeClear(BranchNegativeClear::Decoded(Relative)),
             BmiRel => Operation::BranchNegativeSet(BranchNegativeSet::Decoded(Relative)),
-
             BvcRel => Operation::BranchOverflowClear(BranchOverflowClear::Decoded(Relative)),
             BvsRel => Operation::BranchOverflowSet(BranchOverflowSet::Decoded(Relative)),
             // Set flag

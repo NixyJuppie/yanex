@@ -2,6 +2,7 @@ mod branch;
 mod clear_flag;
 mod control;
 mod load;
+mod logic;
 mod set_flag;
 mod store;
 
@@ -9,6 +10,7 @@ pub use branch::*;
 pub use clear_flag::*;
 pub use control::*;
 pub use load::*;
+pub use logic::*;
 pub use set_flag::*;
 pub use store::*;
 

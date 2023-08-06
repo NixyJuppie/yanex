@@ -17,7 +17,8 @@ impl LoadAccumulator {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.accumulator = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
             LoadAccumulator::ReadingData(read) => {
@@ -25,7 +26,8 @@ impl LoadAccumulator {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.accumulator = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
         }
@@ -46,7 +48,8 @@ impl LoadIndexX {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_x = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
             LoadIndexX::ReadingData(read) => {
@@ -54,7 +57,8 @@ impl LoadIndexX {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_x = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
         }
@@ -75,7 +79,8 @@ impl LoadIndexY {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_y = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
             LoadIndexY::ReadingData(read) => {
@@ -83,7 +88,8 @@ impl LoadIndexY {
                 let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_y = data;
-                cpu.registers.status.set_zero_and_negative(data);
+                cpu.registers.status.set_zero(data == 0);
+                cpu.registers.status.set_negative(data & 0b1000_0000 != 0);
                 Some(())
             }
         }
