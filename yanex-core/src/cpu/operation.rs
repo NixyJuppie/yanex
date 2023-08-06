@@ -23,6 +23,12 @@ pub enum Operation {
     // Branch
     BranchCarryClear(operations::BranchCarryClear),
     BranchCarrySet(operations::BranchCarrySet),
+    BranchZeroClear(operations::BranchZeroClear),
+    BranchZeroSet(operations::BranchZeroSet),
+    BranchNegativeClear(operations::BranchNegativeClear),
+    BranchNegativeSet(operations::BranchNegativeSet),
+    BranchOverflowClear(operations::BranchOverflowClear),
+    BranchOverflowSet(operations::BranchOverflowSet),
     // Set flag
     SetCarry(operations::SetCarry),
     SetDecimal(operations::SetDecimal),
@@ -51,6 +57,12 @@ impl Operation {
             // Branch
             Operation::BranchCarryClear(operation) => operation.execute(cpu, memory),
             Operation::BranchCarrySet(operation) => operation.execute(cpu, memory),
+            Operation::BranchZeroClear(operation) => operation.execute(cpu, memory),
+            Operation::BranchZeroSet(operation) => operation.execute(cpu, memory),
+            Operation::BranchNegativeClear(operation) => operation.execute(cpu, memory),
+            Operation::BranchNegativeSet(operation) => operation.execute(cpu, memory),
+            Operation::BranchOverflowClear(operation) => operation.execute(cpu, memory),
+            Operation::BranchOverflowSet(operation) => operation.execute(cpu, memory),
             // Set flag
             Operation::SetCarry(operation) => operation.execute(cpu, memory),
             Operation::SetDecimal(operation) => operation.execute(cpu, memory),
@@ -112,6 +124,15 @@ impl From<Opcode> for Operation {
             // Branch
             BccRel => Operation::BranchCarryClear(BranchCarryClear::Decoded(Relative)),
             BcsRel => Operation::BranchCarrySet(BranchCarrySet::Decoded(Relative)),
+
+            BneRel => Operation::BranchZeroClear(BranchZeroClear::Decoded(Relative)),
+            BeqRel => Operation::BranchZeroSet(BranchZeroSet::Decoded(Relative)),
+
+            BplRel => Operation::BranchNegativeClear(BranchNegativeClear::Decoded(Relative)),
+            BmiRel => Operation::BranchNegativeSet(BranchNegativeSet::Decoded(Relative)),
+
+            BvcRel => Operation::BranchOverflowClear(BranchOverflowClear::Decoded(Relative)),
+            BvsRel => Operation::BranchOverflowSet(BranchOverflowSet::Decoded(Relative)),
             // Set flag
             SecImp => Operation::SetCarry(SetCarry::Decoded(Implied)),
             SedImp => Operation::SetDecimal(SetDecimal::Decoded(Implied)),
