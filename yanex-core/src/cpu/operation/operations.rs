@@ -4,6 +4,7 @@ mod control;
 mod load;
 mod logic;
 mod set_flag;
+mod stack;
 mod store;
 
 pub use branch::*;
@@ -12,6 +13,7 @@ pub use control::*;
 pub use load::*;
 pub use logic::*;
 pub use set_flag::*;
+pub use stack::*;
 pub use store::*;
 
 use super::addressing_mode::AddressingMode;

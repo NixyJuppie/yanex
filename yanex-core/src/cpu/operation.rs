@@ -16,6 +16,11 @@ pub enum Operation {
     StoreAccumulator(operations::StoreAccumulator),
     StoreIndexX(operations::StoreIndexX),
     StoreIndexY(operations::StoreIndexY),
+    // Stack
+    PushAccumulator(operations::PushAccumulator),
+    PullAccumulator(operations::PullAccumulator),
+    PushStatus(operations::PushStatus),
+    PullStatus(operations::PullStatus),
     // Logic
     BitTest(operations::BitTest),
     // Control
@@ -53,6 +58,11 @@ impl Operation {
             Operation::StoreAccumulator(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexX(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexY(operation) => operation.execute(cpu, memory),
+            // Stack
+            Operation::PushAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::PullAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::PushStatus(operation) => operation.execute(cpu, memory),
+            Operation::PullStatus(operation) => operation.execute(cpu, memory),
             // Logic
             Operation::BitTest(operation) => operation.execute(cpu, memory),
             // Control
@@ -122,6 +132,11 @@ impl From<Opcode> for Operation {
             StyZp => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPage)),
             StyZpX => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPageX)),
             StyAbs => Operation::StoreIndexY(StoreIndexY::Decoded(Absolute)),
+            // Stack
+            PhaImp => Operation::PushAccumulator(PushAccumulator::Decoded(Implied)),
+            PlaImp => Operation::PullAccumulator(PullAccumulator::Decoded(Implied)),
+            PhpImp => Operation::PushStatus(PushStatus::Decoded(Implied)),
+            PlpImp => Operation::PullStatus(PullStatus::Decoded(Implied)),
             // Logic
             BitZp => Operation::BitTest(BitTest::Decoded(ZeroPage)),
             BitAbs => Operation::BitTest(BitTest::Decoded(Absolute)),

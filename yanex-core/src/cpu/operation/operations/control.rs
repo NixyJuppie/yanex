@@ -1,7 +1,4 @@
-use super::mem_read;
-use super::AddressingMode;
-use super::AddressingModeReadAddress;
-use crate::cpu::operation::addressing_mode::AddressingModeReadData;
+use super::{mem_read, AddressingMode, AddressingModeReadAddress, AddressingModeReadData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
