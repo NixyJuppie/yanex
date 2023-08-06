@@ -1,6 +1,8 @@
 use crate::cartridge::Cartridge;
 use crate::cpu::{Cpu, CpuMemory};
 
+const LOG: &str = include_str!("nestest.log");
+
 #[test]
 fn nestest() {
     let mut cpu = Cpu::default();
@@ -12,10 +14,11 @@ fn nestest() {
 
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
+    assert_nestest_log_line(LOG.lines().next().unwrap(), &cpu); // Init state
 
-    for line in include_str!("nestest.log").lines().take(5) {
-        assert_nestest_log_line(line, &cpu);
+    for line in include_str!("nestest.log").lines().skip(1).take(6) {
         cpu.next_operation(&mut memory);
+        assert_nestest_log_line(line, &cpu);
     }
 }
 

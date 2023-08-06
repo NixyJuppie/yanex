@@ -67,6 +67,17 @@ impl Cpu {
             self.next_cycle(memory)
         }
     }
+
+    pub fn stack_push(&mut self, memory: &mut CpuMemory, data: u8) {
+        memory.write_u8(0x0100 + self.registers.stack_pointer as u16, data);
+        self.registers.stack_pointer = self.registers.stack_pointer.wrapping_sub(1);
+    }
+
+    pub fn stack_pull(&mut self, memory: &mut CpuMemory) -> u8 {
+        let data = memory.read_u8(0x0100 + self.registers.stack_pointer as u16);
+        self.registers.stack_pointer = self.registers.stack_pointer.wrapping_add(1);
+        data
+    }
 }
 
 #[derive(Debug, Default)]
