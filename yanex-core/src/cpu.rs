@@ -72,9 +72,8 @@ impl Cpu {
     }
 
     pub fn stack_pull(&mut self, memory: &mut CpuMemory) -> u8 {
-        let data = memory.read_u8(0x0100 + self.registers.stack_pointer as u16);
         self.registers.stack_pointer = self.registers.stack_pointer.wrapping_add(1);
-        data
+        memory.read_u8(0x0100 + self.registers.stack_pointer as u16)
     }
 }
 

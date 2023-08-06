@@ -60,17 +60,70 @@ impl JumpSubroutine {
                 None
             }
             JumpSubroutine::SubroutineAddress(address) => {
-                let byte = cpu.registers.program_counter.wrapping_sub(1).to_le_bytes()[1];
+                let byte = cpu.registers.program_counter.to_le_bytes()[1];
                 cpu.stack_push(memory, byte);
 
                 *self = JumpSubroutine::StackHighByte(*address);
                 None
             }
             JumpSubroutine::StackHighByte(address) => {
-                let byte = cpu.registers.program_counter.wrapping_sub(1).to_le_bytes()[0];
+                let byte = cpu.registers.program_counter.to_le_bytes()[0];
                 cpu.stack_push(memory, byte);
                 cpu.registers.program_counter = *address;
 
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum ReturnSubroutine {
+    Decoded(AddressingMode),
+    DummyReadingData(AddressingModeReadData),
+    DeadCycle1,
+    DeadCycle2,
+    StackLowByte(u8),
+    DeadCycle3,
+}
+
+impl ReturnSubroutine {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            ReturnSubroutine::Decoded(mode) => {
+                let mut read = mode.begin_read_data();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
+
+                *self = ReturnSubroutine::DeadCycle1;
+                None
+            }
+            ReturnSubroutine::DummyReadingData(read) => {
+                let mut read = read.clone();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
+
+                *self = ReturnSubroutine::DeadCycle1;
+                None
+            }
+            ReturnSubroutine::DeadCycle1 => {
+                // Maybe this should be a dummy read
+                *self = ReturnSubroutine::DeadCycle2;
+                None
+            }
+            ReturnSubroutine::DeadCycle2 => {
+                let low_byte = cpu.stack_pull(memory);
+
+                *self = ReturnSubroutine::StackLowByte(low_byte);
+                None
+            }
+            ReturnSubroutine::StackLowByte(low_byte) => {
+                let high_byte = cpu.stack_pull(memory);
+                cpu.registers.program_counter = u16::from_le_bytes([*low_byte, high_byte]);
+
+                *self = ReturnSubroutine::DeadCycle3;
+                None
+            }
+            ReturnSubroutine::DeadCycle3 => {
+                // Maybe this should be a dummy read
                 Some(())
             }
         }

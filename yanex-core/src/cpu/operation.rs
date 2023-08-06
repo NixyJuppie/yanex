@@ -21,6 +21,7 @@ pub enum Operation {
     // Control
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
+    ReturnSubroutine(operations::ReturnSubroutine),
     NoOperation(operations::NoOperation),
     // Branch
     BranchCarryClear(operations::BranchCarryClear),
@@ -57,6 +58,7 @@ impl Operation {
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
+            Operation::ReturnSubroutine(operation) => operation.execute(cpu, memory),
             Operation::NoOperation(operation) => operation.execute(cpu, memory),
             // Branch
             Operation::BranchCarryClear(operation) => operation.execute(cpu, memory),
@@ -127,6 +129,7 @@ impl From<Opcode> for Operation {
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
             JsrAbs => Operation::JumpSubroutine(JumpSubroutine::Decoded(Absolute)),
+            RtsImp => Operation::ReturnSubroutine(ReturnSubroutine::Decoded(Implied)),
             NopImp => Operation::NoOperation(NoOperation::Decoded(Implied)),
             // Branch
             BccRel => Operation::BranchCarryClear(BranchCarryClear::Decoded(Relative)),
