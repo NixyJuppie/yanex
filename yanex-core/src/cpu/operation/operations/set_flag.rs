@@ -6,7 +6,7 @@ use crate::cpu::{Cpu, CpuMemory};
 #[derive(Debug, Clone)]
 pub enum SetCarry {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl SetCarry {
@@ -14,13 +14,13 @@ impl SetCarry {
         match self {
             SetCarry::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(true);
                 Some(())
             }
-            SetCarry::DummyRead(read) => {
+            SetCarry::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(true);
                 Some(())
             }
@@ -31,7 +31,7 @@ impl SetCarry {
 #[derive(Debug, Clone)]
 pub enum SetDecimal {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl SetDecimal {
@@ -39,13 +39,13 @@ impl SetDecimal {
         match self {
             SetDecimal::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(true);
                 Some(())
             }
-            SetDecimal::DummyRead(read) => {
+            SetDecimal::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(true);
                 Some(())
             }
@@ -56,7 +56,7 @@ impl SetDecimal {
 #[derive(Debug, Clone)]
 pub enum SetInterrupt {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl SetInterrupt {
@@ -64,13 +64,13 @@ impl SetInterrupt {
         match self {
             SetInterrupt::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }
-            SetInterrupt::DummyRead(read) => {
+            SetInterrupt::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }

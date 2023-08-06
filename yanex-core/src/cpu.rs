@@ -91,6 +91,13 @@ pub struct CpuStatus {
     pub negative: bool,
 }
 
+impl CpuStatus {
+    pub fn set_zero_and_negative(&mut self, value: u8) {
+        self.set_zero(value == 0);
+        self.set_negative(value & 0b1000_0000 != 0);
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct CpuInternalRegisters {
     pub pointer_low_byte: u8,

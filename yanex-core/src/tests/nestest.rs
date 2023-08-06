@@ -13,7 +13,7 @@ fn nestest() {
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
 
-    for line in include_str!("nestest.log").lines().take(1) {
+    for line in include_str!("nestest.log").lines().take(2) {
         assert_nestest_log_line(line, &cpu);
         cpu.next_operation(&mut memory);
     }

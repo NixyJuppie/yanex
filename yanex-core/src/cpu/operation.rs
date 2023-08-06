@@ -8,10 +8,17 @@ mod operations;
 
 #[derive(Debug, Clone)]
 pub enum Operation {
+    // Load
+    LoadAccumulator(operations::LoadAccumulator),
+    LoadIndexX(operations::LoadIndexX),
+    LoadIndexY(operations::LoadIndexY),
+    // Control
     Jump(operations::Jump),
+    // Set flag
     SetCarry(operations::SetCarry),
     SetDecimal(operations::SetDecimal),
     SetInterrupt(operations::SetInterrupt),
+    // Clear flag
     ClearCarry(operations::ClearCarry),
     ClearDecimal(operations::ClearDecimal),
     ClearInterrupt(operations::ClearInterrupt),
@@ -20,10 +27,17 @@ pub enum Operation {
 impl Operation {
     pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> bool {
         match self {
+            // Load
+            Operation::LoadAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::LoadIndexX(operation) => operation.execute(cpu, memory),
+            Operation::LoadIndexY(operation) => operation.execute(cpu, memory),
+            // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
+            // Set flag
             Operation::SetCarry(operation) => operation.execute(cpu, memory),
             Operation::SetDecimal(operation) => operation.execute(cpu, memory),
             Operation::SetInterrupt(operation) => operation.execute(cpu, memory),
+            // Clear flag
             Operation::ClearCarry(operation) => operation.execute(cpu, memory),
             Operation::ClearDecimal(operation) => operation.execute(cpu, memory),
             Operation::ClearInterrupt(operation) => operation.execute(cpu, memory),
@@ -39,11 +53,33 @@ impl From<Opcode> for Operation {
         use operations::*;
 
         match opcode {
+            // Load
+            LdaImm => Operation::LoadAccumulator(LoadAccumulator::Decoded(Immediate)),
+            LdaZp => Operation::LoadAccumulator(LoadAccumulator::Decoded(ZeroPage)),
+            LdaZpX => Operation::LoadAccumulator(LoadAccumulator::Decoded(ZeroPageX)),
+            LdaAbs => Operation::LoadAccumulator(LoadAccumulator::Decoded(Absolute)),
+            LdaAbsX => Operation::LoadAccumulator(LoadAccumulator::Decoded(AbsoluteX)),
+            LdaAbsY => Operation::LoadAccumulator(LoadAccumulator::Decoded(AbsoluteY)),
+            LdaIndX => Operation::LoadAccumulator(LoadAccumulator::Decoded(IndirectX)),
+            LdaIndY => Operation::LoadAccumulator(LoadAccumulator::Decoded(IndirectY)),
+            LdxImm => Operation::LoadIndexX(LoadIndexX::Decoded(Immediate)),
+            LdxZp => Operation::LoadIndexX(LoadIndexX::Decoded(ZeroPage)),
+            LdxZpY => Operation::LoadIndexX(LoadIndexX::Decoded(ZeroPageY)),
+            LdxAbs => Operation::LoadIndexX(LoadIndexX::Decoded(Absolute)),
+            LdxAbsY => Operation::LoadIndexX(LoadIndexX::Decoded(AbsoluteY)),
+            LdyImm => Operation::LoadIndexY(LoadIndexY::Decoded(Immediate)),
+            LdyZp => Operation::LoadIndexY(LoadIndexY::Decoded(ZeroPage)),
+            LdyZpX => Operation::LoadIndexY(LoadIndexY::Decoded(ZeroPageX)),
+            LdyAbs => Operation::LoadIndexY(LoadIndexY::Decoded(Absolute)),
+            LdyAbsX => Operation::LoadIndexY(LoadIndexY::Decoded(AbsoluteX)),
+            // Control
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
+            // Set flag
             SecImp => Operation::SetCarry(SetCarry::Decoded(Implied)),
             SedImp => Operation::SetDecimal(SetDecimal::Decoded(Implied)),
             SeiImp => Operation::SetInterrupt(SetInterrupt::Decoded(Implied)),
+            // Clear flag
             ClcImp => Operation::ClearCarry(ClearCarry::Decoded(Implied)),
             CldImp => Operation::ClearDecimal(ClearDecimal::Decoded(Implied)),
             CliImp => Operation::ClearInterrupt(ClearInterrupt::Decoded(Implied)),

@@ -43,7 +43,7 @@ impl AddressingMode {
     pub fn begin_read_data(&self) -> AddressingModeReadData {
         match self {
             AddressingMode::Implied => AddressingModeReadData::Implied(Default::default()),
-            AddressingMode::Immediate => todo!(),
+            AddressingMode::Immediate => AddressingModeReadData::Immediate(Default::default()),
             AddressingMode::Accumulator => todo!(),
             AddressingMode::Relative => todo!(),
             AddressingMode::ZeroPage => todo!(),

@@ -6,7 +6,7 @@ use crate::cpu::{Cpu, CpuMemory};
 #[derive(Debug, Clone)]
 pub enum ClearCarry {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl ClearCarry {
@@ -14,13 +14,13 @@ impl ClearCarry {
         match self {
             ClearCarry::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(false);
                 Some(())
             }
-            ClearCarry::DummyRead(read) => {
+            ClearCarry::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(false);
                 Some(())
             }
@@ -31,7 +31,7 @@ impl ClearCarry {
 #[derive(Debug, Clone)]
 pub enum ClearDecimal {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl ClearDecimal {
@@ -39,13 +39,13 @@ impl ClearDecimal {
         match self {
             ClearDecimal::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(false);
                 Some(())
             }
-            ClearDecimal::DummyRead(read) => {
+            ClearDecimal::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(false);
                 Some(())
             }
@@ -56,7 +56,7 @@ impl ClearDecimal {
 #[derive(Debug, Clone)]
 pub enum ClearInterrupt {
     Decoded(AddressingMode),
-    DummyRead(AddressingModeReadData),
+    DummyReadingData(AddressingModeReadData),
 }
 
 impl ClearInterrupt {
@@ -64,13 +64,13 @@ impl ClearInterrupt {
         match self {
             ClearInterrupt::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }
-            ClearInterrupt::DummyRead(read) => {
+            ClearInterrupt::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyRead)?;
+                read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }
