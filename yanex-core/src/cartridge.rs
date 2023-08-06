@@ -1,7 +1,7 @@
-use crate::memory::mapper::{MappedAddress, Mapper};
-use bitfield_struct::bitfield;
+mod mapper;
 
-use super::MemoryAccess;
+use bitfield_struct::bitfield;
+use mapper::{MappedAddress, Mapper};
 
 #[derive(Debug)]
 pub struct Cartridge {
@@ -12,15 +12,15 @@ pub struct Cartridge {
     pub chr_rom: Vec<[u8; 8192]>,
 }
 
-impl MemoryAccess for Cartridge {
-    fn read_u8(&self, address: u16) -> u8 {
+impl Cartridge {
+    pub fn read_u8(&self, address: u16) -> u8 {
         match self.mapper.map(self, address) {
             MappedAddress::PrgRom(bank, address) => self.prg_rom[bank as usize][address as usize],
         }
     }
 
-    fn write_u8(&mut self, _address: u16, _value: u8) {
-        panic!("Tried writing to cartridge ROM")
+    pub fn read_u16(&self, address: u16) -> u16 {
+        u16::from_le_bytes([self.read_u8(address), self.read_u8(address + 1)])
     }
 }
 
@@ -70,7 +70,7 @@ impl TryFrom<Vec<u8>> for Cartridge {
             for bank_index in 0..header.b4_prg_rom_size {
                 let prg_bank: [u8; SIZE] = data[i..i + SIZE]
                     .try_into()
-                    .or(Err(ParseINesError::ChrBankNotFound(bank_index)))?;
+                    .or(Err(ParseINesError::PrgBankNotFound(bank_index)))?;
                 prg_rom.push(prg_bank);
                 i += SIZE;
             }
@@ -129,27 +129,9 @@ impl INesHeader {
 
         match mapper_id {
             0x00 => Mapper::Nrom,
-            _ => todo!("Not supported mapper id {}", mapper_id),
+            _ => todo!("Not supported mapper {}", mapper_id),
         }
     }
-}
-
-#[bitfield(u8)]
-pub struct INesHeaderFlags6 {
-    pub horizontal_mirroring: bool,
-    pub battery: bool,
-    pub trainer: bool,
-    pub four_screen: bool,
-    #[bits(4)]
-    pub mapper_low_nibble: u8,
-}
-
-#[bitfield(u8)]
-pub struct INesHeaderFlags7 {
-    #[bits(4)]
-    pub todo: u8,
-    #[bits(4)]
-    pub mapper_high_nibble: u8,
 }
 
 impl TryFrom<[u8; 16]> for INesHeader {
@@ -179,4 +161,22 @@ impl TryFrom<[u8; 16]> for INesHeader {
             Err(())
         }
     }
+}
+
+#[bitfield(u8)]
+pub struct INesHeaderFlags6 {
+    pub horizontal_mirroring: bool,
+    pub battery: bool,
+    pub trainer: bool,
+    pub four_screen: bool,
+    #[bits(4)]
+    pub mapper_low_nibble: u8,
+}
+
+#[bitfield(u8)]
+pub struct INesHeaderFlags7 {
+    #[bits(4)]
+    pub todo: u8,
+    #[bits(4)]
+    pub mapper_high_nibble: u8,
 }

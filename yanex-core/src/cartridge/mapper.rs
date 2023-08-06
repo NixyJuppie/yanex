@@ -1,4 +1,4 @@
-use crate::Cartridge;
+use super::Cartridge;
 
 #[derive(Debug)]
 pub enum Mapper {

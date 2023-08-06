@@ -1,2 +1,2 @@
 [workspace]
-members = ["yanex-core", "yanex-dbg"]
+members = ["yanex-core"]

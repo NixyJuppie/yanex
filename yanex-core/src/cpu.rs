@@ -1,46 +1,30 @@
-mod addressing_mode;
-mod operation;
-
 use bitfield_struct::bitfield;
+pub use memory::CpuMemory;
+pub use operation::{AddressingMode, Opcode, Operation};
 
-pub use addressing_mode::AddressingMode;
-pub use operation::Operation;
-use std::fmt::{Display, Formatter};
-
-use crate::CpuMemory;
-use crate::MemoryAccess;
+mod memory;
+mod operation;
 
 #[derive(Debug, Default)]
 pub struct Cpu {
     pub registers: CpuRegisters,
+    pub internal_registers: CpuInternalRegisters,
+    pub state: Option<Operation>,
     pub cycle: usize,
-    pub state: CpuState,
-}
-
-#[derive(Debug, Default)]
-pub struct CpuState(Option<Operation>);
-
-impl Display for CpuState {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self.0.as_ref() {
-            None => write!(f, "None"),
-            Some(operation) => write!(f, "{}", operation),
-        }
-    }
 }
 
 impl Cpu {
     pub fn reset(&mut self, memory: &mut CpuMemory) {
-        self.registers.program_counter = 0x0000;
-        self.registers.accumulator = 0x00;
-        self.registers.index_x = 0x00;
-        self.registers.index_y = 0x00;
+        self.registers = CpuRegisters::default();
+        self.internal_registers = CpuInternalRegisters::default();
+        self.state = None;
+        self.cycle = 0;
 
         // Temporarily fill RAM with init code
-        memory.write_u8(0x0000, 0x78); // SEI
-        memory.write_u8(0x0001, 0xD8); // CLD
-        memory.write_u8(0x0002, 0x4C); // JMP
-        memory.write_u16(0x0003, 0xFFFC); // $FFFC
+        memory.write_u8(0x0000, Opcode::SeiImp as u8);
+        memory.write_u8(0x0001, Opcode::CldImp as u8);
+        memory.write_u8(0x0002, Opcode::JmpAbs as u8);
+        memory.write_u16(0x0003, memory.read_u16(0xFFFC));
 
         self.next_operation(memory);
         self.next_operation(memory);
@@ -53,20 +37,19 @@ impl Cpu {
         memory.write_u16(0x0000, 0x0000);
     }
 
-    pub fn next_operation(&mut self, memory: &mut CpuMemory) {
-        self.next_cycle(memory);
-
-        while self.state.0.is_some() {
-            self.next_cycle(memory)
-        }
-    }
-
     pub fn next_cycle(&mut self, memory: &mut CpuMemory) {
-        match self.state.0.as_mut() {
-            None => self.state.0 = Some(self.fetch_operation(memory)),
+        self.state = match self.state.as_ref() {
+            None => {
+                let opcode: Opcode = memory.read_u8(self.registers.program_counter).into();
+                self.registers.program_counter = self.registers.program_counter.wrapping_add(1);
+                Some(opcode.into())
+            }
             Some(operation) => {
-                if (operation).advance(&mut self.registers, memory) {
-                    self.state.0 = None
+                let mut operation = operation.clone();
+                if operation.execute(self, memory) {
+                    None
+                } else {
+                    Some(operation)
                 }
             }
         };
@@ -74,18 +57,21 @@ impl Cpu {
         self.cycle += 1;
     }
 
-    fn fetch_operation(&mut self, memory: &CpuMemory) -> Operation {
-        let operation: Operation = memory.read_u8(self.registers.program_counter).into();
-        self.registers.program_counter += 1;
-        operation
+    pub fn next_operation(&mut self, memory: &mut CpuMemory) {
+        self.next_cycle(memory);
+
+        while self.state.is_some() {
+            self.next_cycle(memory)
+        }
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct CpuRegisters {
     pub accumulator: u8,
     pub index_x: u8,
     pub index_y: u8,
+    pub stack_pointer: u8,
     pub program_counter: u16,
     pub status: CpuStatus,
 }
@@ -102,12 +88,19 @@ pub struct CpuStatus {
     pub negative: bool,
 }
 
-impl CpuStatus {
-    pub fn set_zero_value(&mut self, value: u8) {
-        self.set_zero(value == 0);
-    }
+#[derive(Debug, Default)]
+pub struct CpuInternalRegisters {
+    pub pointer_low_byte: u8,
+    pub pointer_high_byte: u8,
+    pub address_low_byte: u8,
+    pub address_high_byte: u8,
+}
 
-    pub fn set_negative_value(&mut self, value: u8) {
-        self.set_negative(value & 0b1000_0000 != 0);
+impl CpuInternalRegisters {
+    pub fn pointer(&self) -> u16 {
+        u16::from_le_bytes([self.pointer_low_byte, self.pointer_high_byte])
+    }
+    pub fn address(&self) -> u16 {
+        u16::from_le_bytes([self.address_low_byte, self.address_high_byte])
     }
 }

@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 bitfield-struct = "0.5.3"
+num_enum = "0.6.1"

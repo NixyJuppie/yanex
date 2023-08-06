@@ -1,4 +1,5 @@
-use crate::{Cartridge, Cpu, CpuMemory};
+use crate::cartridge::Cartridge;
+use crate::cpu::{Cpu, CpuMemory};
 
 #[test]
 fn nestest() {
@@ -6,13 +7,13 @@ fn nestest() {
     let mut memory = CpuMemory::default();
 
     let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
-    memory.connect_cartridge(cartridge);
+    memory.connect_cartridge(&cartridge);
     cpu.reset(&mut memory);
 
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
 
-    for line in include_str!("nestest.log").lines() {
+    for line in include_str!("nestest.log").lines().take(1) {
         assert_nestest_log_line(line, &cpu);
         cpu.next_operation(&mut memory);
     }

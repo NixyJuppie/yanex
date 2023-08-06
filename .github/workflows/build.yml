@@ -13,12 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container:
-      image: docker.io/fedora:latest
 
     steps:
     - uses: actions/checkout@v3
-    - run: bash -c "yum -y install libadwaita-devel cmake gcc"
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: 'stable'
