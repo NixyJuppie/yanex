@@ -19,6 +19,7 @@ pub enum Operation {
     // Control
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
+    NoOperation(operations::NoOperation),
     // Set flag
     SetCarry(operations::SetCarry),
     SetDecimal(operations::SetDecimal),
@@ -43,6 +44,7 @@ impl Operation {
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
+            Operation::NoOperation(operation) => operation.execute(cpu, memory),
             // Set flag
             Operation::SetCarry(operation) => operation.execute(cpu, memory),
             Operation::SetDecimal(operation) => operation.execute(cpu, memory),
@@ -100,6 +102,7 @@ impl From<Opcode> for Operation {
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
             JsrAbs => Operation::JumpSubroutine(JumpSubroutine::Decoded(Absolute)),
+            NopImp => Operation::NoOperation(NoOperation::Decoded(Implied)),
             // Set flag
             SecImp => Operation::SetCarry(SetCarry::Decoded(Implied)),
             SedImp => Operation::SetDecimal(SetDecimal::Decoded(Implied)),

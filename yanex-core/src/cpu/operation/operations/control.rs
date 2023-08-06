@@ -1,6 +1,7 @@
 use super::mem_read;
 use super::AddressingMode;
 use super::AddressingModeReadAddress;
+use crate::cpu::operation::addressing_mode::AddressingModeReadData;
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
@@ -69,6 +70,31 @@ impl JumpSubroutine {
                 let byte = cpu.registers.program_counter.wrapping_sub(1).to_le_bytes()[0];
                 cpu.stack_push(memory, byte);
                 cpu.registers.program_counter = *address;
+
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum NoOperation {
+    Decoded(AddressingMode),
+    DummyReadingData(AddressingModeReadData),
+}
+
+impl NoOperation {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            NoOperation::Decoded(mode) => {
+                let mut read = mode.begin_read_data();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
+
+                Some(())
+            }
+            NoOperation::DummyReadingData(read) => {
+                let mut read = read.clone();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
 
                 Some(())
             }
