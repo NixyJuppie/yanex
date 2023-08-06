@@ -17,23 +17,22 @@ impl AddressingModeWriteData {
 pub enum ZeroPageAddressingModeWriteData {
     #[default]
     None,
-    AddressLowByte,
+    AddressLowByte(u8),
 }
 
 impl ZeroPageAddressingModeWriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
             ZeroPageAddressingModeWriteData::None => {
-                cpu.internal_registers.address_low_byte =
-                    memory.read_u8(cpu.registers.program_counter);
+                let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = ZeroPageAddressingModeWriteData::AddressLowByte;
+                *self = ZeroPageAddressingModeWriteData::AddressLowByte(low_byte);
                 None
             }
-            ZeroPageAddressingModeWriteData::AddressLowByte => {
-                cpu.internal_registers.address_high_byte = 0x00;
-                memory.write_u8(cpu.internal_registers.address(), data);
+            ZeroPageAddressingModeWriteData::AddressLowByte(low_byte) => {
+                let address = u16::from_le_bytes([*low_byte, 0x00]);
+                memory.write_u8(address, data);
 
                 Some(())
             }

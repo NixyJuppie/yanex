@@ -1,9 +1,11 @@
+mod branch;
 mod clear_flag;
 mod control;
 mod load;
 mod set_flag;
 mod store;
 
+pub use branch::*;
 pub use clear_flag::*;
 pub use control::*;
 pub use load::*;

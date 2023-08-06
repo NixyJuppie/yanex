@@ -20,6 +20,9 @@ pub enum Operation {
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
     NoOperation(operations::NoOperation),
+    // Branch
+    BranchCarryClear(operations::BranchCarryClear),
+    BranchCarrySet(operations::BranchCarrySet),
     // Set flag
     SetCarry(operations::SetCarry),
     SetDecimal(operations::SetDecimal),
@@ -45,6 +48,9 @@ impl Operation {
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
             Operation::NoOperation(operation) => operation.execute(cpu, memory),
+            // Branch
+            Operation::BranchCarryClear(operation) => operation.execute(cpu, memory),
+            Operation::BranchCarrySet(operation) => operation.execute(cpu, memory),
             // Set flag
             Operation::SetCarry(operation) => operation.execute(cpu, memory),
             Operation::SetDecimal(operation) => operation.execute(cpu, memory),
@@ -103,6 +109,9 @@ impl From<Opcode> for Operation {
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
             JsrAbs => Operation::JumpSubroutine(JumpSubroutine::Decoded(Absolute)),
             NopImp => Operation::NoOperation(NoOperation::Decoded(Implied)),
+            // Branch
+            BccRel => Operation::BranchCarryClear(BranchCarryClear::Decoded(Relative)),
+            BcsRel => Operation::BranchCarrySet(BranchCarrySet::Decoded(Relative)),
             // Set flag
             SecImp => Operation::SetCarry(SetCarry::Decoded(Implied)),
             SedImp => Operation::SetDecimal(SetDecimal::Decoded(Implied)),

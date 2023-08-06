@@ -29,7 +29,7 @@ impl AddressingMode {
             AddressingMode::Implied => todo!(),
             AddressingMode::Immediate => todo!(),
             AddressingMode::Accumulator => todo!(),
-            AddressingMode::Relative => todo!(),
+            AddressingMode::Relative => AddressingModeReadAddress::Relative(Default::default()),
             AddressingMode::ZeroPage => AddressingModeReadAddress::ZeroPage(Default::default()),
             AddressingMode::ZeroPageX => todo!(),
             AddressingMode::ZeroPageY => todo!(),

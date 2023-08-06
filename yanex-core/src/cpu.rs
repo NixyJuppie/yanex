@@ -8,7 +8,6 @@ mod operation;
 #[derive(Debug, Default)]
 pub struct Cpu {
     pub registers: CpuRegisters,
-    pub internal_registers: CpuInternalRegisters,
     pub state: Option<Operation>,
     pub cycle: usize,
 }
@@ -19,7 +18,6 @@ impl Cpu {
             stack_pointer: 0xFD,
             ..Default::default()
         };
-        self.internal_registers = CpuInternalRegisters::default();
         self.state = None;
         self.cycle = 0;
 
@@ -106,22 +104,5 @@ impl CpuStatus {
     pub fn set_zero_and_negative(&mut self, value: u8) {
         self.set_zero(value == 0);
         self.set_negative(value & 0b1000_0000 != 0);
-    }
-}
-
-#[derive(Debug, Default)]
-pub struct CpuInternalRegisters {
-    pub pointer_low_byte: u8,
-    pub pointer_high_byte: u8,
-    pub address_low_byte: u8,
-    pub address_high_byte: u8,
-}
-
-impl CpuInternalRegisters {
-    pub fn pointer(&self) -> u16 {
-        u16::from_le_bytes([self.pointer_low_byte, self.pointer_high_byte])
-    }
-    pub fn address(&self) -> u16 {
-        u16::from_le_bytes([self.address_low_byte, self.address_high_byte])
     }
 }
