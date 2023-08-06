@@ -1,4 +1,4 @@
-use super::read;
+use super::mem_read;
 use super::AddressingMode;
 use super::AddressingModeReadData;
 use crate::cpu::{Cpu, CpuMemory};
@@ -14,13 +14,13 @@ impl SetCarry {
         match self {
             SetCarry::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(true);
                 Some(())
             }
             SetCarry::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_carry(true);
                 Some(())
             }
@@ -39,13 +39,13 @@ impl SetDecimal {
         match self {
             SetDecimal::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(true);
                 Some(())
             }
             SetDecimal::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_decimal(true);
                 Some(())
             }
@@ -64,13 +64,13 @@ impl SetInterrupt {
         match self {
             SetInterrupt::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }
             SetInterrupt::DummyReadingData(read) => {
                 let mut read = read.clone();
-                read!(self, cpu, memory, read, DummyReadingData)?;
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
                 cpu.registers.status.set_interrupt(true);
                 Some(())
             }

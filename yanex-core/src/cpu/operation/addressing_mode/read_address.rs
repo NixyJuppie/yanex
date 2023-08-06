@@ -45,6 +45,7 @@ impl AbsoluteAddressingModeReadAddress {
                 cpu.internal_registers.address_low_byte =
                     memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
                 *self = AbsoluteAddressingModeReadAddress::AddressLowByte;
                 None
             }
@@ -52,6 +53,7 @@ impl AbsoluteAddressingModeReadAddress {
                 cpu.internal_registers.address_high_byte =
                     memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
                 Some(u16::from_le_bytes([
                     cpu.internal_registers.address_low_byte,
                     cpu.internal_registers.address_high_byte,

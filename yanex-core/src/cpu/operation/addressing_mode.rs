@@ -1,8 +1,10 @@
 pub use read_address::AddressingModeReadAddress;
 pub use read_data::AddressingModeReadData;
+pub use write_data::AddressingModeWriteData;
 
 mod read_address;
 mod read_data;
+mod write_data;
 
 #[derive(Debug, Clone)]
 pub enum AddressingMode {
@@ -47,6 +49,24 @@ impl AddressingMode {
             AddressingMode::Accumulator => todo!(),
             AddressingMode::Relative => todo!(),
             AddressingMode::ZeroPage => todo!(),
+            AddressingMode::ZeroPageX => todo!(),
+            AddressingMode::ZeroPageY => todo!(),
+            AddressingMode::Absolute => todo!(),
+            AddressingMode::AbsoluteX => todo!(),
+            AddressingMode::AbsoluteY => todo!(),
+            AddressingMode::Indirect => todo!(),
+            AddressingMode::IndirectX => todo!(),
+            AddressingMode::IndirectY => todo!(),
+        }
+    }
+
+    pub fn begin_write_data(&self, data: u8) -> AddressingModeWriteData {
+        match self {
+            AddressingMode::Implied => todo!(),
+            AddressingMode::Immediate => todo!(),
+            AddressingMode::Accumulator => todo!(),
+            AddressingMode::Relative => todo!(),
+            AddressingMode::ZeroPage => AddressingModeWriteData::ZeroPage(data, Default::default()),
             AddressingMode::ZeroPageX => todo!(),
             AddressingMode::ZeroPageY => todo!(),
             AddressingMode::Absolute => todo!(),

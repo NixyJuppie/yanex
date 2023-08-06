@@ -1,4 +1,4 @@
-use super::read;
+use super::mem_read;
 use super::AddressingMode;
 use super::AddressingModeReadData;
 use crate::cpu::{Cpu, CpuMemory};
@@ -14,7 +14,7 @@ impl LoadAccumulator {
         match self {
             LoadAccumulator::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.accumulator = data;
                 cpu.registers.status.set_zero_and_negative(data);
@@ -22,7 +22,7 @@ impl LoadAccumulator {
             }
             LoadAccumulator::ReadingData(read) => {
                 let mut read = read.clone();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.accumulator = data;
                 cpu.registers.status.set_zero_and_negative(data);
@@ -43,7 +43,7 @@ impl LoadIndexX {
         match self {
             LoadIndexX::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_x = data;
                 cpu.registers.status.set_zero_and_negative(data);
@@ -51,7 +51,7 @@ impl LoadIndexX {
             }
             LoadIndexX::ReadingData(read) => {
                 let mut read = read.clone();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_x = data;
                 cpu.registers.status.set_zero_and_negative(data);
@@ -72,7 +72,7 @@ impl LoadIndexY {
         match self {
             LoadIndexY::Decoded(mode) => {
                 let mut read = mode.begin_read_data();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_y = data;
                 cpu.registers.status.set_zero_and_negative(data);
@@ -80,7 +80,7 @@ impl LoadIndexY {
             }
             LoadIndexY::ReadingData(read) => {
                 let mut read = read.clone();
-                let data = read!(self, cpu, memory, read, ReadingData)?;
+                let data = mem_read!(self, cpu, memory, read, ReadingData)?;
 
                 cpu.registers.index_y = data;
                 cpu.registers.status.set_zero_and_negative(data);

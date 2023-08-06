@@ -31,10 +31,10 @@ impl<'a> CpuMemory<'a> {
         }
     }
 
-    pub fn write_u8(&mut self, address: u16, value: u8) {
+    pub fn write_u8(&mut self, address: u16, data: u8) {
         match address {
-            0x0000..=0x1FFF => self.ram[address as usize & 2047] = value,
-            0x2000..=0x3FFF => self.ppu_registers[address as usize & 7] = value,
+            0x0000..=0x1FFF => self.ram[address as usize & 2047] = data,
+            0x2000..=0x3FFF => self.ppu_registers[address as usize & 7] = data,
             0x4000..=0x401F => todo!("APU/IO registers"),
             0x4020..=0xFFFF => todo!("Cartridge"),
         };

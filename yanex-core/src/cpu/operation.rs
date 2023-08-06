@@ -12,6 +12,10 @@ pub enum Operation {
     LoadAccumulator(operations::LoadAccumulator),
     LoadIndexX(operations::LoadIndexX),
     LoadIndexY(operations::LoadIndexY),
+    // Store
+    StoreAccumulator(operations::StoreAccumulator),
+    StoreIndexX(operations::StoreIndexX),
+    StoreIndexY(operations::StoreIndexY),
     // Control
     Jump(operations::Jump),
     // Set flag
@@ -31,6 +35,10 @@ impl Operation {
             Operation::LoadAccumulator(operation) => operation.execute(cpu, memory),
             Operation::LoadIndexX(operation) => operation.execute(cpu, memory),
             Operation::LoadIndexY(operation) => operation.execute(cpu, memory),
+            // Store
+            Operation::StoreAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::StoreIndexX(operation) => operation.execute(cpu, memory),
+            Operation::StoreIndexY(operation) => operation.execute(cpu, memory),
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             // Set flag
@@ -72,6 +80,20 @@ impl From<Opcode> for Operation {
             LdyZpX => Operation::LoadIndexY(LoadIndexY::Decoded(ZeroPageX)),
             LdyAbs => Operation::LoadIndexY(LoadIndexY::Decoded(Absolute)),
             LdyAbsX => Operation::LoadIndexY(LoadIndexY::Decoded(AbsoluteX)),
+            // Store
+            StaZp => Operation::StoreAccumulator(StoreAccumulator::Decoded(ZeroPage)),
+            StaZpX => Operation::StoreAccumulator(StoreAccumulator::Decoded(ZeroPageX)),
+            StaAbs => Operation::StoreAccumulator(StoreAccumulator::Decoded(Absolute)),
+            StaAbsX => Operation::StoreAccumulator(StoreAccumulator::Decoded(AbsoluteX)),
+            StaAbsY => Operation::StoreAccumulator(StoreAccumulator::Decoded(AbsoluteY)),
+            StaIndX => Operation::StoreAccumulator(StoreAccumulator::Decoded(IndirectX)),
+            StaIndY => Operation::StoreAccumulator(StoreAccumulator::Decoded(IndirectY)),
+            StxZp => Operation::StoreIndexX(StoreIndexX::Decoded(ZeroPage)),
+            StxZpY => Operation::StoreIndexX(StoreIndexX::Decoded(ZeroPageY)),
+            StxAbs => Operation::StoreIndexX(StoreIndexX::Decoded(Absolute)),
+            StyZp => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPage)),
+            StyZpX => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPageX)),
+            StyAbs => Operation::StoreIndexY(StoreIndexY::Decoded(Absolute)),
             // Control
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),

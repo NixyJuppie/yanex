@@ -1,4 +1,4 @@
-use super::read;
+use super::mem_read;
 use super::AddressingMode;
 use super::AddressingModeReadAddress;
 use crate::cpu::{Cpu, CpuMemory};
@@ -14,12 +14,12 @@ impl Jump {
         match self {
             Jump::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                cpu.registers.program_counter = read!(self, cpu, memory, read, ReadingAddress)?;
+                cpu.registers.program_counter = mem_read!(self, cpu, memory, read, ReadingAddress)?;
                 Some(())
             }
             Jump::ReadingAddress(read) => {
                 let mut read = read.clone();
-                cpu.registers.program_counter = read!(self, cpu, memory, read, ReadingAddress)?;
+                cpu.registers.program_counter = mem_read!(self, cpu, memory, read, ReadingAddress)?;
                 Some(())
             }
         }
