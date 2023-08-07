@@ -1,20 +1,18 @@
 mod arithmetic;
 mod branch;
-mod clear_flag;
 mod control;
+mod flags;
 mod load;
 mod logic;
-mod set_flag;
 mod stack;
 mod store;
 
 pub use arithmetic::*;
 pub use branch::*;
-pub use clear_flag::*;
 pub use control::*;
+pub use flags::*;
 pub use load::*;
 pub use logic::*;
-pub use set_flag::*;
 pub use stack::*;
 pub use store::*;
 

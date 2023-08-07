@@ -52,6 +52,7 @@ pub enum Operation {
     ClearCarry(operations::ClearCarry),
     ClearDecimal(operations::ClearDecimal),
     ClearInterrupt(operations::ClearInterrupt),
+    ClearOverflow(operations::ClearOverflow),
 }
 
 impl Operation {
@@ -101,6 +102,7 @@ impl Operation {
             Operation::ClearCarry(operation) => operation.execute(cpu, memory),
             Operation::ClearDecimal(operation) => operation.execute(cpu, memory),
             Operation::ClearInterrupt(operation) => operation.execute(cpu, memory),
+            Operation::ClearOverflow(operation) => operation.execute(cpu, memory),
         }
         .is_some()
     }
@@ -216,6 +218,7 @@ impl From<Opcode> for Operation {
             ClcImp => Operation::ClearCarry(ClearCarry::Decoded(Implied)),
             CldImp => Operation::ClearDecimal(ClearDecimal::Decoded(Implied)),
             CliImp => Operation::ClearInterrupt(ClearInterrupt::Decoded(Implied)),
+            ClvImp => Operation::ClearOverflow(ClearOverflow::Decoded(Implied)),
             _ => todo!("Not supported opcode {opcode:?}"),
         }
     }
