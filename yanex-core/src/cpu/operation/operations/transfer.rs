@@ -189,22 +189,14 @@ impl TransferXToStackPointer {
                 let mut read = mode.begin_read_data();
                 mem_read!(self, cpu, memory, read, DummyReadingData)?;
 
-                transfer(
-                    cpu.registers.index_x,
-                    &mut cpu.registers.stack_pointer,
-                    &mut cpu.registers.status,
-                );
+                cpu.registers.stack_pointer = cpu.registers.index_x;
                 Some(())
             }
             TransferXToStackPointer::DummyReadingData(read) => {
                 let mut read = read.clone();
                 mem_read!(self, cpu, memory, read, DummyReadingData)?;
 
-                transfer(
-                    cpu.registers.index_x,
-                    &mut cpu.registers.stack_pointer,
-                    &mut cpu.registers.status,
-                );
+                cpu.registers.stack_pointer = cpu.registers.index_x;
                 Some(())
             }
         }

@@ -64,7 +64,7 @@ impl JumpSubroutine {
                 None
             }
             JumpSubroutine::StackHighByte(address) => {
-                let byte = cpu.registers.program_counter.to_le_bytes()[0];
+                let byte = cpu.registers.program_counter.wrapping_sub(1).to_le_bytes()[0];
                 cpu.stack_push(memory, byte);
                 cpu.registers.program_counter = *address;
 
@@ -107,7 +107,7 @@ impl ReturnSubroutine {
                 None
             }
             ReturnSubroutine::DeadCycle2 => {
-                let low_byte = cpu.stack_pull(memory);
+                let low_byte = cpu.stack_pull(memory).wrapping_add(1);
 
                 *self = ReturnSubroutine::StackLowByte(low_byte);
                 None
