@@ -26,6 +26,11 @@ pub enum Operation {
     BitAnd(operations::BitAnd),
     BitOr(operations::BitOr),
     BitXor(operations::BitXor),
+    // Increment
+    IncrementIndexX(operations::IncrementIndexX),
+    DecrementIndexX(operations::DecrementIndexX),
+    IncrementIndexY(operations::IncrementIndexY),
+    DecrementIndexY(operations::DecrementIndexY),
     // Arithmetic
     CompareAccumulator(operations::CompareAccumulator),
     CompareIndexX(operations::CompareIndexX),
@@ -77,6 +82,11 @@ impl Operation {
             Operation::BitAnd(operation) => operation.execute(cpu, memory),
             Operation::BitOr(operation) => operation.execute(cpu, memory),
             Operation::BitXor(operation) => operation.execute(cpu, memory),
+            // Increment
+            Operation::IncrementIndexX(operation) => operation.execute(cpu, memory),
+            Operation::DecrementIndexX(operation) => operation.execute(cpu, memory),
+            Operation::IncrementIndexY(operation) => operation.execute(cpu, memory),
+            Operation::DecrementIndexY(operation) => operation.execute(cpu, memory),
             // Arithmetic
             Operation::CompareAccumulator(operation) => operation.execute(cpu, memory),
             Operation::CompareIndexX(operation) => operation.execute(cpu, memory),
@@ -182,6 +192,11 @@ impl From<Opcode> for Operation {
             EorAbsY => Operation::BitXor(BitXor::Decoded(AbsoluteY)),
             EorIndX => Operation::BitXor(BitXor::Decoded(IndirectX)),
             EorIndY => Operation::BitXor(BitXor::Decoded(IndirectY)),
+            // Increment
+            InxImp => Operation::IncrementIndexX(IncrementIndexX::Decoded(Implied)),
+            DexImp => Operation::DecrementIndexX(DecrementIndexX::Decoded(Implied)),
+            InyImp => Operation::IncrementIndexY(IncrementIndexY::Decoded(Implied)),
+            DeyImp => Operation::DecrementIndexY(DecrementIndexY::Decoded(Implied)),
             // Arithmetic
             CmpImm => Operation::CompareAccumulator(CompareAccumulator::Decoded(Immediate)),
             CmpZp => Operation::CompareAccumulator(CompareAccumulator::Decoded(ZeroPage)),

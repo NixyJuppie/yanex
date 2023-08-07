@@ -14,15 +14,15 @@ fn nestest() {
 
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
-    assert_nestest_log_line(LOG.lines().next().unwrap(), &cpu); // Init state
+    assert_nestest_log_line_equal(LOG.lines().next().unwrap(), &cpu); // Init state
 
-    for line in include_str!("nestest.log").lines().skip(1).take(505) {
+    for line in include_str!("nestest.log").lines().skip(1).take(756) {
         cpu.next_operation(&mut memory);
-        assert_nestest_log_line(line, &cpu);
+        assert_nestest_log_line_equal(line, &cpu);
     }
 }
 
-fn assert_nestest_log_line(line: &str, cpu: &Cpu) {
+fn assert_nestest_log_line_equal(line: &str, cpu: &Cpu) {
     let program_counter = u16::from_str_radix(&line[0..4], 16).unwrap();
     let accumulator: u8 = u8::from_str_radix(&line[50..52], 16).unwrap();
     let index_x: u8 = u8::from_str_radix(&line[55..57], 16).unwrap();
