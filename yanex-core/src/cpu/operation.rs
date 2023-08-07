@@ -16,6 +16,13 @@ pub enum Operation {
     StoreAccumulator(operations::StoreAccumulator),
     StoreIndexX(operations::StoreIndexX),
     StoreIndexY(operations::StoreIndexY),
+    // Transfer
+    TransferAccumulatorToX(operations::TransferAccumulatorToX),
+    TransferAccumulatorToY(operations::TransferAccumulatorToY),
+    TransferXToAccumulator(operations::TransferXToAccumulator),
+    TransferYToAccumulator(operations::TransferYToAccumulator),
+    TransferStackPointerToX(operations::TransferStackPointerToX),
+    TransferXToStackPointer(operations::TransferXToStackPointer),
     // Stack
     PushAccumulator(operations::PushAccumulator),
     PullAccumulator(operations::PullAccumulator),
@@ -72,6 +79,13 @@ impl Operation {
             Operation::StoreAccumulator(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexX(operation) => operation.execute(cpu, memory),
             Operation::StoreIndexY(operation) => operation.execute(cpu, memory),
+            // Transfer
+            Operation::TransferAccumulatorToX(operation) => operation.execute(cpu, memory),
+            Operation::TransferAccumulatorToY(operation) => operation.execute(cpu, memory),
+            Operation::TransferXToAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::TransferYToAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::TransferStackPointerToX(operation) => operation.execute(cpu, memory),
+            Operation::TransferXToStackPointer(operation) => operation.execute(cpu, memory),
             // Stack
             Operation::PushAccumulator(operation) => operation.execute(cpu, memory),
             Operation::PullAccumulator(operation) => operation.execute(cpu, memory),
@@ -160,6 +174,13 @@ impl From<Opcode> for Operation {
             StyZp => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPage)),
             StyZpX => Operation::StoreIndexY(StoreIndexY::Decoded(ZeroPageX)),
             StyAbs => Operation::StoreIndexY(StoreIndexY::Decoded(Absolute)),
+            // Transfer
+            TaxImp => Operation::TransferAccumulatorToX(TransferAccumulatorToX::Decoded(Implied)),
+            TayImp => Operation::TransferAccumulatorToY(TransferAccumulatorToY::Decoded(Implied)),
+            TxaImp => Operation::TransferXToAccumulator(TransferXToAccumulator::Decoded(Implied)),
+            TyaImp => Operation::TransferYToAccumulator(TransferYToAccumulator::Decoded(Implied)),
+            TsxImp => Operation::TransferStackPointerToX(TransferStackPointerToX::Decoded(Implied)),
+            TxsImp => Operation::TransferXToStackPointer(TransferXToStackPointer::Decoded(Implied)),
             // Stack
             PhaImp => Operation::PushAccumulator(PushAccumulator::Decoded(Implied)),
             PlaImp => Operation::PullAccumulator(PullAccumulator::Decoded(Implied)),

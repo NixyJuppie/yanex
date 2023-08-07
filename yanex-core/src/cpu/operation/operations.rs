@@ -7,6 +7,7 @@ mod load;
 mod logic;
 mod stack;
 mod store;
+mod transfer;
 
 pub use arithmetic::*;
 pub use branch::*;
@@ -17,6 +18,7 @@ pub use load::*;
 pub use logic::*;
 pub use stack::*;
 pub use store::*;
+pub use transfer::*;
 
 use super::addressing_mode::AddressingMode;
 use super::addressing_mode::AddressingModeReadAddress;
