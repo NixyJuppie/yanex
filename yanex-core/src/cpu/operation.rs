@@ -30,6 +30,8 @@ pub enum Operation {
     CompareAccumulator(operations::CompareAccumulator),
     CompareIndexX(operations::CompareIndexX),
     CompareIndexY(operations::CompareIndexY),
+    AddCarry(operations::AddCarry),
+    SubtractCarry(operations::SubtractCarry),
     // Control
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
@@ -44,11 +46,10 @@ pub enum Operation {
     BranchNegativeSet(operations::BranchNegativeSet),
     BranchOverflowClear(operations::BranchOverflowClear),
     BranchOverflowSet(operations::BranchOverflowSet),
-    // Set flag
+    // Flags
     SetCarry(operations::SetCarry),
     SetDecimal(operations::SetDecimal),
     SetInterrupt(operations::SetInterrupt),
-    // Clear flag
     ClearCarry(operations::ClearCarry),
     ClearDecimal(operations::ClearDecimal),
     ClearInterrupt(operations::ClearInterrupt),
@@ -80,6 +81,8 @@ impl Operation {
             Operation::CompareAccumulator(operation) => operation.execute(cpu, memory),
             Operation::CompareIndexX(operation) => operation.execute(cpu, memory),
             Operation::CompareIndexY(operation) => operation.execute(cpu, memory),
+            Operation::AddCarry(operation) => operation.execute(cpu, memory),
+            Operation::SubtractCarry(operation) => operation.execute(cpu, memory),
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
@@ -94,11 +97,10 @@ impl Operation {
             Operation::BranchNegativeSet(operation) => operation.execute(cpu, memory),
             Operation::BranchOverflowClear(operation) => operation.execute(cpu, memory),
             Operation::BranchOverflowSet(operation) => operation.execute(cpu, memory),
-            // Set flag
+            // Flags
             Operation::SetCarry(operation) => operation.execute(cpu, memory),
             Operation::SetDecimal(operation) => operation.execute(cpu, memory),
             Operation::SetInterrupt(operation) => operation.execute(cpu, memory),
-            // Clear flag
             Operation::ClearCarry(operation) => operation.execute(cpu, memory),
             Operation::ClearDecimal(operation) => operation.execute(cpu, memory),
             Operation::ClearInterrupt(operation) => operation.execute(cpu, memory),
@@ -195,6 +197,22 @@ impl From<Opcode> for Operation {
             CpyImm => Operation::CompareIndexY(CompareIndexY::Decoded(Immediate)),
             CpyZp => Operation::CompareIndexY(CompareIndexY::Decoded(ZeroPage)),
             CpyAbs => Operation::CompareIndexY(CompareIndexY::Decoded(Absolute)),
+            AdcImm => Operation::AddCarry(AddCarry::Decoded(Immediate)),
+            AdcZp => Operation::AddCarry(AddCarry::Decoded(ZeroPage)),
+            AdcZpX => Operation::AddCarry(AddCarry::Decoded(ZeroPageX)),
+            AdcAbs => Operation::AddCarry(AddCarry::Decoded(Absolute)),
+            AdcAbsX => Operation::AddCarry(AddCarry::Decoded(AbsoluteX)),
+            AdcAbsY => Operation::AddCarry(AddCarry::Decoded(AbsoluteY)),
+            AdcIndX => Operation::AddCarry(AddCarry::Decoded(IndirectX)),
+            AdcIndY => Operation::AddCarry(AddCarry::Decoded(IndirectY)),
+            SbcImm => Operation::SubtractCarry(SubtractCarry::Decoded(Immediate)),
+            SbcZp => Operation::SubtractCarry(SubtractCarry::Decoded(ZeroPage)),
+            SbcZpX => Operation::SubtractCarry(SubtractCarry::Decoded(ZeroPageX)),
+            SbcAbs => Operation::SubtractCarry(SubtractCarry::Decoded(Absolute)),
+            SbcAbsX => Operation::SubtractCarry(SubtractCarry::Decoded(AbsoluteX)),
+            SbcAbsY => Operation::SubtractCarry(SubtractCarry::Decoded(AbsoluteY)),
+            SbcIndX => Operation::SubtractCarry(SubtractCarry::Decoded(IndirectX)),
+            SbcIndY => Operation::SubtractCarry(SubtractCarry::Decoded(IndirectY)),
             // Control
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),
@@ -210,11 +228,10 @@ impl From<Opcode> for Operation {
             BmiRel => Operation::BranchNegativeSet(BranchNegativeSet::Decoded(Relative)),
             BvcRel => Operation::BranchOverflowClear(BranchOverflowClear::Decoded(Relative)),
             BvsRel => Operation::BranchOverflowSet(BranchOverflowSet::Decoded(Relative)),
-            // Set flag
+            // Flags
             SecImp => Operation::SetCarry(SetCarry::Decoded(Implied)),
             SedImp => Operation::SetDecimal(SetDecimal::Decoded(Implied)),
             SeiImp => Operation::SetInterrupt(SetInterrupt::Decoded(Implied)),
-            // Clear flag
             ClcImp => Operation::ClearCarry(ClearCarry::Decoded(Implied)),
             CldImp => Operation::ClearDecimal(ClearDecimal::Decoded(Implied)),
             CliImp => Operation::ClearInterrupt(ClearInterrupt::Decoded(Implied)),

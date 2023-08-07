@@ -2,46 +2,6 @@ use super::{mem_read, AddressingModeReadAddress};
 use crate::cpu::{AddressingMode, Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
-pub enum BranchCarryClear {
-    Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
-    Branching(u16),
-}
-
-impl BranchCarryClear {
-    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
-        match self {
-            BranchCarryClear::Decoded(mode) => {
-                let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
-
-                if !cpu.registers.status.carry() {
-                    *self = BranchCarryClear::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
-            }
-            BranchCarryClear::ReadingAddress(read) => {
-                let mut read = read.clone();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
-
-                if !cpu.registers.status.carry() {
-                    *self = BranchCarryClear::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
-            }
-            BranchCarryClear::Branching(address) => {
-                cpu.registers.program_counter = *address;
-                Some(())
-            }
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
 pub enum BranchCarrySet {
     Decoded(AddressingMode),
     ReadingAddress(AddressingModeReadAddress),
@@ -53,25 +13,24 @@ impl BranchCarrySet {
         match self {
             BranchCarrySet::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if cpu.registers.status.carry() {
-                    *self = BranchCarrySet::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if !cpu.registers.status.carry() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchCarrySet::ReadingAddress(read),
+                    Some(address) => *self = BranchCarrySet::Branching(address),
+                }
+                None
             }
             BranchCarrySet::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if cpu.registers.status.carry() {
-                    *self = BranchCarrySet::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchCarrySet::Branching(address);
+                None
             }
             BranchCarrySet::Branching(address) => {
                 cpu.registers.program_counter = *address;
@@ -82,38 +41,37 @@ impl BranchCarrySet {
 }
 
 #[derive(Debug, Clone)]
-pub enum BranchZeroClear {
+pub enum BranchCarryClear {
     Decoded(AddressingMode),
     ReadingAddress(AddressingModeReadAddress),
     Branching(u16),
 }
 
-impl BranchZeroClear {
+impl BranchCarryClear {
     pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
         match self {
-            BranchZeroClear::Decoded(mode) => {
+            BranchCarryClear::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if !cpu.registers.status.zero() {
-                    *self = BranchZeroClear::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if cpu.registers.status.carry() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchCarryClear::ReadingAddress(read),
+                    Some(address) => *self = BranchCarryClear::Branching(address),
+                }
+                None
             }
-            BranchZeroClear::ReadingAddress(read) => {
+            BranchCarryClear::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if !cpu.registers.status.zero() {
-                    *self = BranchZeroClear::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchCarryClear::Branching(address);
+                None
             }
-            BranchZeroClear::Branching(address) => {
+            BranchCarryClear::Branching(address) => {
                 cpu.registers.program_counter = *address;
                 Some(())
             }
@@ -133,25 +91,24 @@ impl BranchZeroSet {
         match self {
             BranchZeroSet::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if cpu.registers.status.zero() {
-                    *self = BranchZeroSet::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if !cpu.registers.status.zero() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchZeroSet::ReadingAddress(read),
+                    Some(address) => *self = BranchZeroSet::Branching(address),
+                }
+                None
             }
             BranchZeroSet::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if cpu.registers.status.zero() {
-                    *self = BranchZeroSet::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchZeroSet::Branching(address);
+                None
             }
             BranchZeroSet::Branching(address) => {
                 cpu.registers.program_counter = *address;
@@ -162,38 +119,37 @@ impl BranchZeroSet {
 }
 
 #[derive(Debug, Clone)]
-pub enum BranchNegativeClear {
+pub enum BranchZeroClear {
     Decoded(AddressingMode),
     ReadingAddress(AddressingModeReadAddress),
     Branching(u16),
 }
 
-impl BranchNegativeClear {
+impl BranchZeroClear {
     pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
         match self {
-            BranchNegativeClear::Decoded(mode) => {
+            BranchZeroClear::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if !cpu.registers.status.negative() {
-                    *self = BranchNegativeClear::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if cpu.registers.status.zero() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchZeroClear::ReadingAddress(read),
+                    Some(address) => *self = BranchZeroClear::Branching(address),
+                }
+                None
             }
-            BranchNegativeClear::ReadingAddress(read) => {
+            BranchZeroClear::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if !cpu.registers.status.negative() {
-                    *self = BranchNegativeClear::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchZeroClear::Branching(address);
+                None
             }
-            BranchNegativeClear::Branching(address) => {
+            BranchZeroClear::Branching(address) => {
                 cpu.registers.program_counter = *address;
                 Some(())
             }
@@ -213,25 +169,24 @@ impl BranchNegativeSet {
         match self {
             BranchNegativeSet::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if cpu.registers.status.negative() {
-                    *self = BranchNegativeSet::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if !cpu.registers.status.negative() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchNegativeSet::ReadingAddress(read),
+                    Some(address) => *self = BranchNegativeSet::Branching(address),
+                }
+                None
             }
             BranchNegativeSet::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if cpu.registers.status.negative() {
-                    *self = BranchNegativeSet::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchNegativeSet::Branching(address);
+                None
             }
             BranchNegativeSet::Branching(address) => {
                 cpu.registers.program_counter = *address;
@@ -242,38 +197,37 @@ impl BranchNegativeSet {
 }
 
 #[derive(Debug, Clone)]
-pub enum BranchOverflowClear {
+pub enum BranchNegativeClear {
     Decoded(AddressingMode),
     ReadingAddress(AddressingModeReadAddress),
     Branching(u16),
 }
 
-impl BranchOverflowClear {
+impl BranchNegativeClear {
     pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
         match self {
-            BranchOverflowClear::Decoded(mode) => {
+            BranchNegativeClear::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if !cpu.registers.status.overflow() {
-                    *self = BranchOverflowClear::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if cpu.registers.status.negative() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchNegativeClear::ReadingAddress(read),
+                    Some(address) => *self = BranchNegativeClear::Branching(address),
+                }
+                None
             }
-            BranchOverflowClear::ReadingAddress(read) => {
+            BranchNegativeClear::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if !cpu.registers.status.overflow() {
-                    *self = BranchOverflowClear::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchNegativeClear::Branching(address);
+                None
             }
-            BranchOverflowClear::Branching(address) => {
+            BranchNegativeClear::Branching(address) => {
                 cpu.registers.program_counter = *address;
                 Some(())
             }
@@ -293,27 +247,65 @@ impl BranchOverflowSet {
         match self {
             BranchOverflowSet::Decoded(mode) => {
                 let mut read = mode.begin_read_address();
-                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+                let result = read.read(cpu, memory);
 
-                if cpu.registers.status.overflow() {
-                    *self = BranchOverflowSet::Branching(address);
-                    None
-                } else {
-                    Some(())
+                if !cpu.registers.status.overflow() {
+                    return Some(());
                 }
+
+                match result {
+                    None => *self = BranchOverflowSet::ReadingAddress(read),
+                    Some(address) => *self = BranchOverflowSet::Branching(address),
+                }
+                None
             }
             BranchOverflowSet::ReadingAddress(read) => {
                 let mut read = read.clone();
                 let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
 
-                if cpu.registers.status.overflow() {
-                    *self = BranchOverflowSet::Branching(address);
-                    None
-                } else {
-                    Some(())
-                }
+                *self = BranchOverflowSet::Branching(address);
+                None
             }
             BranchOverflowSet::Branching(address) => {
+                cpu.registers.program_counter = *address;
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum BranchOverflowClear {
+    Decoded(AddressingMode),
+    ReadingAddress(AddressingModeReadAddress),
+    Branching(u16),
+}
+
+impl BranchOverflowClear {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            BranchOverflowClear::Decoded(mode) => {
+                let mut read = mode.begin_read_address();
+                let result = read.read(cpu, memory);
+
+                if cpu.registers.status.overflow() {
+                    return Some(());
+                }
+
+                match result {
+                    None => *self = BranchOverflowClear::ReadingAddress(read),
+                    Some(address) => *self = BranchOverflowClear::Branching(address),
+                }
+                None
+            }
+            BranchOverflowClear::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = BranchOverflowClear::Branching(address);
+                None
+            }
+            BranchOverflowClear::Branching(address) => {
                 cpu.registers.program_counter = *address;
                 Some(())
             }

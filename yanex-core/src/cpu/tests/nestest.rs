@@ -16,7 +16,7 @@ fn nestest() {
     cpu.registers.program_counter = 0xC000;
     assert_nestest_log_line(LOG.lines().next().unwrap(), &cpu); // Init state
 
-    for line in include_str!("nestest.log").lines().skip(1).take(217) {
+    for line in include_str!("nestest.log").lines().skip(1).take(505) {
         cpu.next_operation(&mut memory);
         assert_nestest_log_line(line, &cpu);
     }
