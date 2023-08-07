@@ -26,6 +26,10 @@ pub enum Operation {
     BitAnd(operations::BitAnd),
     BitOr(operations::BitOr),
     BitXor(operations::BitXor),
+    // Arithmetic
+    CompareAccumulator(operations::CompareAccumulator),
+    CompareIndexX(operations::CompareIndexX),
+    CompareIndexY(operations::CompareIndexY),
     // Control
     Jump(operations::Jump),
     JumpSubroutine(operations::JumpSubroutine),
@@ -71,6 +75,10 @@ impl Operation {
             Operation::BitAnd(operation) => operation.execute(cpu, memory),
             Operation::BitOr(operation) => operation.execute(cpu, memory),
             Operation::BitXor(operation) => operation.execute(cpu, memory),
+            // Arithmetic
+            Operation::CompareAccumulator(operation) => operation.execute(cpu, memory),
+            Operation::CompareIndexX(operation) => operation.execute(cpu, memory),
+            Operation::CompareIndexY(operation) => operation.execute(cpu, memory),
             // Control
             Operation::Jump(operation) => operation.execute(cpu, memory),
             Operation::JumpSubroutine(operation) => operation.execute(cpu, memory),
@@ -170,6 +178,21 @@ impl From<Opcode> for Operation {
             EorAbsY => Operation::BitXor(BitXor::Decoded(AbsoluteY)),
             EorIndX => Operation::BitXor(BitXor::Decoded(IndirectX)),
             EorIndY => Operation::BitXor(BitXor::Decoded(IndirectY)),
+            // Arithmetic
+            CmpImm => Operation::CompareAccumulator(CompareAccumulator::Decoded(Immediate)),
+            CmpZp => Operation::CompareAccumulator(CompareAccumulator::Decoded(ZeroPage)),
+            CmpZpX => Operation::CompareAccumulator(CompareAccumulator::Decoded(ZeroPageX)),
+            CmpAbs => Operation::CompareAccumulator(CompareAccumulator::Decoded(Absolute)),
+            CmpAbsX => Operation::CompareAccumulator(CompareAccumulator::Decoded(AbsoluteX)),
+            CmpAbsY => Operation::CompareAccumulator(CompareAccumulator::Decoded(AbsoluteY)),
+            CmpIndX => Operation::CompareAccumulator(CompareAccumulator::Decoded(IndirectX)),
+            CmpIndY => Operation::CompareAccumulator(CompareAccumulator::Decoded(IndirectY)),
+            CpxImm => Operation::CompareIndexX(CompareIndexX::Decoded(Immediate)),
+            CpxZp => Operation::CompareIndexX(CompareIndexX::Decoded(ZeroPage)),
+            CpxAbs => Operation::CompareIndexX(CompareIndexX::Decoded(Absolute)),
+            CpyImm => Operation::CompareIndexY(CompareIndexY::Decoded(Immediate)),
+            CpyZp => Operation::CompareIndexY(CompareIndexY::Decoded(ZeroPage)),
+            CpyAbs => Operation::CompareIndexY(CompareIndexY::Decoded(Absolute)),
             // Control
             JmpAbs => Operation::Jump(Jump::Decoded(Absolute)),
             JmpInd => Operation::Jump(Jump::Decoded(Indirect)),

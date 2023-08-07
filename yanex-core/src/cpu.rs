@@ -5,6 +5,9 @@ pub use operation::{AddressingMode, Opcode, Operation};
 mod memory;
 mod operation;
 
+#[cfg(test)]
+mod tests;
+
 #[derive(Debug, Default)]
 pub struct Cpu {
     pub registers: CpuRegisters,

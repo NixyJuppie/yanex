@@ -1,5 +1,5 @@
 use super::{mem_read, AddressingModeReadData};
-use crate::cpu::{AddressingMode, Cpu, CpuMemory};
+use crate::cpu::{AddressingMode, Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum PushAccumulator {
@@ -138,7 +138,10 @@ impl PullStatus {
                 None
             }
             PullStatus::DeadCycle => {
-                cpu.registers.status = cpu.stack_pull(memory).into();
+                let mut status: CpuStatus = cpu.stack_pull(memory).into();
+                status.set_break_(cpu.registers.status.break_()); // Ignored
+                status.set_unused(cpu.registers.status.unused()); // Ignored
+                cpu.registers.status = status;
                 Some(())
             }
         }

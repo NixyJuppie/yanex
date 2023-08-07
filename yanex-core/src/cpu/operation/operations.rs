@@ -1,3 +1,4 @@
+mod arithmetic;
 mod branch;
 mod clear_flag;
 mod control;
@@ -7,6 +8,7 @@ mod set_flag;
 mod stack;
 mod store;
 
+pub use arithmetic::*;
 pub use branch::*;
 pub use clear_flag::*;
 pub use control::*;
