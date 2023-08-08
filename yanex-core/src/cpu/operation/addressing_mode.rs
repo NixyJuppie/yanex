@@ -52,8 +52,8 @@ impl AddressingMode {
             AddressingMode::ZeroPageX => todo!(),
             AddressingMode::ZeroPageY => todo!(),
             AddressingMode::Absolute => AddressingModeReadData::Absolute(Default::default()),
-            AddressingMode::AbsoluteX => todo!(),
-            AddressingMode::AbsoluteY => todo!(),
+            AddressingMode::AbsoluteX => AddressingModeReadData::AbsoluteX(Default::default()),
+            AddressingMode::AbsoluteY => AddressingModeReadData::AbsoluteY(Default::default()),
             AddressingMode::Indirect => todo!(),
             AddressingMode::IndirectX => AddressingModeReadData::IndirectX(Default::default()),
             AddressingMode::IndirectY => AddressingModeReadData::IndirectY(Default::default()),
@@ -70,8 +70,12 @@ impl AddressingMode {
             AddressingMode::ZeroPageX => todo!(),
             AddressingMode::ZeroPageY => todo!(),
             AddressingMode::Absolute => AddressingModeWriteData::Absolute(data, Default::default()),
-            AddressingMode::AbsoluteX => todo!(),
-            AddressingMode::AbsoluteY => todo!(),
+            AddressingMode::AbsoluteX => {
+                AddressingModeWriteData::AbsoluteX(data, Default::default())
+            }
+            AddressingMode::AbsoluteY => {
+                AddressingModeWriteData::AbsoluteY(data, Default::default())
+            }
             AddressingMode::Indirect => todo!(),
             AddressingMode::IndirectX => {
                 AddressingModeWriteData::IndirectX(data, Default::default())
