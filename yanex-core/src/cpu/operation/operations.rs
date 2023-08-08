@@ -23,9 +23,9 @@ pub use store::*;
 pub use transfer::*;
 
 use super::addressing_mode::AddressingMode;
-use super::addressing_mode::AddressingModeReadAddress;
-use super::addressing_mode::AddressingModeReadData;
-use super::addressing_mode::AddressingModeWriteData;
+use super::addressing_mode::ReadAddress;
+use super::addressing_mode::ReadData;
+use super::addressing_mode::WriteData;
 
 macro_rules! mem_read {
     ($self:ident, $cpu:ident, $memory:ident, $read:ident, $reading_state:ident) => {{

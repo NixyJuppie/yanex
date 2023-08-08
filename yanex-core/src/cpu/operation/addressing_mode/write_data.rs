@@ -1,46 +1,50 @@
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
-pub enum AddressingModeWriteData {
-    ZeroPage(u8, ZeroPageAddressingModeWriteData),
-    Absolute(u8, AbsoluteAddressingModeWriteData),
-    AbsoluteX(u8, AbsoluteXAddressingModeWriteData),
-    AbsoluteY(u8, AbsoluteYAddressingModeWriteData),
-    IndirectX(u8, IndirectXAddressingModeWriteData),
-    IndirectY(u8, IndirectYAddressingModeWriteData),
+pub enum WriteData {
+    ZeroPage(u8, ZeroPageWriteData),
+    ZeroPageX(u8, ZeroPageXWriteData),
+    ZeroPageY(u8, ZeroPageYWriteData),
+    Absolute(u8, AbsoluteWriteData),
+    AbsoluteX(u8, AbsoluteXWriteData),
+    AbsoluteY(u8, AbsoluteYWriteData),
+    IndirectX(u8, IndirectXWriteData),
+    IndirectY(u8, IndirectYWriteData),
 }
 
-impl AddressingModeWriteData {
+impl WriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
         match self {
-            AddressingModeWriteData::ZeroPage(data, state) => state.write(cpu, memory, *data),
-            AddressingModeWriteData::Absolute(data, state) => state.write(cpu, memory, *data),
-            AddressingModeWriteData::AbsoluteX(data, state) => state.write(cpu, memory, *data),
-            AddressingModeWriteData::AbsoluteY(data, state) => state.write(cpu, memory, *data),
-            AddressingModeWriteData::IndirectX(data, state) => state.write(cpu, memory, *data),
-            AddressingModeWriteData::IndirectY(data, state) => state.write(cpu, memory, *data),
+            WriteData::ZeroPage(data, state) => state.write(cpu, memory, *data),
+            WriteData::ZeroPageX(data, state) => state.write(cpu, memory, *data),
+            WriteData::ZeroPageY(data, state) => state.write(cpu, memory, *data),
+            WriteData::Absolute(data, state) => state.write(cpu, memory, *data),
+            WriteData::AbsoluteX(data, state) => state.write(cpu, memory, *data),
+            WriteData::AbsoluteY(data, state) => state.write(cpu, memory, *data),
+            WriteData::IndirectX(data, state) => state.write(cpu, memory, *data),
+            WriteData::IndirectY(data, state) => state.write(cpu, memory, *data),
         }
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum ZeroPageAddressingModeWriteData {
+pub enum ZeroPageWriteData {
     #[default]
     None,
     AddressLowByte(u8),
 }
 
-impl ZeroPageAddressingModeWriteData {
+impl ZeroPageWriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            ZeroPageAddressingModeWriteData::None => {
+            ZeroPageWriteData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = ZeroPageAddressingModeWriteData::AddressLowByte(low_byte);
+                *self = ZeroPageWriteData::AddressLowByte(low_byte);
                 None
             }
-            ZeroPageAddressingModeWriteData::AddressLowByte(low_byte) => {
+            ZeroPageWriteData::AddressLowByte(low_byte) => {
                 let address = u16::from_le_bytes([*low_byte, 0x00]);
                 memory.write_u8(address, data);
 
@@ -51,32 +55,98 @@ impl ZeroPageAddressingModeWriteData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteAddressingModeWriteData {
+pub enum ZeroPageXWriteData {
+    #[default]
+    None,
+    DummyRead(u8),
+    AddressLowByte(u8),
+}
+
+impl ZeroPageXWriteData {
+    pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
+        match self {
+            ZeroPageXWriteData::None => {
+                let low_byte = memory.read_u8(cpu.registers.program_counter);
+                cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
+                *self = ZeroPageXWriteData::DummyRead(low_byte);
+                None
+            }
+            ZeroPageXWriteData::DummyRead(low_byte) => {
+                *self = ZeroPageXWriteData::AddressLowByte(*low_byte);
+                None
+            }
+            ZeroPageXWriteData::AddressLowByte(low_byte) => {
+                let low_byte = low_byte.wrapping_add(cpu.registers.index_x);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                memory.write_u8(address, data);
+
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ZeroPageYWriteData {
+    #[default]
+    None,
+    DummyRead(u8),
+    AddressLowByte(u8),
+}
+
+impl ZeroPageYWriteData {
+    pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
+        match self {
+            ZeroPageYWriteData::None => {
+                let low_byte = memory.read_u8(cpu.registers.program_counter);
+                cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
+                *self = ZeroPageYWriteData::DummyRead(low_byte);
+                None
+            }
+            ZeroPageYWriteData::DummyRead(low_byte) => {
+                *self = ZeroPageYWriteData::AddressLowByte(*low_byte);
+                None
+            }
+            ZeroPageYWriteData::AddressLowByte(low_byte) => {
+                let low_byte = low_byte.wrapping_add(cpu.registers.index_y);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                memory.write_u8(address, data);
+
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum AbsoluteWriteData {
     #[default]
     None,
     AddressLowByte(u8),
     Address(u16),
 }
 
-impl AbsoluteAddressingModeWriteData {
+impl AbsoluteWriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            AbsoluteAddressingModeWriteData::None => {
+            AbsoluteWriteData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteAddressingModeWriteData::AddressLowByte(low_byte);
+                *self = AbsoluteWriteData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteAddressingModeWriteData::AddressLowByte(low_byte) => {
+            AbsoluteWriteData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteAddressingModeWriteData::Address(address);
+                *self = AbsoluteWriteData::Address(address);
                 None
             }
-            AbsoluteAddressingModeWriteData::Address(address) => {
+            AbsoluteWriteData::Address(address) => {
                 memory.write_u8(*address, data);
                 Some(())
             }
@@ -85,7 +155,7 @@ impl AbsoluteAddressingModeWriteData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteXAddressingModeWriteData {
+pub enum AbsoluteXWriteData {
     #[default]
     None,
     AddressLowByte(u8),
@@ -93,25 +163,25 @@ pub enum AbsoluteXAddressingModeWriteData {
     DummyRead(u16),
 }
 
-impl AbsoluteXAddressingModeWriteData {
+impl AbsoluteXWriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            AbsoluteXAddressingModeWriteData::None => {
+            AbsoluteXWriteData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteXAddressingModeWriteData::AddressLowByte(low_byte);
+                *self = AbsoluteXWriteData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteXAddressingModeWriteData::AddressLowByte(low_byte) => {
+            AbsoluteXWriteData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteXAddressingModeWriteData::Address(address);
+                *self = AbsoluteXWriteData::Address(address);
                 None
             }
-            AbsoluteXAddressingModeWriteData::Address(address) => {
+            AbsoluteXWriteData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_x);
                 let high_byte = if low_byte < address_bytes[0] {
@@ -121,10 +191,10 @@ impl AbsoluteXAddressingModeWriteData {
                 };
                 let address = u16::from_le_bytes([low_byte, high_byte]);
 
-                *self = AbsoluteXAddressingModeWriteData::DummyRead(address);
+                *self = AbsoluteXWriteData::DummyRead(address);
                 None
             }
-            AbsoluteXAddressingModeWriteData::DummyRead(address) => {
+            AbsoluteXWriteData::DummyRead(address) => {
                 memory.write_u8(*address, data);
                 Some(())
             }
@@ -133,7 +203,7 @@ impl AbsoluteXAddressingModeWriteData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteYAddressingModeWriteData {
+pub enum AbsoluteYWriteData {
     #[default]
     None,
     AddressLowByte(u8),
@@ -141,25 +211,25 @@ pub enum AbsoluteYAddressingModeWriteData {
     DummyRead(u16),
 }
 
-impl AbsoluteYAddressingModeWriteData {
+impl AbsoluteYWriteData {
     pub fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            AbsoluteYAddressingModeWriteData::None => {
+            AbsoluteYWriteData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteYAddressingModeWriteData::AddressLowByte(low_byte);
+                *self = AbsoluteYWriteData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteYAddressingModeWriteData::AddressLowByte(low_byte) => {
+            AbsoluteYWriteData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteYAddressingModeWriteData::Address(address);
+                *self = AbsoluteYWriteData::Address(address);
                 None
             }
-            AbsoluteYAddressingModeWriteData::Address(address) => {
+            AbsoluteYWriteData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_y);
                 let high_byte = if low_byte < address_bytes[0] {
@@ -169,10 +239,10 @@ impl AbsoluteYAddressingModeWriteData {
                 };
                 let address = u16::from_le_bytes([low_byte, high_byte]);
 
-                *self = AbsoluteYAddressingModeWriteData::DummyRead(address);
+                *self = AbsoluteYWriteData::DummyRead(address);
                 None
             }
-            AbsoluteYAddressingModeWriteData::DummyRead(address) => {
+            AbsoluteYWriteData::DummyRead(address) => {
                 memory.write_u8(*address, data);
                 Some(())
             }
@@ -181,7 +251,7 @@ impl AbsoluteYAddressingModeWriteData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum IndirectXAddressingModeWriteData {
+pub enum IndirectXWriteData {
     #[default]
     None,
     PointerLowByte(u8),
@@ -190,41 +260,40 @@ pub enum IndirectXAddressingModeWriteData {
     Address(u16),
 }
 
-impl IndirectXAddressingModeWriteData {
+impl IndirectXWriteData {
     fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            IndirectXAddressingModeWriteData::None => {
+            IndirectXWriteData::None => {
                 let low_byte = memory
                     .read_u8(cpu.registers.program_counter)
                     .wrapping_add(cpu.registers.index_x);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = IndirectXAddressingModeWriteData::PointerLowByte(low_byte);
+                *self = IndirectXWriteData::PointerLowByte(low_byte);
                 None
             }
-            IndirectXAddressingModeWriteData::PointerLowByte(low_byte) => {
+            IndirectXWriteData::PointerLowByte(low_byte) => {
                 memory.read_u8(cpu.registers.program_counter);
 
-                *self = IndirectXAddressingModeWriteData::DummyRead(*low_byte);
+                *self = IndirectXWriteData::DummyRead(*low_byte);
                 None
             }
-            IndirectXAddressingModeWriteData::DummyRead(pointer_low_byte) => {
+            IndirectXWriteData::DummyRead(pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([*pointer_low_byte, 0x00]);
                 let low_byte = memory.read_u8(pointer);
 
-                *self =
-                    IndirectXAddressingModeWriteData::AddressLowByte(low_byte, *pointer_low_byte);
+                *self = IndirectXWriteData::AddressLowByte(low_byte, *pointer_low_byte);
                 None
             }
-            IndirectXAddressingModeWriteData::AddressLowByte(low_byte, pointer_low_byte) => {
+            IndirectXWriteData::AddressLowByte(low_byte, pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([pointer_low_byte.wrapping_add(1), 0x00]);
                 let high_byte = memory.read_u8(pointer);
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
 
-                *self = IndirectXAddressingModeWriteData::Address(address);
+                *self = IndirectXWriteData::Address(address);
                 None
             }
-            IndirectXAddressingModeWriteData::Address(address) => {
+            IndirectXWriteData::Address(address) => {
                 memory.write_u8(*address, data);
                 Some(())
             }
@@ -233,7 +302,7 @@ impl IndirectXAddressingModeWriteData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum IndirectYAddressingModeWriteData {
+pub enum IndirectYWriteData {
     #[default]
     None,
     PointerLowByte(u8),
@@ -243,44 +312,43 @@ pub enum IndirectYAddressingModeWriteData {
     PageCrossed(u16),
 }
 
-impl IndirectYAddressingModeWriteData {
+impl IndirectYWriteData {
     fn write(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory, data: u8) -> Option<()> {
         match self {
-            IndirectYAddressingModeWriteData::None => {
+            IndirectYWriteData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = IndirectYAddressingModeWriteData::PointerLowByte(low_byte);
+                *self = IndirectYWriteData::PointerLowByte(low_byte);
                 None
             }
-            IndirectYAddressingModeWriteData::PointerLowByte(pointer_low_byte) => {
+            IndirectYWriteData::PointerLowByte(pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([*pointer_low_byte, 0x00]);
                 let low_byte = memory.read_u8(pointer);
 
-                *self =
-                    IndirectYAddressingModeWriteData::AddressLowByte(low_byte, *pointer_low_byte);
+                *self = IndirectYWriteData::AddressLowByte(low_byte, *pointer_low_byte);
                 None
             }
-            IndirectYAddressingModeWriteData::AddressLowByte(low_byte, pointer_low_byte) => {
-                *self = IndirectYAddressingModeWriteData::DummyRead(*low_byte, *pointer_low_byte);
+            IndirectYWriteData::AddressLowByte(low_byte, pointer_low_byte) => {
+                *self = IndirectYWriteData::DummyRead(*low_byte, *pointer_low_byte);
                 None
             }
-            IndirectYAddressingModeWriteData::DummyRead(low_byte, pointer_low_byte) => {
+            IndirectYWriteData::DummyRead(low_byte, pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([pointer_low_byte.wrapping_add(1), 0x00]);
                 let high_byte = memory.read_u8(pointer);
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
 
-                *self = IndirectYAddressingModeWriteData::Address(address);
+                *self = IndirectYWriteData::Address(address);
                 None
             }
-            IndirectYAddressingModeWriteData::Address(address) => {
+            IndirectYWriteData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_y);
 
                 if low_byte < address_bytes[0] {
                     let high_byte = address_bytes[1].wrapping_add(1);
                     let address = u16::from_le_bytes([low_byte, high_byte]);
-                    *self = IndirectYAddressingModeWriteData::PageCrossed(address);
+                    *self = IndirectYWriteData::PageCrossed(address);
                     None
                 } else {
                     let address = u16::from_le_bytes([low_byte, address_bytes[1]]);
@@ -288,7 +356,7 @@ impl IndirectYAddressingModeWriteData {
                     Some(())
                 }
             }
-            IndirectYAddressingModeWriteData::PageCrossed(address) => {
+            IndirectYWriteData::PageCrossed(address) => {
                 memory.write_u8(*address, data);
                 Some(())
             }

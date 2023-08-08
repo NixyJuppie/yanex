@@ -1,47 +1,51 @@
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
-pub enum AddressingModeReadData {
-    Implied(ImpliedAddressingModeReadData),
-    Immediate(ImmediateAddressingModeReadData),
-    ZeroPage(ZeroPageAddressingModeReadData),
-    Absolute(AbsoluteAddressingModeReadData),
-    AbsoluteX(AbsoluteXAddressingModeReadData),
-    AbsoluteY(AbsoluteYAddressingModeReadData),
-    IndirectX(IndirectXAddressingModeReadData),
-    IndirectY(IndirectYAddressingModeReadData),
+pub enum ReadData {
+    Implied(ImpliedReadData),
+    Immediate(ImmediateReadData),
+    ZeroPage(ZeroPageReadData),
+    ZeroPageX(ZeroPageXReadData),
+    ZeroPageY(ZeroPageYReadData),
+    Absolute(AbsoluteReadData),
+    AbsoluteX(AbsoluteXReadData),
+    AbsoluteY(AbsoluteYReadData),
+    IndirectX(IndirectXReadData),
+    IndirectY(IndirectYReadData),
 }
 
-impl AddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl ReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            AddressingModeReadData::Implied(state) => state.read(cpu, memory),
-            AddressingModeReadData::Immediate(state) => state.read(cpu, memory),
-            AddressingModeReadData::ZeroPage(state) => state.read(cpu, memory),
-            AddressingModeReadData::Absolute(state) => state.read(cpu, memory),
-            AddressingModeReadData::AbsoluteX(state) => state.read(cpu, memory),
-            AddressingModeReadData::AbsoluteY(state) => state.read(cpu, memory),
-            AddressingModeReadData::IndirectX(state) => state.read(cpu, memory),
-            AddressingModeReadData::IndirectY(state) => state.read(cpu, memory),
+            ReadData::Implied(state) => state.read(cpu, memory),
+            ReadData::Immediate(state) => state.read(cpu, memory),
+            ReadData::ZeroPage(state) => state.read(cpu, memory),
+            ReadData::ZeroPageX(state) => state.read(cpu, memory),
+            ReadData::ZeroPageY(state) => state.read(cpu, memory),
+            ReadData::Absolute(state) => state.read(cpu, memory),
+            ReadData::AbsoluteX(state) => state.read(cpu, memory),
+            ReadData::AbsoluteY(state) => state.read(cpu, memory),
+            ReadData::IndirectX(state) => state.read(cpu, memory),
+            ReadData::IndirectY(state) => state.read(cpu, memory),
         }
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct ImpliedAddressingModeReadData;
+pub struct ImpliedReadData;
 
-impl ImpliedAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl ImpliedReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         // Dummy read
         Some(memory.read_u8(cpu.registers.program_counter))
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct ImmediateAddressingModeReadData;
+pub struct ImmediateReadData;
 
-impl ImmediateAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl ImmediateReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         let data = memory.read_u8(cpu.registers.program_counter);
         cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
         Some(data)
@@ -49,23 +53,23 @@ impl ImmediateAddressingModeReadData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum ZeroPageAddressingModeReadData {
+pub enum ZeroPageReadData {
     #[default]
     None,
     AddressLowByte(u8),
 }
 
-impl ZeroPageAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl ZeroPageReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            ZeroPageAddressingModeReadData::None => {
+            ZeroPageReadData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = ZeroPageAddressingModeReadData::AddressLowByte(low_byte);
+                *self = ZeroPageReadData::AddressLowByte(low_byte);
                 None
             }
-            ZeroPageAddressingModeReadData::AddressLowByte(low_byte) => {
+            ZeroPageReadData::AddressLowByte(low_byte) => {
                 let address = u16::from_le_bytes([*low_byte, 0x00]);
                 let data = memory.read_u8(address);
 
@@ -76,32 +80,98 @@ impl ZeroPageAddressingModeReadData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteAddressingModeReadData {
+pub enum ZeroPageXReadData {
+    #[default]
+    None,
+    DummyRead(u8),
+    AddressLowByte(u8),
+}
+
+impl ZeroPageXReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ZeroPageXReadData::None => {
+                let low_byte = memory.read_u8(cpu.registers.program_counter);
+                cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
+                *self = ZeroPageXReadData::DummyRead(low_byte);
+                None
+            }
+            ZeroPageXReadData::DummyRead(low_byte) => {
+                *self = ZeroPageXReadData::AddressLowByte(*low_byte);
+                None
+            }
+            ZeroPageXReadData::AddressLowByte(low_byte) => {
+                let low_byte = low_byte.wrapping_add(cpu.registers.index_x);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                let data = memory.read_u8(address);
+
+                Some(data)
+            }
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum ZeroPageYReadData {
+    #[default]
+    None,
+    DummyRead(u8),
+    AddressLowByte(u8),
+}
+
+impl ZeroPageYReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
+        match self {
+            ZeroPageYReadData::None => {
+                let low_byte = memory.read_u8(cpu.registers.program_counter);
+                cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
+
+                *self = ZeroPageYReadData::DummyRead(low_byte);
+                None
+            }
+            ZeroPageYReadData::DummyRead(low_byte) => {
+                *self = ZeroPageYReadData::AddressLowByte(*low_byte);
+                None
+            }
+            ZeroPageYReadData::AddressLowByte(low_byte) => {
+                let low_byte = low_byte.wrapping_add(cpu.registers.index_y);
+                let address = u16::from_le_bytes([low_byte, 0x00]);
+                let data = memory.read_u8(address);
+
+                Some(data)
+            }
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub enum AbsoluteReadData {
     #[default]
     None,
     AddressLowByte(u8),
     Address(u16),
 }
 
-impl AbsoluteAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl AbsoluteReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            AbsoluteAddressingModeReadData::None => {
+            AbsoluteReadData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteAddressingModeReadData::AddressLowByte(low_byte);
+                *self = AbsoluteReadData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteAddressingModeReadData::AddressLowByte(low_byte) => {
+            AbsoluteReadData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteAddressingModeReadData::Address(address);
+                *self = AbsoluteReadData::Address(address);
                 None
             }
-            AbsoluteAddressingModeReadData::Address(address) => {
+            AbsoluteReadData::Address(address) => {
                 let data = memory.read_u8(*address);
                 Some(data)
             }
@@ -110,7 +180,7 @@ impl AbsoluteAddressingModeReadData {
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteXAddressingModeReadData {
+pub enum AbsoluteXReadData {
     #[default]
     None,
     AddressLowByte(u8),
@@ -118,45 +188,45 @@ pub enum AbsoluteXAddressingModeReadData {
     PageCrossed(u16),
 }
 
-impl AbsoluteXAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl AbsoluteXReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            AbsoluteXAddressingModeReadData::None => {
+            AbsoluteXReadData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteXAddressingModeReadData::AddressLowByte(low_byte);
+                *self = AbsoluteXReadData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteXAddressingModeReadData::AddressLowByte(low_byte) => {
+            AbsoluteXReadData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteXAddressingModeReadData::Address(address);
+                *self = AbsoluteXReadData::Address(address);
                 None
             }
-            AbsoluteXAddressingModeReadData::Address(address) => {
+            AbsoluteXReadData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_x);
 
                 if low_byte < address_bytes[0] {
                     let high_byte = address_bytes[1].wrapping_add(1);
                     let address = u16::from_le_bytes([low_byte, high_byte]);
-                    *self = AbsoluteXAddressingModeReadData::PageCrossed(address);
+                    *self = AbsoluteXReadData::PageCrossed(address);
                     None
                 } else {
                     let address = u16::from_le_bytes([low_byte, address_bytes[1]]);
                     Some(memory.read_u8(address))
                 }
             }
-            AbsoluteXAddressingModeReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
+            AbsoluteXReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
         }
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum AbsoluteYAddressingModeReadData {
+pub enum AbsoluteYReadData {
     #[default]
     None,
     AddressLowByte(u8),
@@ -164,45 +234,45 @@ pub enum AbsoluteYAddressingModeReadData {
     PageCrossed(u16),
 }
 
-impl AbsoluteYAddressingModeReadData {
-    pub fn read(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<u8> {
+impl AbsoluteYReadData {
+    pub fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            AbsoluteYAddressingModeReadData::None => {
+            AbsoluteYReadData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = AbsoluteYAddressingModeReadData::AddressLowByte(low_byte);
+                *self = AbsoluteYReadData::AddressLowByte(low_byte);
                 None
             }
-            AbsoluteYAddressingModeReadData::AddressLowByte(low_byte) => {
+            AbsoluteYReadData::AddressLowByte(low_byte) => {
                 let high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
-                *self = AbsoluteYAddressingModeReadData::Address(address);
+                *self = AbsoluteYReadData::Address(address);
                 None
             }
-            AbsoluteYAddressingModeReadData::Address(address) => {
+            AbsoluteYReadData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_y);
 
                 if low_byte < address_bytes[0] {
                     let high_byte = address_bytes[1].wrapping_add(1);
                     let address = u16::from_le_bytes([low_byte, high_byte]);
-                    *self = AbsoluteYAddressingModeReadData::PageCrossed(address);
+                    *self = AbsoluteYReadData::PageCrossed(address);
                     None
                 } else {
                     let address = u16::from_le_bytes([low_byte, address_bytes[1]]);
                     Some(memory.read_u8(address))
                 }
             }
-            AbsoluteYAddressingModeReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
+            AbsoluteYReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
         }
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum IndirectXAddressingModeReadData {
+pub enum IndirectXReadData {
     #[default]
     None,
     PointerLowByte(u8),
@@ -211,47 +281,46 @@ pub enum IndirectXAddressingModeReadData {
     Address(u16),
 }
 
-impl IndirectXAddressingModeReadData {
+impl IndirectXReadData {
     fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            IndirectXAddressingModeReadData::None => {
+            IndirectXReadData::None => {
                 let low_byte = memory
                     .read_u8(cpu.registers.program_counter)
                     .wrapping_add(cpu.registers.index_x);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = IndirectXAddressingModeReadData::PointerLowByte(low_byte);
+                *self = IndirectXReadData::PointerLowByte(low_byte);
                 None
             }
-            IndirectXAddressingModeReadData::PointerLowByte(low_byte) => {
+            IndirectXReadData::PointerLowByte(low_byte) => {
                 memory.read_u8(cpu.registers.program_counter);
 
-                *self = IndirectXAddressingModeReadData::DummyRead(*low_byte);
+                *self = IndirectXReadData::DummyRead(*low_byte);
                 None
             }
-            IndirectXAddressingModeReadData::DummyRead(pointer_low_byte) => {
+            IndirectXReadData::DummyRead(pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([*pointer_low_byte, 0x00]);
                 let low_byte = memory.read_u8(pointer);
 
-                *self =
-                    IndirectXAddressingModeReadData::AddressLowByte(low_byte, *pointer_low_byte);
+                *self = IndirectXReadData::AddressLowByte(low_byte, *pointer_low_byte);
                 None
             }
-            IndirectXAddressingModeReadData::AddressLowByte(low_byte, pointer_low_byte) => {
+            IndirectXReadData::AddressLowByte(low_byte, pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([pointer_low_byte.wrapping_add(1), 0x00]);
                 let high_byte = memory.read_u8(pointer);
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
 
-                *self = IndirectXAddressingModeReadData::Address(address);
+                *self = IndirectXReadData::Address(address);
                 None
             }
-            IndirectXAddressingModeReadData::Address(address) => Some(memory.read_u8(*address)),
+            IndirectXReadData::Address(address) => Some(memory.read_u8(*address)),
         }
     }
 }
 
 #[derive(Debug, Default, Clone)]
-pub enum IndirectYAddressingModeReadData {
+pub enum IndirectYReadData {
     #[default]
     None,
     PointerLowByte(u8),
@@ -260,47 +329,46 @@ pub enum IndirectYAddressingModeReadData {
     PageCrossed(u16),
 }
 
-impl IndirectYAddressingModeReadData {
+impl IndirectYReadData {
     fn read(&mut self, cpu: &mut Cpu, memory: &CpuMemory) -> Option<u8> {
         match self {
-            IndirectYAddressingModeReadData::None => {
+            IndirectYReadData::None => {
                 let low_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
 
-                *self = IndirectYAddressingModeReadData::PointerLowByte(low_byte);
+                *self = IndirectYReadData::PointerLowByte(low_byte);
                 None
             }
-            IndirectYAddressingModeReadData::PointerLowByte(pointer_low_byte) => {
+            IndirectYReadData::PointerLowByte(pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([*pointer_low_byte, 0x00]);
                 let low_byte = memory.read_u8(pointer);
 
-                *self =
-                    IndirectYAddressingModeReadData::AddressLowByte(low_byte, *pointer_low_byte);
+                *self = IndirectYReadData::AddressLowByte(low_byte, *pointer_low_byte);
                 None
             }
-            IndirectYAddressingModeReadData::AddressLowByte(low_byte, pointer_low_byte) => {
+            IndirectYReadData::AddressLowByte(low_byte, pointer_low_byte) => {
                 let pointer = u16::from_le_bytes([pointer_low_byte.wrapping_add(1), 0x00]);
                 let high_byte = memory.read_u8(pointer);
                 let address = u16::from_le_bytes([*low_byte, high_byte]);
 
-                *self = IndirectYAddressingModeReadData::Address(address);
+                *self = IndirectYReadData::Address(address);
                 None
             }
-            IndirectYAddressingModeReadData::Address(address) => {
+            IndirectYReadData::Address(address) => {
                 let address_bytes = address.to_le_bytes();
                 let low_byte = address_bytes[0].wrapping_add(cpu.registers.index_y);
 
                 if low_byte < address_bytes[0] {
                     let high_byte = address_bytes[1].wrapping_add(1);
                     let address = u16::from_le_bytes([low_byte, high_byte]);
-                    *self = IndirectYAddressingModeReadData::PageCrossed(address);
+                    *self = IndirectYReadData::PageCrossed(address);
                     None
                 } else {
                     let address = u16::from_le_bytes([low_byte, address_bytes[1]]);
                     Some(memory.read_u8(address))
                 }
             }
-            IndirectYAddressingModeReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
+            IndirectYReadData::PageCrossed(address) => Some(memory.read_u8(*address)),
         }
     }
 }

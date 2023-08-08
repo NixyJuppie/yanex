@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingModeReadData};
+use super::{mem_read, ReadData};
 use crate::cpu::{AddressingMode, Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum PushAccumulator {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DummyRead,
 }
 
@@ -36,7 +36,7 @@ impl PushAccumulator {
 #[derive(Debug, Clone)]
 pub enum PullAccumulator {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DummyRead,
     DeadCycle,
 }
@@ -77,7 +77,7 @@ impl PullAccumulator {
 #[derive(Debug, Clone)]
 pub enum PushStatus {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DummyRead,
 }
 
@@ -111,7 +111,7 @@ impl PushStatus {
 #[derive(Debug, Clone)]
 pub enum PullStatus {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DummyRead,
     DeadCycle,
 }

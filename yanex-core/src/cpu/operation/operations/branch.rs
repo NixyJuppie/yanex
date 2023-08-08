@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingModeReadAddress};
+use super::{mem_read, ReadAddress};
 use crate::cpu::{AddressingMode, Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum BranchCarrySet {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -43,7 +43,7 @@ impl BranchCarrySet {
 #[derive(Debug, Clone)]
 pub enum BranchCarryClear {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -82,7 +82,7 @@ impl BranchCarryClear {
 #[derive(Debug, Clone)]
 pub enum BranchZeroSet {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -121,7 +121,7 @@ impl BranchZeroSet {
 #[derive(Debug, Clone)]
 pub enum BranchZeroClear {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -160,7 +160,7 @@ impl BranchZeroClear {
 #[derive(Debug, Clone)]
 pub enum BranchNegativeSet {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -199,7 +199,7 @@ impl BranchNegativeSet {
 #[derive(Debug, Clone)]
 pub enum BranchNegativeClear {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -238,7 +238,7 @@ impl BranchNegativeClear {
 #[derive(Debug, Clone)]
 pub enum BranchOverflowSet {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 
@@ -277,7 +277,7 @@ impl BranchOverflowSet {
 #[derive(Debug, Clone)]
 pub enum BranchOverflowClear {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     Branching(u16),
 }
 

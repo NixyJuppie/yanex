@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadData};
+use super::{mem_read, AddressingMode, ReadData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum LoadAccumulator {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl LoadAccumulator {
@@ -35,7 +35,7 @@ impl LoadAccumulator {
 #[derive(Debug, Clone)]
 pub enum LoadIndexX {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl LoadIndexX {
@@ -66,7 +66,7 @@ impl LoadIndexX {
 #[derive(Debug, Clone)]
 pub enum LoadIndexY {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl LoadIndexY {

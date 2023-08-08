@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadAddress, AddressingModeReadData};
+use super::{mem_read, AddressingMode, ReadAddress, ReadData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum IncrementIndexX {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl IncrementIndexX {
@@ -37,7 +37,7 @@ impl IncrementIndexX {
 #[derive(Debug, Clone)]
 pub enum DecrementIndexX {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl DecrementIndexX {
@@ -70,7 +70,7 @@ impl DecrementIndexX {
 #[derive(Debug, Clone)]
 pub enum IncrementIndexY {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl IncrementIndexY {
@@ -103,7 +103,7 @@ impl IncrementIndexY {
 #[derive(Debug, Clone)]
 pub enum DecrementIndexY {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl DecrementIndexY {
@@ -136,7 +136,7 @@ impl DecrementIndexY {
 #[derive(Debug, Clone)]
 pub enum IncrementMemory {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),
@@ -184,7 +184,7 @@ impl IncrementMemory {
 #[derive(Debug, Clone)]
 pub enum DecrementMemory {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),

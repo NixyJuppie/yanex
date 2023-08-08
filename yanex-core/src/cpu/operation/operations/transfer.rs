@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadData};
+use super::{mem_read, AddressingMode, ReadData};
 use crate::cpu::{Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum TransferAccumulatorToX {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferAccumulatorToX {
@@ -39,7 +39,7 @@ impl TransferAccumulatorToX {
 #[derive(Debug, Clone)]
 pub enum TransferAccumulatorToY {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferAccumulatorToY {
@@ -74,7 +74,7 @@ impl TransferAccumulatorToY {
 #[derive(Debug, Clone)]
 pub enum TransferXToAccumulator {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferXToAccumulator {
@@ -109,7 +109,7 @@ impl TransferXToAccumulator {
 #[derive(Debug, Clone)]
 pub enum TransferYToAccumulator {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferYToAccumulator {
@@ -144,7 +144,7 @@ impl TransferYToAccumulator {
 #[derive(Debug, Clone)]
 pub enum TransferStackPointerToX {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferStackPointerToX {
@@ -179,7 +179,7 @@ impl TransferStackPointerToX {
 #[derive(Debug, Clone)]
 pub enum TransferXToStackPointer {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl TransferXToStackPointer {

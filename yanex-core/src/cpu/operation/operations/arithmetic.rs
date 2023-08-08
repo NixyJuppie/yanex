@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingModeReadData};
+use super::{mem_read, ReadData};
 use crate::cpu::{AddressingMode, Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum CompareAccumulator {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl CompareAccumulator {
@@ -41,7 +41,7 @@ impl CompareAccumulator {
 #[derive(Debug, Clone)]
 pub enum CompareIndexX {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl CompareIndexX {
@@ -78,7 +78,7 @@ impl CompareIndexX {
 #[derive(Debug, Clone)]
 pub enum CompareIndexY {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl CompareIndexY {
@@ -115,7 +115,7 @@ impl CompareIndexY {
 #[derive(Debug, Clone)]
 pub enum AddCarry {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl AddCarry {
@@ -142,7 +142,7 @@ impl AddCarry {
 #[derive(Debug, Clone)]
 pub enum SubtractCarry {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl SubtractCarry {

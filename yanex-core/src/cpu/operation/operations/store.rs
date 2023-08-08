@@ -1,10 +1,10 @@
-use super::{mem_write, AddressingMode, AddressingModeWriteData};
+use super::{mem_write, AddressingMode, WriteData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum StoreAccumulator {
     Decoded(AddressingMode),
-    WritingData(AddressingModeWriteData),
+    WritingData(WriteData),
 }
 
 impl StoreAccumulator {
@@ -25,7 +25,7 @@ impl StoreAccumulator {
 #[derive(Debug, Clone)]
 pub enum StoreIndexX {
     Decoded(AddressingMode),
-    WritingData(AddressingModeWriteData),
+    WritingData(WriteData),
 }
 
 impl StoreIndexX {
@@ -46,7 +46,7 @@ impl StoreIndexX {
 #[derive(Debug, Clone)]
 pub enum StoreIndexY {
     Decoded(AddressingMode),
-    WritingData(AddressingModeWriteData),
+    WritingData(WriteData),
 }
 
 impl StoreIndexY {

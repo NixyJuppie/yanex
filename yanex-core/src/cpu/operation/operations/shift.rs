@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadAddress};
+use super::{mem_read, AddressingMode, ReadAddress};
 use crate::cpu::{Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum ShiftRight {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),
@@ -63,7 +63,7 @@ fn shift_right(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum ShiftLeft {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),
@@ -122,7 +122,7 @@ fn shift_left(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum RotateLeft {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),
@@ -187,7 +187,7 @@ fn rotate_left(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum RotateRight {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     ReadAddress(u16),
     DummyRead(u16),
     ReadData(u8, u16),

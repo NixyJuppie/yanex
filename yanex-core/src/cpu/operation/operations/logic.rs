@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingModeReadData};
+use super::{mem_read, ReadData};
 use crate::cpu::{AddressingMode, Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum BitTest {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl BitTest {
@@ -37,7 +37,7 @@ impl BitTest {
 #[derive(Debug, Clone)]
 pub enum BitAnd {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl BitAnd {
@@ -70,7 +70,7 @@ impl BitAnd {
 #[derive(Debug, Clone)]
 pub enum BitOr {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl BitOr {
@@ -103,7 +103,7 @@ impl BitOr {
 #[derive(Debug, Clone)]
 pub enum BitXor {
     Decoded(AddressingMode),
-    ReadingData(AddressingModeReadData),
+    ReadingData(ReadData),
 }
 
 impl BitXor {

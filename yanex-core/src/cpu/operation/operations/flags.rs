@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadData};
+use super::{mem_read, AddressingMode, ReadData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
 pub enum SetCarry {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl SetCarry {
@@ -29,7 +29,7 @@ impl SetCarry {
 #[derive(Debug, Clone)]
 pub enum ClearCarry {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl ClearCarry {
@@ -54,7 +54,7 @@ impl ClearCarry {
 #[derive(Debug, Clone)]
 pub enum SetDecimal {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl SetDecimal {
@@ -79,7 +79,7 @@ impl SetDecimal {
 #[derive(Debug, Clone)]
 pub enum ClearDecimal {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl ClearDecimal {
@@ -104,7 +104,7 @@ impl ClearDecimal {
 #[derive(Debug, Clone)]
 pub enum SetInterrupt {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl SetInterrupt {
@@ -129,7 +129,7 @@ impl SetInterrupt {
 #[derive(Debug, Clone)]
 pub enum ClearInterrupt {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl ClearInterrupt {
@@ -154,7 +154,7 @@ impl ClearInterrupt {
 #[derive(Debug, Clone)]
 pub enum ClearOverflow {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl ClearOverflow {

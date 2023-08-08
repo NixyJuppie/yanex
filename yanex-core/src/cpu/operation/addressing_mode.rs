@@ -1,6 +1,6 @@
-pub use read_address::AddressingModeReadAddress;
-pub use read_data::AddressingModeReadData;
-pub use write_data::AddressingModeWriteData;
+pub use read_address::ReadAddress;
+pub use read_data::ReadData;
+pub use write_data::WriteData;
 
 mod read_address;
 mod read_data;
@@ -24,65 +24,57 @@ pub enum AddressingMode {
 }
 
 impl AddressingMode {
-    pub fn begin_read_address(&self) -> AddressingModeReadAddress {
+    pub fn begin_read_address(&self) -> ReadAddress {
         match self {
             AddressingMode::Implied => todo!(),
             AddressingMode::Immediate => todo!(),
             AddressingMode::Accumulator => todo!(),
-            AddressingMode::Relative => AddressingModeReadAddress::Relative(Default::default()),
-            AddressingMode::ZeroPage => AddressingModeReadAddress::ZeroPage(Default::default()),
-            AddressingMode::ZeroPageX => todo!(),
-            AddressingMode::ZeroPageY => todo!(),
-            AddressingMode::Absolute => AddressingModeReadAddress::Absolute(Default::default()),
+            AddressingMode::Relative => ReadAddress::Relative(Default::default()),
+            AddressingMode::ZeroPage => ReadAddress::ZeroPage(Default::default()),
+            AddressingMode::ZeroPageX => ReadAddress::ZeroPageX(Default::default()),
+            AddressingMode::ZeroPageY => ReadAddress::ZeroPageY(Default::default()),
+            AddressingMode::Absolute => ReadAddress::Absolute(Default::default()),
             AddressingMode::AbsoluteX => todo!(),
             AddressingMode::AbsoluteY => todo!(),
-            AddressingMode::Indirect => AddressingModeReadAddress::Indirect(Default::default()),
-            AddressingMode::IndirectX => AddressingModeReadAddress::IndirectX(Default::default()),
-            AddressingMode::IndirectY => AddressingModeReadAddress::IndirectY(Default::default()),
+            AddressingMode::Indirect => ReadAddress::Indirect(Default::default()),
+            AddressingMode::IndirectX => ReadAddress::IndirectX(Default::default()),
+            AddressingMode::IndirectY => ReadAddress::IndirectY(Default::default()),
         }
     }
 
-    pub fn begin_read_data(&self) -> AddressingModeReadData {
+    pub fn begin_read_data(&self) -> ReadData {
         match self {
-            AddressingMode::Implied => AddressingModeReadData::Implied(Default::default()),
-            AddressingMode::Immediate => AddressingModeReadData::Immediate(Default::default()),
+            AddressingMode::Implied => ReadData::Implied(Default::default()),
+            AddressingMode::Immediate => ReadData::Immediate(Default::default()),
             AddressingMode::Accumulator => todo!(),
             AddressingMode::Relative => todo!(),
-            AddressingMode::ZeroPage => AddressingModeReadData::ZeroPage(Default::default()),
-            AddressingMode::ZeroPageX => todo!(),
-            AddressingMode::ZeroPageY => todo!(),
-            AddressingMode::Absolute => AddressingModeReadData::Absolute(Default::default()),
-            AddressingMode::AbsoluteX => AddressingModeReadData::AbsoluteX(Default::default()),
-            AddressingMode::AbsoluteY => AddressingModeReadData::AbsoluteY(Default::default()),
+            AddressingMode::ZeroPage => ReadData::ZeroPage(Default::default()),
+            AddressingMode::ZeroPageX => ReadData::ZeroPageX(Default::default()),
+            AddressingMode::ZeroPageY => ReadData::ZeroPageY(Default::default()),
+            AddressingMode::Absolute => ReadData::Absolute(Default::default()),
+            AddressingMode::AbsoluteX => ReadData::AbsoluteX(Default::default()),
+            AddressingMode::AbsoluteY => ReadData::AbsoluteY(Default::default()),
             AddressingMode::Indirect => todo!(),
-            AddressingMode::IndirectX => AddressingModeReadData::IndirectX(Default::default()),
-            AddressingMode::IndirectY => AddressingModeReadData::IndirectY(Default::default()),
+            AddressingMode::IndirectX => ReadData::IndirectX(Default::default()),
+            AddressingMode::IndirectY => ReadData::IndirectY(Default::default()),
         }
     }
 
-    pub fn begin_write_data(&self, data: u8) -> AddressingModeWriteData {
+    pub fn begin_write_data(&self, data: u8) -> WriteData {
         match self {
             AddressingMode::Implied => todo!(),
             AddressingMode::Immediate => todo!(),
             AddressingMode::Accumulator => todo!(),
             AddressingMode::Relative => todo!(),
-            AddressingMode::ZeroPage => AddressingModeWriteData::ZeroPage(data, Default::default()),
-            AddressingMode::ZeroPageX => todo!(),
-            AddressingMode::ZeroPageY => todo!(),
-            AddressingMode::Absolute => AddressingModeWriteData::Absolute(data, Default::default()),
-            AddressingMode::AbsoluteX => {
-                AddressingModeWriteData::AbsoluteX(data, Default::default())
-            }
-            AddressingMode::AbsoluteY => {
-                AddressingModeWriteData::AbsoluteY(data, Default::default())
-            }
+            AddressingMode::ZeroPage => WriteData::ZeroPage(data, Default::default()),
+            AddressingMode::ZeroPageX => WriteData::ZeroPageX(data, Default::default()),
+            AddressingMode::ZeroPageY => WriteData::ZeroPageY(data, Default::default()),
+            AddressingMode::Absolute => WriteData::Absolute(data, Default::default()),
+            AddressingMode::AbsoluteX => WriteData::AbsoluteX(data, Default::default()),
+            AddressingMode::AbsoluteY => WriteData::AbsoluteY(data, Default::default()),
             AddressingMode::Indirect => todo!(),
-            AddressingMode::IndirectX => {
-                AddressingModeWriteData::IndirectX(data, Default::default())
-            }
-            AddressingMode::IndirectY => {
-                AddressingModeWriteData::IndirectY(data, Default::default())
-            }
+            AddressingMode::IndirectX => WriteData::IndirectX(data, Default::default()),
+            AddressingMode::IndirectY => WriteData::IndirectY(data, Default::default()),
         }
     }
 }

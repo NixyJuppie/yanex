@@ -1,10 +1,10 @@
-use super::{mem_read, AddressingMode, AddressingModeReadAddress, AddressingModeReadData};
+use super::{mem_read, AddressingMode, ReadAddress, ReadData};
 use crate::cpu::{Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum Jump {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
 }
 
 impl Jump {
@@ -27,7 +27,7 @@ impl Jump {
 #[derive(Debug, Clone)]
 pub enum JumpSubroutine {
     Decoded(AddressingMode),
-    ReadingAddress(AddressingModeReadAddress),
+    ReadingAddress(ReadAddress),
     DummyRead(u16),
     SubroutineAddress(u16),
     StackHighByte(u16),
@@ -77,7 +77,7 @@ impl JumpSubroutine {
 #[derive(Debug, Clone)]
 pub enum ReturnSubroutine {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DeadCycle1,
     DeadCycle2,
     StackLowByte(u8),
@@ -130,7 +130,7 @@ impl ReturnSubroutine {
 #[derive(Debug, Clone)]
 pub enum ReturnInterrupt {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
     DeadCycle1,
     DeadCycle2,
     StackLowByte(u8),
@@ -187,7 +187,7 @@ impl ReturnInterrupt {
 #[derive(Debug, Clone)]
 pub enum NoOperation {
     Decoded(AddressingMode),
-    DummyReadingData(AddressingModeReadData),
+    DummyReadingData(ReadData),
 }
 
 impl NoOperation {
