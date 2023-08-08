@@ -157,7 +157,7 @@ pub enum AbsoluteXReadAddress {
     #[default]
     None,
     AddressLowByte(u8),
-    PageCrossed(u16),
+    DummyRead(u16),
 }
 
 impl AbsoluteXReadAddress {
@@ -171,21 +171,19 @@ impl AbsoluteXReadAddress {
                 None
             }
             AbsoluteXReadAddress::AddressLowByte(low_byte) => {
-                let high_byte = memory.read_u8(cpu.registers.program_counter);
+                let mut high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
                 let low_byte_x = low_byte.wrapping_add(cpu.registers.index_x);
 
                 if low_byte_x < *low_byte {
-                    let high_byte = high_byte.wrapping_add(1);
-                    let address = u16::from_le_bytes([low_byte_x, high_byte]);
-                    *self = AbsoluteXReadAddress::PageCrossed(address);
-                    None
-                } else {
-                    let address = u16::from_le_bytes([low_byte_x, high_byte]);
-                    Some(address)
+                    high_byte = high_byte.wrapping_add(1);
                 }
+                let address = u16::from_le_bytes([low_byte_x, high_byte]);
+
+                *self = AbsoluteXReadAddress::DummyRead(address);
+                None
             }
-            AbsoluteXReadAddress::PageCrossed(address) => Some(*address),
+            AbsoluteXReadAddress::DummyRead(address) => Some(*address),
         }
     }
 }
@@ -195,7 +193,7 @@ pub enum AbsoluteYReadAddress {
     #[default]
     None,
     AddressLowByte(u8),
-    PageCrossed(u16),
+    DummyRead(u16),
 }
 
 impl AbsoluteYReadAddress {
@@ -209,21 +207,19 @@ impl AbsoluteYReadAddress {
                 None
             }
             AbsoluteYReadAddress::AddressLowByte(low_byte) => {
-                let high_byte = memory.read_u8(cpu.registers.program_counter);
+                let mut high_byte = memory.read_u8(cpu.registers.program_counter);
                 cpu.registers.program_counter = cpu.registers.program_counter.wrapping_add(1);
-                let low_byte_y = low_byte.wrapping_add(cpu.registers.index_y);
+                let low_byte_x = low_byte.wrapping_add(cpu.registers.index_y);
 
-                if low_byte_y < *low_byte {
-                    let high_byte = high_byte.wrapping_add(1);
-                    let address = u16::from_le_bytes([low_byte_y, high_byte]);
-                    *self = AbsoluteYReadAddress::PageCrossed(address);
-                    None
-                } else {
-                    let address = u16::from_le_bytes([low_byte_y, high_byte]);
-                    Some(address)
+                if low_byte_x < *low_byte {
+                    high_byte = high_byte.wrapping_add(1);
                 }
+                let address = u16::from_le_bytes([low_byte_x, high_byte]);
+
+                *self = AbsoluteYReadAddress::DummyRead(address);
+                None
             }
-            AbsoluteYReadAddress::PageCrossed(address) => Some(*address),
+            AbsoluteYReadAddress::DummyRead(address) => Some(*address),
         }
     }
 }
