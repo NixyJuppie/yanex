@@ -1,6 +1,6 @@
 use crate::cartridge::Cartridge;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CpuMemory<'a> {
     ram: [u8; 2048],
     ppu_registers: [u8; 8],

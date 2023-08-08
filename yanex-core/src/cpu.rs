@@ -5,10 +5,7 @@ pub use operation::{AddressingMode, Opcode, Operation};
 mod memory;
 mod operation;
 
-#[cfg(test)]
-mod tests;
-
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Cpu {
     pub registers: CpuRegisters,
     pub state: Option<Operation>,
@@ -80,7 +77,7 @@ impl Cpu {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct CpuRegisters {
     pub accumulator: u8,
     pub index_x: u8,

@@ -6,3 +6,10 @@ edition = "2021"
 [dependencies]
 bitfield-struct = "0.5.3"
 num_enum = "0.6.1"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "nestest"
+harness = false

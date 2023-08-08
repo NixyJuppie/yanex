@@ -1,10 +1,8 @@
 use crate::cartridge::Cartridge;
 use crate::cpu::{Cpu, CpuMemory};
 
-const LOG: &str = include_str!("nestest.log");
-
 #[test]
-fn nestest() {
+fn legal_opcodes() {
     let mut cpu = Cpu::default();
     let mut memory = CpuMemory::default();
 
@@ -14,11 +12,9 @@ fn nestest() {
 
     // Start of non-interactive test
     cpu.registers.program_counter = 0xC000;
-    assert_nestest_log_line_equal(LOG.lines().next().unwrap(), &cpu); // Init state
-
-    for line in include_str!("nestest.log").lines().skip(1).take(5003) {
-        cpu.next_operation(&mut memory);
+    for line in include_str!("nestest.log").lines().take(5003) {
         assert_nestest_log_line_equal(line, &cpu);
+        cpu.next_operation(&mut memory);
     }
 }
 
@@ -38,6 +34,4 @@ fn assert_nestest_log_line_equal(line: &str, cpu: &Cpu) {
     assert_eq!(status, cpu.registers.status.into());
     assert_eq!(stack_pointer, cpu.registers.stack_pointer);
     assert_eq!(cycle, cpu.cycle);
-
-    // TODO: PPU
 }
