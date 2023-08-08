@@ -1,4 +1,4 @@
-use super::{mem_read, AddressingMode, AddressingModeReadData};
+use super::{mem_read, AddressingMode, AddressingModeReadAddress, AddressingModeReadData};
 use crate::cpu::{Cpu, CpuMemory};
 
 #[derive(Debug, Clone)]
@@ -127,6 +127,102 @@ impl DecrementIndexY {
                 cpu.registers.index_y = result;
                 cpu.registers.status.set_zero(result == 0);
                 cpu.registers.status.set_negative(result & 0b_1000_0000 > 0);
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum IncrementMemory {
+    Decoded(AddressingMode),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
+}
+
+impl IncrementMemory {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            IncrementMemory::Decoded(mode) => {
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = IncrementMemory::ReadAddress(address);
+                None
+            }
+            IncrementMemory::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = IncrementMemory::ReadAddress(address);
+                None
+            }
+            IncrementMemory::ReadAddress(address) => {
+                *self = IncrementMemory::DummyRead(*address);
+                None
+            }
+            IncrementMemory::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = IncrementMemory::ReadData(data, *address);
+                None
+            }
+            IncrementMemory::ReadData(data, address) => {
+                let result = data.wrapping_add(1);
+                cpu.registers.status.set_zero(result == 0);
+                cpu.registers.status.set_negative(result & 0b_1000_0000 > 0);
+
+                memory.write_u8(*address, result);
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum DecrementMemory {
+    Decoded(AddressingMode),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
+}
+
+impl DecrementMemory {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            DecrementMemory::Decoded(mode) => {
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = DecrementMemory::ReadAddress(address);
+                None
+            }
+            DecrementMemory::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = DecrementMemory::ReadAddress(address);
+                None
+            }
+            DecrementMemory::ReadAddress(address) => {
+                *self = DecrementMemory::DummyRead(*address);
+                None
+            }
+            DecrementMemory::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = DecrementMemory::ReadData(data, *address);
+                None
+            }
+            DecrementMemory::ReadData(data, address) => {
+                let result = data.wrapping_sub(1);
+                cpu.registers.status.set_zero(result == 0);
+                cpu.registers.status.set_negative(result & 0b_1000_0000 > 0);
+
+                memory.write_u8(*address, result);
                 Some(())
             }
         }

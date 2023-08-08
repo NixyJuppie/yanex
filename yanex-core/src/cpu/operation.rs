@@ -43,6 +43,8 @@ pub enum Operation {
     DecrementIndexX(operations::DecrementIndexX),
     IncrementIndexY(operations::IncrementIndexY),
     DecrementIndexY(operations::DecrementIndexY),
+    IncrementMemory(operations::IncrementMemory),
+    DecrementMemory(operations::DecrementMemory),
     // Arithmetic
     CompareAccumulator(operations::CompareAccumulator),
     CompareIndexX(operations::CompareIndexX),
@@ -112,6 +114,8 @@ impl Operation {
             Operation::DecrementIndexX(operation) => operation.execute(cpu, memory),
             Operation::IncrementIndexY(operation) => operation.execute(cpu, memory),
             Operation::DecrementIndexY(operation) => operation.execute(cpu, memory),
+            Operation::IncrementMemory(operation) => operation.execute(cpu, memory),
+            Operation::DecrementMemory(operation) => operation.execute(cpu, memory),
             // Arithmetic
             Operation::CompareAccumulator(operation) => operation.execute(cpu, memory),
             Operation::CompareIndexX(operation) => operation.execute(cpu, memory),
@@ -251,6 +255,14 @@ impl From<Opcode> for Operation {
             DexImp => Operation::DecrementIndexX(DecrementIndexX::Decoded(Implied)),
             InyImp => Operation::IncrementIndexY(IncrementIndexY::Decoded(Implied)),
             DeyImp => Operation::DecrementIndexY(DecrementIndexY::Decoded(Implied)),
+            IncAbs => Operation::IncrementMemory(IncrementMemory::Decoded(Absolute)),
+            IncAbsX => Operation::IncrementMemory(IncrementMemory::Decoded(AbsoluteX)),
+            IncZp => Operation::IncrementMemory(IncrementMemory::Decoded(ZeroPage)),
+            IncZpX => Operation::IncrementMemory(IncrementMemory::Decoded(ZeroPageX)),
+            DecAbs => Operation::DecrementMemory(DecrementMemory::Decoded(Absolute)),
+            DecAbsX => Operation::DecrementMemory(DecrementMemory::Decoded(AbsoluteX)),
+            DecZp => Operation::DecrementMemory(DecrementMemory::Decoded(ZeroPage)),
+            DecZpX => Operation::DecrementMemory(DecrementMemory::Decoded(ZeroPageX)),
             // Arithmetic
             CmpImm => Operation::CompareAccumulator(CompareAccumulator::Decoded(Immediate)),
             CmpZp => Operation::CompareAccumulator(CompareAccumulator::Decoded(ZeroPage)),
