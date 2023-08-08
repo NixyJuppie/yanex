@@ -1,5 +1,5 @@
 use super::{mem_read, AddressingMode, AddressingModeReadAddress, AddressingModeReadData};
-use crate::cpu::{Cpu, CpuMemory};
+use crate::cpu::{Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum Jump {
@@ -120,6 +120,63 @@ impl ReturnSubroutine {
                 None
             }
             ReturnSubroutine::DeadCycle3 => {
+                // Maybe this should be a dummy read
+                Some(())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum ReturnInterrupt {
+    Decoded(AddressingMode),
+    DummyReadingData(AddressingModeReadData),
+    DeadCycle1,
+    DeadCycle2,
+    StackLowByte(u8),
+    DeadCycle3,
+}
+
+impl ReturnInterrupt {
+    pub fn execute(&mut self, cpu: &mut Cpu, memory: &mut CpuMemory) -> Option<()> {
+        match self {
+            ReturnInterrupt::Decoded(mode) => {
+                let mut read = mode.begin_read_data();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
+
+                *self = ReturnInterrupt::DeadCycle1;
+                None
+            }
+            ReturnInterrupt::DummyReadingData(read) => {
+                let mut read = read.clone();
+                mem_read!(self, cpu, memory, read, DummyReadingData)?;
+
+                *self = ReturnInterrupt::DeadCycle1;
+                None
+            }
+            ReturnInterrupt::DeadCycle1 => {
+                let mut status = CpuStatus::from(cpu.stack_pull(memory));
+                status.set_break_(cpu.registers.status.break_()); // Ignored
+                status.set_unused(cpu.registers.status.unused()); // Ignored
+                cpu.registers.status = status;
+
+                *self = ReturnInterrupt::DeadCycle2;
+                None
+            }
+            ReturnInterrupt::DeadCycle2 => {
+                let low_byte = cpu.stack_pull(memory);
+
+                *self = ReturnInterrupt::StackLowByte(low_byte);
+                None
+            }
+            ReturnInterrupt::StackLowByte(low_byte) => {
+                let high_byte = cpu.stack_pull(memory);
+                cpu.registers.program_counter = u16::from_le_bytes([*low_byte, high_byte]);
+
+                *self = ReturnInterrupt::DeadCycle3;
+                None
+            }
+            ReturnInterrupt::DeadCycle3 => {
                 // Maybe this should be a dummy read
                 Some(())
             }
