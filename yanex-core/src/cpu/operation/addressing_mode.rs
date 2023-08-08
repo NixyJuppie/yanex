@@ -55,7 +55,7 @@ impl AddressingMode {
             AddressingMode::AbsoluteX => todo!(),
             AddressingMode::AbsoluteY => todo!(),
             AddressingMode::Indirect => todo!(),
-            AddressingMode::IndirectX => todo!(),
+            AddressingMode::IndirectX => AddressingModeReadData::IndirectX(Default::default()),
             AddressingMode::IndirectY => todo!(),
         }
     }
@@ -73,7 +73,9 @@ impl AddressingMode {
             AddressingMode::AbsoluteX => todo!(),
             AddressingMode::AbsoluteY => todo!(),
             AddressingMode::Indirect => todo!(),
-            AddressingMode::IndirectX => todo!(),
+            AddressingMode::IndirectX => {
+                AddressingModeWriteData::IndirectX(data, Default::default())
+            }
             AddressingMode::IndirectY => todo!(),
         }
     }

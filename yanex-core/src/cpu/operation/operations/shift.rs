@@ -1,11 +1,13 @@
-use super::{mem_write, AddressingMode, AddressingModeReadData, AddressingModeWriteData};
+use super::{mem_read, AddressingMode, AddressingModeReadAddress};
 use crate::cpu::{Cpu, CpuMemory, CpuStatus};
 
 #[derive(Debug, Clone)]
 pub enum ShiftRight {
     Decoded(AddressingMode),
-    ReadingData(AddressingMode, AddressingModeReadData),
-    WritingData(AddressingModeWriteData),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
 }
 
 impl ShiftRight {
@@ -18,31 +20,32 @@ impl ShiftRight {
                     return Some(());
                 }
 
-                let mut read = mode.begin_read_data();
-                match read.read(cpu, memory) {
-                    None => {
-                        *self = ShiftRight::ReadingData(mode.clone(), read);
-                        None
-                    }
-                    Some(data) => {
-                        let result = shift_right(data, &mut cpu.registers.status);
-                        let write = mode.begin_write_data(result);
-                        *self = ShiftRight::WritingData(write);
-                        None
-                    }
-                }
-            }
-            ShiftRight::ReadingData(mode, read) => {
-                if let Some(data) = read.read(cpu, memory) {
-                    let result = shift_right(data, &mut cpu.registers.status);
-                    let write = mode.begin_write_data(result);
-                    *self = ShiftRight::WritingData(write);
-                }
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = ShiftRight::ReadAddress(address);
                 None
             }
-            ShiftRight::WritingData(write) => {
-                let mut write = write.clone();
-                mem_write!(self, cpu, memory, write, WritingData)?;
+            ShiftRight::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = ShiftRight::ReadAddress(address);
+                None
+            }
+            ShiftRight::ReadAddress(address) => {
+                *self = ShiftRight::DummyRead(*address);
+                None
+            }
+            ShiftRight::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = ShiftRight::ReadData(data, *address);
+                None
+            }
+            ShiftRight::ReadData(data, address) => {
+                let data = shift_right(*data, &mut cpu.registers.status);
+                memory.write_u8(*address, data);
                 Some(())
             }
         }
@@ -60,8 +63,10 @@ fn shift_right(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum ShiftLeft {
     Decoded(AddressingMode),
-    ReadingData(AddressingMode, AddressingModeReadData),
-    WritingData(AddressingModeWriteData),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
 }
 
 impl ShiftLeft {
@@ -74,31 +79,32 @@ impl ShiftLeft {
                     return Some(());
                 }
 
-                let mut read = mode.begin_read_data();
-                match read.read(cpu, memory) {
-                    None => {
-                        *self = ShiftLeft::ReadingData(mode.clone(), read);
-                        None
-                    }
-                    Some(data) => {
-                        let result = shift_left(data, &mut cpu.registers.status);
-                        let write = mode.begin_write_data(result);
-                        *self = ShiftLeft::WritingData(write);
-                        None
-                    }
-                }
-            }
-            ShiftLeft::ReadingData(mode, read) => {
-                if let Some(data) = read.read(cpu, memory) {
-                    let result = shift_left(data, &mut cpu.registers.status);
-                    let write = mode.begin_write_data(result);
-                    *self = ShiftLeft::WritingData(write);
-                }
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = ShiftLeft::ReadAddress(address);
                 None
             }
-            ShiftLeft::WritingData(write) => {
-                let mut write = write.clone();
-                mem_write!(self, cpu, memory, write, WritingData)?;
+            ShiftLeft::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = ShiftLeft::ReadAddress(address);
+                None
+            }
+            ShiftLeft::ReadAddress(address) => {
+                *self = ShiftLeft::DummyRead(*address);
+                None
+            }
+            ShiftLeft::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = ShiftLeft::ReadData(data, *address);
+                None
+            }
+            ShiftLeft::ReadData(data, address) => {
+                let data = shift_left(*data, &mut cpu.registers.status);
+                memory.write_u8(*address, data);
                 Some(())
             }
         }
@@ -116,8 +122,10 @@ fn shift_left(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum RotateLeft {
     Decoded(AddressingMode),
-    ReadingData(AddressingMode, AddressingModeReadData),
-    WritingData(AddressingModeWriteData),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
 }
 
 impl RotateLeft {
@@ -130,31 +138,32 @@ impl RotateLeft {
                     return Some(());
                 }
 
-                let mut read = mode.begin_read_data();
-                match read.read(cpu, memory) {
-                    None => {
-                        *self = RotateLeft::ReadingData(mode.clone(), read);
-                        None
-                    }
-                    Some(data) => {
-                        let result = rotate_left(data, &mut cpu.registers.status);
-                        let write = mode.begin_write_data(result);
-                        *self = RotateLeft::WritingData(write);
-                        None
-                    }
-                }
-            }
-            RotateLeft::ReadingData(mode, read) => {
-                if let Some(data) = read.read(cpu, memory) {
-                    let result = rotate_left(data, &mut cpu.registers.status);
-                    let write = mode.begin_write_data(result);
-                    *self = RotateLeft::WritingData(write);
-                }
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = RotateLeft::ReadAddress(address);
                 None
             }
-            RotateLeft::WritingData(write) => {
-                let mut write = write.clone();
-                mem_write!(self, cpu, memory, write, WritingData)?;
+            RotateLeft::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = RotateLeft::ReadAddress(address);
+                None
+            }
+            RotateLeft::ReadAddress(address) => {
+                *self = RotateLeft::DummyRead(*address);
+                None
+            }
+            RotateLeft::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = RotateLeft::ReadData(data, *address);
+                None
+            }
+            RotateLeft::ReadData(data, address) => {
+                let data = rotate_left(*data, &mut cpu.registers.status);
+                memory.write_u8(*address, data);
                 Some(())
             }
         }
@@ -178,8 +187,10 @@ fn rotate_left(input: u8, status: &mut CpuStatus) -> u8 {
 #[derive(Debug, Clone)]
 pub enum RotateRight {
     Decoded(AddressingMode),
-    ReadingData(AddressingMode, AddressingModeReadData),
-    WritingData(AddressingModeWriteData),
+    ReadingAddress(AddressingModeReadAddress),
+    ReadAddress(u16),
+    DummyRead(u16),
+    ReadData(u8, u16),
 }
 
 impl RotateRight {
@@ -192,31 +203,32 @@ impl RotateRight {
                     return Some(());
                 }
 
-                let mut read = mode.begin_read_data();
-                match read.read(cpu, memory) {
-                    None => {
-                        *self = RotateRight::ReadingData(mode.clone(), read);
-                        None
-                    }
-                    Some(data) => {
-                        let result = rotate_right(data, &mut cpu.registers.status);
-                        let write = mode.begin_write_data(result);
-                        *self = RotateRight::WritingData(write);
-                        None
-                    }
-                }
-            }
-            RotateRight::ReadingData(mode, read) => {
-                if let Some(data) = read.read(cpu, memory) {
-                    let result = rotate_right(data, &mut cpu.registers.status);
-                    let write = mode.begin_write_data(result);
-                    *self = RotateRight::WritingData(write);
-                }
+                let mut read = mode.begin_read_address();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = RotateRight::ReadAddress(address);
                 None
             }
-            RotateRight::WritingData(write) => {
-                let mut write = write.clone();
-                mem_write!(self, cpu, memory, write, WritingData)?;
+            RotateRight::ReadingAddress(read) => {
+                let mut read = read.clone();
+                let address = mem_read!(self, cpu, memory, read, ReadingAddress)?;
+
+                *self = RotateRight::ReadAddress(address);
+                None
+            }
+            RotateRight::ReadAddress(address) => {
+                *self = RotateRight::DummyRead(*address);
+                None
+            }
+            RotateRight::DummyRead(address) => {
+                let data = memory.read_u8(*address);
+
+                *self = RotateRight::ReadData(data, *address);
+                None
+            }
+            RotateRight::ReadData(data, address) => {
+                let data = rotate_right(*data, &mut cpu.registers.status);
+                memory.write_u8(*address, data);
                 Some(())
             }
         }
