@@ -6,7 +6,7 @@ mod read_address;
 mod read_data;
 mod write_data;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AddressingMode {
     Implied,
     Immediate,
