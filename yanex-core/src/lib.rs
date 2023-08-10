@@ -21,12 +21,12 @@ pub struct Nes {
 }
 
 impl Nes {
-    pub fn insert_cartridge(&mut self, cartridge: Option<Cartridge>) {
+    pub fn insert_cartridge(&mut self, cartridge: Option<Cartridge>) -> Option<Cartridge> {
         let cartridge = cartridge.map(|c| Rc::new(RefCell::new(c)));
         let old = std::mem::replace(&mut self.cartridge, cartridge);
         self.cpu_mem.connect_cartridge(self.cartridge.clone());
         self.ppu_mem.connect_cartridge(self.cartridge.clone());
-        old.map(|c| Rc::try_unwrap(c).unwrap().into_inner());
+        old.map(|c| Rc::try_unwrap(c).unwrap().into_inner())
     }
 
     pub fn reset(&mut self) {
