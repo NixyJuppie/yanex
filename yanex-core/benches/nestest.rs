@@ -1,11 +1,10 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use std::rc::Rc;
 use yanex_core::{Cartridge, Nes};
 
 fn nestest_benchmark(c: &mut Criterion) {
     let mut nes = Nes::default();
     let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
-    nes.insert_cartridge(Rc::new(Some(cartridge)));
+    nes.insert_cartridge(Some(cartridge));
     nes.reset();
 
     c.bench_function("nestest_legal 1s", |b| {

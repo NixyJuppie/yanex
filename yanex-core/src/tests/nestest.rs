@@ -1,12 +1,11 @@
 use crate::cartridge::Cartridge;
 use crate::Nes;
-use std::rc::Rc;
 
 #[test]
 fn legal_opcodes() {
     let mut nes = Nes::default();
     let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
-    nes.insert_cartridge(Rc::new(Some(cartridge)));
+    nes.insert_cartridge(Some(cartridge));
     nes.reset();
 
     // Start of non-interactive test

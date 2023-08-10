@@ -1,7 +1,7 @@
 mod mapper;
 
 use bitfield_struct::bitfield;
-use mapper::{MappedAddress, Mapper};
+use mapper::Mapper;
 
 #[derive(Debug)]
 pub struct Cartridge {
@@ -13,14 +13,40 @@ pub struct Cartridge {
 }
 
 impl Cartridge {
-    pub fn read_u8(&self, address: u16) -> u8 {
-        match self.mapper.map(self, address) {
-            MappedAddress::PrgRom(bank, address) => self.prg_rom[bank as usize][address as usize],
+    pub fn cpu_read(&self, address: u16) -> Option<u8> {
+        match self.mapper.cpu_map(self, address) {
+            None => None,
+            Some((bank, address)) => self.prg_rom[bank as usize][address as usize].into(),
         }
     }
 
-    pub fn read_u16(&self, address: u16) -> u16 {
-        u16::from_le_bytes([self.read_u8(address), self.read_u8(address + 1)])
+    pub fn ppu_read(&self, address: u16) -> Option<u8> {
+        match self.mapper.cpu_map(self, address) {
+            None => None,
+            Some((bank, address)) => self.chr_rom[bank as usize][address as usize].into(),
+        }
+    }
+
+    pub fn cpu_write(&mut self, address: u16, _data: u8) -> Option<()> {
+        match self.mapper.cpu_map(self, address) {
+            None => None,
+            Some((_bank, _address)) => {
+                todo!("Tried writing to cartridge memory");
+                // self.prg_rom[bank as usize][address as usize] = data;
+                // Some(())
+            }
+        }
+    }
+
+    pub fn ppu_write(&mut self, address: u16, _data: u8) -> Option<()> {
+        match self.mapper.ppu_map(self, address) {
+            None => None,
+            Some((_bank, _address)) => {
+                todo!("Tried writing to cartridge memory");
+                // self.chr_rom[bank as usize][address as usize] = data;
+                // Some(())
+            }
+        }
     }
 }
 

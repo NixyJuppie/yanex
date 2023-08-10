@@ -1,11 +1,12 @@
 use crate::cartridge::Cartridge;
+use std::cell::RefCell;
 use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 pub struct CpuMemory {
     ram: [u8; 0x800],
     ppu_registers: [u8; 0x8],
-    cartridge: Rc<Option<Cartridge>>,
+    cartridge: Option<Rc<RefCell<Cartridge>>>,
 }
 
 impl Default for CpuMemory {
@@ -19,26 +20,38 @@ impl Default for CpuMemory {
 }
 
 impl CpuMemory {
-    pub fn connect_cartridge(&mut self, cartridge: Rc<Option<Cartridge>>) {
+    pub fn connect_cartridge(&mut self, cartridge: Option<Rc<RefCell<Cartridge>>>) {
         self.cartridge = cartridge;
     }
 
     pub fn read_u8(&self, address: u16) -> u8 {
-        match address {
-            0x0000..=0x1FFF => self.ram[address as usize & 0x7FF],
-            0x2000..=0x3FFF => self.ppu_registers[address as usize & 0x7],
-            0x4000..=0x401F => todo!("APU/IO registers"),
-            0x4020..=0xFFFF => (*self.cartridge).as_ref().unwrap().read_u8(address),
-        }
+        self.cartridge
+            .as_ref()
+            .unwrap()
+            .borrow()
+            .cpu_read(address)
+            .unwrap_or_else(|| match address {
+                0x0000..=0x1FFF => self.ram[address as usize & 0x7FF],
+                0x2000..=0x3FFF => self.ppu_registers[address as usize & 0x7],
+                0x4000..=0x401F => todo!("APU/IO registers"),
+                0x4020..=0xFFFF => todo!("..."),
+            })
     }
 
     pub fn write_u8(&mut self, address: u16, data: u8) {
-        match address {
-            0x0000..=0x1FFF => self.ram[address as usize & 0x7FF] = data,
-            0x2000..=0x3FFF => self.ppu_registers[address as usize & 0x7] = data,
-            0x4000..=0x401F => todo!("APU/IO registers"),
-            0x4020..=0xFFFF => todo!("Cartridge"),
-        };
+        self.cartridge
+            .as_ref()
+            .unwrap()
+            .borrow_mut()
+            .cpu_write(address, data)
+            .unwrap_or_else(|| {
+                match address {
+                    0x0000..=0x1FFF => self.ram[address as usize & 0x7FF] = data,
+                    0x2000..=0x3FFF => self.ppu_registers[address as usize & 0x7] = data,
+                    0x4000..=0x401F => todo!("APU/IO registers"),
+                    0x4020..=0xFFFF => todo!("..."),
+                };
+            });
     }
 
     pub fn read_u16(&self, address: u16) -> u16 {

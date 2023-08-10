@@ -5,14 +5,16 @@ pub enum Mapper {
     Nrom,
 }
 
-pub enum MappedAddress {
-    PrgRom(u8, u16),
-}
-
 impl Mapper {
-    pub fn map(&self, cartridge: &Cartridge, address: u16) -> MappedAddress {
+    pub fn cpu_map(&self, cartridge: &Cartridge, address: u16) -> Option<(u8, u16)> {
         match self {
-            Mapper::Nrom => NromMapper::map(cartridge, address),
+            Mapper::Nrom => NromMapper::cpu_map(cartridge, address),
+        }
+    }
+
+    pub fn ppu_map(&self, cartridge: &Cartridge, address: u16) -> Option<(u8, u16)> {
+        match self {
+            Mapper::Nrom => NromMapper::ppu_map(cartridge, address),
         }
     }
 }
@@ -21,15 +23,18 @@ impl Mapper {
 struct NromMapper;
 
 impl NromMapper {
-    pub fn map(cartridge: &Cartridge, address: u16) -> MappedAddress {
+    pub fn cpu_map(cartridge: &Cartridge, address: u16) -> Option<(u8, u16)> {
         assert!(cartridge.prg_rom.len() <= 2);
 
         match address {
-            0x8000..=0xBFFF => MappedAddress::PrgRom(0, address & 16383),
-            0xC000..=0xFFFF => {
-                MappedAddress::PrgRom(cartridge.prg_rom.len() as u8 - 1, address & 16383)
-            }
-            _ => panic!("Address 0x{:04X} is not handled by mapper", address),
+            0x8000..=0xBFFF => (0, address & 16383).into(),
+            0xC000..=0xFFFF => (cartridge.prg_rom.len() as u8 - 1, address & 16383).into(),
+            _ => None,
         }
+    }
+
+    pub fn ppu_map(cartridge: &Cartridge, _address: u16) -> Option<(u8, u16)> {
+        assert!(cartridge.prg_rom.len() <= 2);
+        todo!()
     }
 }

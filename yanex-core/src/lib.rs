@@ -1,6 +1,7 @@
 pub use cartridge::Cartridge;
 pub use cpu::{Cpu, CpuMemory};
 pub use ppu::{Ppu, PpuMemory};
+use std::cell::RefCell;
 use std::rc::Rc;
 
 mod cartridge;
@@ -16,14 +17,16 @@ pub struct Nes {
     pub cpu_mem: CpuMemory,
     pub ppu: Ppu,
     pub ppu_mem: PpuMemory,
-    pub cartridge: Rc<Option<Cartridge>>,
+    pub cartridge: Option<Rc<RefCell<Cartridge>>>,
 }
 
 impl Nes {
-    pub fn insert_cartridge(&mut self, cartridge: Rc<Option<Cartridge>>) -> Rc<Option<Cartridge>> {
-        self.cpu_mem.connect_cartridge(cartridge.clone());
-        self.ppu_mem.connect_cartridge(cartridge.clone());
-        std::mem::replace(&mut self.cartridge, cartridge)
+    pub fn insert_cartridge(&mut self, cartridge: Option<Cartridge>) {
+        let cartridge = cartridge.map(|c| Rc::new(RefCell::new(c)));
+        let old = std::mem::replace(&mut self.cartridge, cartridge);
+        self.cpu_mem.connect_cartridge(self.cartridge.clone());
+        self.ppu_mem.connect_cartridge(self.cartridge.clone());
+        old.map(|c| Rc::try_unwrap(c).unwrap().into_inner());
     }
 
     pub fn reset(&mut self) {

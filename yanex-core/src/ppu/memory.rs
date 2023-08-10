@@ -1,4 +1,5 @@
 use crate::cartridge::Cartridge;
+use std::cell::RefCell;
 use std::rc::Rc;
 
 #[derive(Debug, Clone)]
@@ -6,7 +7,7 @@ pub struct PpuMemory {
     patterns: [u8; 0x2000],
     nametable: [u8; 0x1000],
     palette: [u8; 0x20],
-    cartridge: Rc<Option<Cartridge>>,
+    cartridge: Option<Rc<RefCell<Cartridge>>>,
 }
 
 impl Default for PpuMemory {
@@ -21,25 +22,39 @@ impl Default for PpuMemory {
 }
 
 impl PpuMemory {
-    pub fn connect_cartridge(&mut self, cartridge: Rc<Option<Cartridge>>) {
+    pub fn connect_cartridge(&mut self, cartridge: Option<Rc<RefCell<Cartridge>>>) {
         self.cartridge = cartridge;
     }
 
     pub fn read_u8(&self, address: u16) -> u8 {
-        match address & 0x3FFF {
-            0x0000..=0x1FFF => self.patterns[address as usize],
-            0x2000..=0x3EFF => self.nametable[address as usize & 0x1FFF],
-            0x3F00..=0x3FFF => self.palette[address as usize & 0x1F],
-            _ => unreachable!(),
-        }
+        self.cartridge
+            .as_ref()
+            .unwrap()
+            .borrow()
+            .ppu_read(address)
+            .unwrap_or_else(|| match address & 0x3FFF {
+                0x0000..=0x1FFF => self.patterns[address as usize],
+                0x2000..=0x3EFF => self.nametable[address as usize & 0x1FFF],
+                0x3F00..=0x3FFF => self.palette[address as usize & 0x1F],
+                _ => unreachable!(),
+            })
     }
 
     pub fn write_u8(&mut self, address: u16, data: u8) {
-        match address & 0x3FFF {
-            0x0000..=0x1FFF => self.patterns[address as usize] = data,
-            0x2000..=0x3EFF => self.nametable[address as usize & 0x1FFF] = data,
-            0x3F00..=0x3FFF => self.palette[address as usize & 0x1F] = data,
-            _ => unreachable!(),
+        match self
+            .cartridge
+            .as_ref()
+            .unwrap()
+            .borrow_mut()
+            .cpu_write(address, data)
+        {
+            None => {}
+            Some(_) => match address & 0x3FFF {
+                0x0000..=0x1FFF => self.patterns[address as usize] = data,
+                0x2000..=0x3EFF => self.nametable[address as usize & 0x1FFF] = data,
+                0x3F00..=0x3FFF => self.palette[address as usize & 0x1F] = data,
+                _ => unreachable!(),
+            },
         }
     }
 
