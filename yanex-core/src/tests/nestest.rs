@@ -1,24 +1,25 @@
 use crate::cartridge::Cartridge;
-use crate::cpu::{Cpu, CpuMemory};
+use crate::Nes;
+use std::rc::Rc;
 
 #[test]
 fn legal_opcodes() {
-    let mut cpu = Cpu::default();
-    let mut memory = CpuMemory::default();
-
+    let mut nes = Nes::default();
     let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
-    memory.connect_cartridge(&cartridge);
-    cpu.reset(&mut memory);
+    nes.insert_cartridge(Rc::new(Some(cartridge)));
+    nes.reset();
 
     // Start of non-interactive test
-    cpu.registers.program_counter = 0xC000;
+    nes.cpu.registers.program_counter = 0xC000;
     for line in include_str!("nestest.log").lines().take(5003) {
-        assert_nestest_log_line_equal(line, &cpu);
-        cpu.next_operation(&mut memory);
+        assert_nestest_log_line_equal(line, &nes);
+        nes.next_cpu_operation();
     }
 }
 
-fn assert_nestest_log_line_equal(line: &str, cpu: &Cpu) {
+fn assert_nestest_log_line_equal(line: &str, nes: &Nes) {
+    let cpu = &nes.cpu;
+
     let program_counter = u16::from_str_radix(&line[0..4], 16).unwrap();
     let accumulator: u8 = u8::from_str_radix(&line[50..52], 16).unwrap();
     let index_x: u8 = u8::from_str_radix(&line[55..57], 16).unwrap();
