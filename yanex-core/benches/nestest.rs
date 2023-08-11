@@ -1,19 +1,24 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use yanex_core::{Cartridge, Nes};
 
 fn nestest_benchmark(c: &mut Criterion) {
-    let mut nes = Nes::default();
-    let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
-    nes.insert_cartridge(Some(cartridge));
-    nes.reset();
-
-    c.bench_function("nestest_legal 1s", |b| {
-        b.iter(|| {
-            nestest_legal(
-                1_789_773, // 1.789773 MHz (~559 ns per cycle)
-                nes.clone(),
-            )
-        })
+    c.bench_function("nestest_legal 1s", move |b| {
+        let cartridge: Cartridge = include_bytes!("nestest.nes").to_vec().try_into().unwrap();
+        b.iter_batched(
+            || {
+                let mut nes = Nes::default();
+                nes.insert_cartridge(Some(cartridge.clone()));
+                nes.reset();
+                nes
+            },
+            |nes| {
+                nestest_legal(
+                    1_789_773, // 1.789773 MHz (~559 ns per cycle)
+                    nes,
+                )
+            },
+            BatchSize::LargeInput,
+        )
     });
 }
 

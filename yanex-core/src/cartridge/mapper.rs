@@ -1,6 +1,6 @@
 use super::Cartridge;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Mapper {
     Nrom,
 }

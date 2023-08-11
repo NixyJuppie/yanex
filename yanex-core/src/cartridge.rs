@@ -3,7 +3,7 @@ mod mapper;
 use bitfield_struct::bitfield;
 use mapper::Mapper;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cartridge {
     pub header: INesHeader,
     pub mapper: Mapper,
@@ -131,7 +131,7 @@ impl TryFrom<Vec<u8>> for Cartridge {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone)]
 pub struct INesHeader {
     pub descriptor: [u8; 4],
     pub b4_prg_rom_size: u8,

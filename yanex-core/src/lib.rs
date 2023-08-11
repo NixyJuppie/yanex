@@ -11,7 +11,7 @@ mod ppu;
 #[cfg(test)]
 mod tests;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct Nes {
     pub cpu: Cpu,
     pub cpu_mem: CpuMemory,
