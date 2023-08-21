@@ -1,3 +1,4 @@
+use crate::ppu::PpuRegisters;
 pub use cartridge::Cartridge;
 pub use cpu::{Cpu, CpuMemory};
 pub use ppu::{Ppu, PpuMemory};
@@ -11,7 +12,7 @@ mod ppu;
 #[cfg(test)]
 mod tests;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Nes {
     pub cpu: Cpu,
     pub cpu_mem: CpuMemory,
@@ -46,6 +47,20 @@ impl Nes {
 
         while self.cpu.state.is_some() {
             self.next();
+        }
+    }
+}
+
+impl Default for Nes {
+    fn default() -> Self {
+        let registers = Rc::new(RefCell::new(PpuRegisters::default()));
+
+        Self {
+            cpu: Default::default(),
+            cpu_mem: CpuMemory::new(registers.clone()),
+            ppu: Ppu::new(registers),
+            ppu_mem: Default::default(),
+            cartridge: None,
         }
     }
 }
