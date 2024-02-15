@@ -2,25 +2,50 @@ name: Build
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "master", "develop" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "master", "develop" ]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
+    name: Test
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: 'stable'
-        override: true
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Install stable toolchain
+      uses: dtolnay/rust-toolchain@stable
+    - name: Run cargo test
       run: cargo test --verbose
+
+  clippy:
+    runs-on: ubuntu-latest
+    name: Clippy
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+  format:
+    runs-on: ubuntu-latest
+    name: Format
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
