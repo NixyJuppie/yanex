@@ -1,2 +1,3 @@
 [workspace]
 members = ["yanex-core"]
+resolver = "2"

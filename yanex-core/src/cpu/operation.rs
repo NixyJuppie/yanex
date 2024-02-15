@@ -56,6 +56,7 @@ pub enum Operation {
     JumpSubroutine(operations::JumpSubroutine),
     ReturnSubroutine(operations::ReturnSubroutine),
     ReturnInterrupt(operations::ReturnInterrupt),
+    #[allow(clippy::enum_variant_names)]
     NoOperation(operations::NoOperation),
     // Branch
     BranchCarryClear(operations::BranchCarryClear),
